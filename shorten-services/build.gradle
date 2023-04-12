@@ -1,0 +1,107 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        def jooqVersion = '3.14.16'
+        classpath "org.jooq:jooq:${jooqVersion}"
+        classpath "org.jooq:jooq-meta:${jooqVersion}"
+        classpath "org.jooq:jooq-codegen:${jooqVersion}"
+        classpath 'org.mariadb.jdbc:mariadb-java-client:2.7.2'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.3'
+    }
+}
+
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '4.0.3'
+}
+
+group 'com.hieplp.url'
+version '1.0'
+
+repositories {
+    mavenCentral()
+}
+
+def vertxVersion = '4.4.0'
+def jooqVersion = '3.14.16'
+def junitVersion = '5.8.1'
+def lombokVersion = '1.18.26'
+def log4jVersion = '2.20.0'
+
+dependencies {
+    implementation(
+            "io.vertx:vertx-core:${vertxVersion}",
+            "io.vertx:vertx-web:${vertxVersion}",
+            "io.vertx:vertx-config:${vertxVersion}",
+    )
+
+    implementation(
+            "org.jooq:jooq:${jooqVersion}",
+            "org.jooq:jooq-codegen:${jooqVersion}",
+            "com.zaxxer:HikariCP:5.0.1",
+            'org.mariadb.jdbc:mariadb-java-client:2.7.2'
+    )
+
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+
+    implementation(
+            "org.apache.logging.log4j:log4j-core:${log4jVersion}",
+            "org.apache.logging.log4j:log4j-api:${log4jVersion}",
+            "org.apache.logging.log4j:log4j-slf4j-impl:${log4jVersion}"
+    )
+
+    implementation(
+            'com.google.inject:guice:5.1.0',
+            'com.google.code.gson:gson:2.10.1',
+            'com.google.guava:guava:30.0-jre'
+    )
+
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
+}
+
+test {
+    useJUnitPlatform()
+}
+
+shadowJar {
+    manifest {
+        attributes 'Main-Class': 'io.vertx.core.Launcher'
+        attributes 'Main-Verticle': 'com.hieplp.url.Application'
+    }
+    mergeServiceFiles {
+        include 'META-INF/services/io.vertx.core.spi.VerticleFactory'
+    }
+}
+
+
+// -------------------------------------------------------------------------
+// XXX Generate JOOQ tables
+// -------------------------------------------------------------------------
+
+//import org.jooq.codegen.GenerationTool
+//import org.jooq.meta.jaxb.*
+//
+//GenerationTool.generate(new Configuration()
+//        .withJdbc(new Jdbc()
+//                .withDriver('org.mariadb.jdbc.Driver')
+//                .withUrl('jdbc:mysql://127.0.0.1:3306/shortenUrl')
+//                .withUser('root')
+//                .withPassword('123456'))
+//        .withGenerator(new Generator()
+//                .withDatabase(new Database()
+//                        .withName("org.jooq.meta.mariadb.MariaDBDatabase")
+//                        .withInputSchema("shortenUrl")
+//                        .withOutputSchema("shortenUrl"))
+//                .withGenerate(new Generate()
+//                        .withFluentSetters(true)
+//                        .withPojos(true)
+//                        .withDaos(true))
+//                .withTarget(new Target()
+//                        .withPackageName('com.hieplp.url.repository.generate')
+////                        .withDirectory('D:\\Project\\todolist\\todolist-api\\src\\main\\java'))))
+//                        .withDirectory('/home/hieplp/Intellin/own-project/url-shorten/shorten-services/src/main/java'))))
