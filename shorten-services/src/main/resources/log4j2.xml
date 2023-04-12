@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Properties>
+        <Property name="log-path">
+            logs
+        </Property>
+        <Property name="backup-log-path">
+            logs/backup
+        </Property>
+    </Properties>
+    <Appenders>
+        <RollingFile name="url-admin-error"
+                     fileName="${log-path}/url-admin-error.log"
+                     filePattern="${backup-log-path}/url-admin-error-%d{yyyy-MMM-dd}-%i.log.gz"
+                     immediateFlush="true" append="true">
+            <PatternLayout>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] [%t] %c{10} [%L] - %msg%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="50 MB"/>
+            </Policies>
+        </RollingFile>
+        <RollingFile name="url-admin-debug"
+                     fileName="${log-path}/url-admin-debug.log"
+                     filePattern="${backup-log-path}/url-admin-debug-%d{yyyy-MMM-dd}-%i.log.gz"
+                     immediateFlush="true" append="true">
+            <PatternLayout>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] [%t] %c{10} [%L] - %msg%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="50 MB"/>
+            </Policies>
+        </RollingFile>
+        <RollingFile name="url-admin-info"
+                     fileName="${log-path}/url-admin-info.log"
+                     filePattern="${backup-log-path}/url-admin-info-%d{yyyy-MMM-dd}-%i.log.gz"
+                     immediateFlush="true" append="true">
+            <PatternLayout>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] [%t] %c{10} [%L] - %msg%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="50 MB"/>
+            </Policies>
+        </RollingFile>
+        <RollingFile name="url-admin-trace"
+                     fileName="${log-path}/url-admin-trace.log"
+                     filePattern="${backup-log-path}/url-admin-trace-%d{yyyy-MMM-dd}-%i.log.gz"
+                     immediateFlush="true" append="true">
+            <PatternLayout>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] [%t] %c{10} [%L] - %msg%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="50 M"/>
+            </Policies>
+        </RollingFile>
+
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout disableAnsi="false" pattern="%highlight{%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] [%T] %c{1} -%M %c{10} - %msg%n}{FATAL=red,
+                    ERROR=red, WARN=yellow bold, INFO=green, DEBUG=white bold, TRACE=gray}"/>
+        </Console>
+    </Appenders>
+
+    <Loggers>
+        <Logger name="com.zaxxer.hikari" level="error"/>
+        <Logger name="org.mongodb" level="error"/>
+        <Root level="debug">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="url-admin-error" level="error"/>
+            <AppenderRef ref="url-admin-info" level="info"/>
+            <AppenderRef ref="url-admin-debug" level="debug"/>
+            <AppenderRef ref="url-admin-trace" level="trace"/>
+        </Root>
+
+    </Loggers>
+
+</Configuration>
