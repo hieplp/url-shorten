@@ -9,6 +9,11 @@ import java.util.regex.Pattern;
 
 @Slf4j
 public class ValidationUtil {
+
+    public ValidationUtil() {
+        throw new IllegalStateException("Utility class: ValidationUtil");
+    }
+
     /**
      * Check object is null or not. if null, throw BadRequestException
      *
@@ -29,6 +34,33 @@ public class ValidationUtil {
         }
     }
 
+    /**
+     * Check all field of object are null or not. if null, throw BadRequestException
+     *
+     * @param object object need to check
+     */
+    public static void checkNotNullAll(Object object) {
+        try {
+            for (Field f : object.getClass().getDeclaredFields()) {
+                f.setAccessible(true);
+
+                if (States.isNull(f.get(object))) {
+                    throw new BadRequestException(String.format("Field: %s is null", f.getName()));
+                }
+            }
+        } catch (IllegalAccessException e) {
+            log.error("Error when check not null all: {}", e.getMessage());
+            throw new BadRequestException(e.getMessage());
+        }
+    }
+
+    public static void checkNotNull(Object... objects) {
+        for (Object object : objects) {
+            if (States.isNull(object)) {
+                throw new BadRequestException(String.format("Field is null"));
+            }
+        }
+    }
 
     /**
      * Check url is valid. if not valid, throw BadRequestException

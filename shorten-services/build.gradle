@@ -60,6 +60,12 @@ dependencies {
             'com.google.guava:guava:30.0-jre'
     )
 
+    implementation(
+            'io.jsonwebtoken:jjwt-impl:0.11.2',
+            'io.jsonwebtoken:jjwt-jackson:0.11.2',
+            'com.auth0:java-jwt:3.19.2'
+    )
+
     testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
 }
@@ -83,25 +89,25 @@ shadowJar {
 // XXX Generate JOOQ tables
 // -------------------------------------------------------------------------
 
-//import org.jooq.codegen.GenerationTool
-//import org.jooq.meta.jaxb.*
-//
-//GenerationTool.generate(new Configuration()
-//        .withJdbc(new Jdbc()
-//                .withDriver('org.mariadb.jdbc.Driver')
-//                .withUrl('jdbc:mysql://127.0.0.1:3306/shortenUrl')
-//                .withUser('root')
-//                .withPassword('123456'))
-//        .withGenerator(new Generator()
-//                .withDatabase(new Database()
-//                        .withName("org.jooq.meta.mariadb.MariaDBDatabase")
-//                        .withInputSchema("shortenUrl")
-//                        .withOutputSchema("shortenUrl"))
-//                .withGenerate(new Generate()
-//                        .withFluentSetters(true)
-//                        .withPojos(true)
-//                        .withDaos(true))
-//                .withTarget(new Target()
-//                        .withPackageName('com.hieplp.url.repository.generate')
-////                        .withDirectory('D:\\Project\\todolist\\todolist-api\\src\\main\\java'))))
+import org.jooq.codegen.GenerationTool
+import org.jooq.meta.jaxb.*
+
+GenerationTool.generate(new Configuration()
+        .withJdbc(new Jdbc()
+                .withDriver('org.mariadb.jdbc.Driver')
+                .withUrl('jdbc:mysql://127.0.0.1:3306/shortenUrl')
+                .withUser('root')
+                .withPassword('123456'))
+        .withGenerator(new Generator()
+                .withDatabase(new Database()
+                        .withName("org.jooq.meta.mariadb.MariaDBDatabase")
+                        .withInputSchema("shortenUrl")
+                        .withOutputSchema("shortenUrl"))
+                .withGenerate(new Generate()
+                        .withFluentSetters(true)
+                        .withPojos(true)
+                        .withDaos(true))
+                .withTarget(new Target()
+                        .withPackageName('com.hieplp.url.repository.generate')
+                        .withDirectory('/home/hieplp/Project/url-shorten/shorten-services/src/main/java'))))
 //                        .withDirectory('/home/hieplp/Intellin/own-project/url-shorten/shorten-services/src/main/java'))))

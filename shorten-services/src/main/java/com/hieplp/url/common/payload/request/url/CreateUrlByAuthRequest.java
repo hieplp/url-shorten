@@ -4,8 +4,9 @@ import com.hieplp.url.common.annotation.NotNull;
 import lombok.Data;
 
 @Data
-public class CreateUrlRequest {
-    private String shortUrl;
+public class CreateUrlByAuthRequest {
     @NotNull
     private String longUrl;
+    private String shortUrl;
+    private Long expiredAt;
 }

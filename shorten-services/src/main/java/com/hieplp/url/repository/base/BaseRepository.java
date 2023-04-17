@@ -1,9 +1,9 @@
 package com.hieplp.url.repository.base;
 
-import org.jooq.Condition;
+import com.hieplp.url.common.payload.request.QueryRequest;
+import com.hieplp.url.common.payload.response.QueryResponse;
 import org.jooq.Record;
-import org.jooq.SelectSelectStep;
-import org.jooq.Table;
+import org.jooq.*;
 
 import java.sql.SQLException;
 
@@ -16,6 +16,13 @@ public interface BaseRepository {
      * @param record record need to save
      */
     void save(Record record);
+
+    /**
+     * Save record to database with transaction
+     *
+     * @param records record list
+     */
+    void saveWithTransaction(Record... records);
 
     /**
      * Save record to database and return saved object
@@ -72,4 +79,38 @@ public interface BaseRepository {
      * @return queried object
      */
     <T> T fetchOneNotNull(Table<?> table, Condition condition, Class<? extends T> type);
+
+
+    /**
+     * Fetch one record from database. If record is null, throw exception
+     *
+     * @param table     table
+     * @param condition condition
+     * @param type      type of return object
+     * @param fields    fields to fetch
+     * @param <T>       type of return object
+     * @return queried object
+     */
+    <T> T fetchOneNotNull(Table<?> table, Condition condition, Class<? extends T> type, Field<?>[] fields);
+
+    /**
+     * Check if record exist in database
+     *
+     * @param table     table
+     * @param condition queried condition
+     * @return true if record exist, otherwise return false
+     */
+    boolean isExistent(Table<?> table, Condition condition);
+
+    /**
+     * Fetch records from database
+     *
+     * @param request   query request
+     * @param table     table to fetch
+     * @param condition condition to fetch
+     * @param type      type of return object
+     * @param <T>       type of return object
+     * @return query response
+     */
+    <T> QueryResponse<T> fetch(QueryRequest request, Table<?> table, Condition condition, Class<? extends T> type);
 }

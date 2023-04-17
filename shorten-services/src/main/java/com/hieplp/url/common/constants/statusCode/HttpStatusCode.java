@@ -1,6 +1,6 @@
 package com.hieplp.url.common.constants.statusCode;
 
-public enum HttpStatusCode {
+public enum HttpStatusCode implements ResponseCode {
 
     // 1xx: Informational
     CONTINUE(100, "Continue"),
@@ -73,19 +73,25 @@ public enum HttpStatusCode {
     NOT_EXTENDED(510, "Not Extended"),
     NETWORK_AUTHENTICATION_REQUIRED(511, "Network Authentication Required");
 
-    private final int value;
-    private final String description;
+    private final int code;
+    private final String message;
 
-    HttpStatusCode(int value, String description) {
-        this.value = value;
-        this.description = description;
+    HttpStatusCode(int code, String message) {
+        this.code = code;
+        this.message = message;
     }
 
-    public int getValue() {
-        return value;
+    @Override
+    public String getCode() {
+        return String.valueOf(code);
     }
 
-    public String getDescription() {
-        return description;
+    @Override
+    public String getMessage() {
+        return message;
+    }
+
+    public Integer getCodeAsInteger() {
+        return code;
     }
 }

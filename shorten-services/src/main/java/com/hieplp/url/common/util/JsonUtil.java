@@ -1,5 +1,6 @@
 package com.hieplp.url.common.util;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -13,6 +14,10 @@ public class JsonUtil {
     private static Gson gson = new GsonBuilder()
             .disableHtmlEscaping()
             .create();
+
+    public JsonUtil() {
+        throw new IllegalStateException("Utility class: JsonUtil");
+    }
 
     public static Gson getGson() {
         if (States.isNull(gson)) {
@@ -54,5 +59,10 @@ public class JsonUtil {
 
     public static String toJson(Object object) {
         return getGson().toJson(object);
+    }
+
+    public static <T> T fromMap(Map<?, ?> map, Class<T> clazz) {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.convertValue(map, clazz);
     }
 }

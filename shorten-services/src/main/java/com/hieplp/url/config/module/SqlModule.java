@@ -7,8 +7,12 @@ import com.google.inject.Singleton;
 import com.hieplp.url.common.config.SqlConfig;
 import com.hieplp.url.common.util.States;
 import com.hieplp.url.config.ConfigInfo;
+import com.hieplp.url.repository.source.PasswordRepository;
 import com.hieplp.url.repository.source.UrlRepository;
+import com.hieplp.url.repository.source.UserRepository;
+import com.hieplp.url.repository.source.impl.PasswordRepositoryImpl;
 import com.hieplp.url.repository.source.impl.UrlRepositoryImpl;
+import com.hieplp.url.repository.source.impl.UserRepositoryImpl;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.RequiredArgsConstructor;
@@ -18,17 +22,18 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor(onConstructor = @__({@Inject}))
 public class SqlModule extends AbstractModule {
 
+    private static final int DEFAULT_IDLE_TIMEOUT = 600000;
+    private static final int DEFAULT_CONNECTION_TIMEOUT = 10000;
+    private static final int DEFAULT_MAX_POOL_SIZE = 8;
+    private static final int DEFAULT_MIN_IDLE = 4;
     private final ConfigInfo configInfo;
-
-    private final int DEFAULT_IDLE_TIMEOUT = 600000;
-    private final int DEFAULT_CONNECTION_TIMEOUT = 10000;
-    private final int DEFAULT_MAX_POOL_SIZE = 8;
-    private final int DEFAULT_MIN_IDLE = 4;
 
     @Override
     protected void configure() {
         log.info("Configuring SQL module");
         bind(UrlRepository.class).to(UrlRepositoryImpl.class).in(Singleton.class);
+        bind(UserRepository.class).to(UserRepositoryImpl.class).in(Singleton.class);
+        bind(PasswordRepository.class).to(PasswordRepositoryImpl.class).in(Singleton.class);
     }
 
     @Provides

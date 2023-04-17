@@ -3,7 +3,9 @@ package com.hieplp.url.comsumer;
 
 import com.google.inject.Inject;
 import com.hieplp.url.config.ConfigInfo;
+import com.hieplp.url.controller.AuthController;
 import com.hieplp.url.controller.UrlController;
+import com.hieplp.url.controller.UserController;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.ext.web.Router;
@@ -16,7 +18,11 @@ public class ConsumerImpl implements Consumer {
 
     private final Vertx vertx;
     private final ConfigInfo configInfo;
+    //
+    private final AuthController authController;
+    private final UserController userController;
     private final UrlController urlController;
+
 
     @Override
     public Consumer api() {
@@ -24,13 +30,14 @@ public class ConsumerImpl implements Consumer {
 
         Router router = Router.router(vertx);
 
+        authController.init(router);
+        userController.init(router);
         urlController.init(router);
 
         vertx
                 .createHttpServer(new HttpServerOptions()
                         .setHost(configInfo.getServerConfig().getHost())
-                        .setPort(configInfo.getServerConfig().getPort())
-                )
+                        .setPort(configInfo.getServerConfig().getPort()))
                 .requestHandler(router)
                 .listen(event -> {
                     if (event.succeeded()) {

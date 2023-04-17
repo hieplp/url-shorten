@@ -3,9 +3,12 @@ package com.hieplp.url.repository.base;
 import com.google.inject.Inject;
 import com.hieplp.url.common.exception.data.NotFoundException;
 import com.hieplp.url.common.exception.data.QueryException;
+import com.hieplp.url.common.payload.request.QueryRequest;
+import com.hieplp.url.common.payload.response.QueryResponse;
 import com.hieplp.url.common.util.States;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.extern.slf4j.Slf4j;
+import org.jooq.Record;
 import org.jooq.*;
 import org.jooq.conf.Settings;
 import org.jooq.impl.DSL;
@@ -40,6 +43,23 @@ public class BaseRepositoryImpl implements BaseRepository {
         } catch (Exception e) {
             log.error("Error when save record: {}", e.getMessage());
             throw new QueryException("Unknown error when save record");
+        }
+    }
+
+    @Override
+    public void saveWithTransaction(Record... records) {
+        try (CustomDSLContext context = getDslContext()) {
+            log.info("Save record with transaction");
+            context.transaction(configuration -> {
+                Arrays.stream(records).forEach(record -> {
+                    context.insertInto(getTable(record))
+                            .set(record)
+                            .execute();
+                });
+            });
+        } catch (Exception e) {
+            log.error("Error when save record: {}", e.getMessage());
+            throw new QueryException(e.getMessage());
         }
     }
 
@@ -126,22 +146,86 @@ public class BaseRepositoryImpl implements BaseRepository {
         }
     }
 
-    protected Condition getSearchCondition(Condition condition, String searchBy, String searchValue) {
-        if (States.isNotEmpty(searchBy) && States.isNotEmpty(searchValue)) {
-            String[] searchInput = searchBy.split(Pattern.quote("."));
-            Field<Object> searchField = DSL.field(DSL.name(searchInput[0], searchInput[1]));
-            condition = condition.and(searchField.contains(searchValue));
+    @Override
+    public <T> T fetchOneNotNull(Table<?> table, Condition condition, Class<? extends T> type, Field<?>[] fields) {
+        try (CustomDSLContext context = getDslContext()) {
+            return context.select(fields)
+                    .from(table)
+                    .where(condition)
+                    .fetchInto(type)
+                    .get(0);
+        } catch (IndexOutOfBoundsException e) {
+            log.error("Not found record: {}", e.getMessage());
+            throw new NotFoundException(e.getMessage());
+        } catch (Exception e) {
+            log.error("Error when fetch one not null record: {}", e.getMessage());
+            throw new QueryException(e.getMessage());
         }
-        return condition;
     }
 
-    protected Condition getFilterCondition(Condition condition, String filterBy, String filterValue) {
-        if (States.isNotNull(filterBy) && States.isNotNull(filterValue)) {
-            String[] filterInput = filterBy.split(Pattern.quote("."));
-            Field<Object> filterField = DSL.field(DSL.name(filterInput[0], filterInput[1]));
-            condition = condition.and(filterField.eq(filterValue));
+    @Override
+    public boolean isExistent(Table<?> table, Condition condition) {
+        try (CustomDSLContext context = getDslContext()) {
+            return context.fetchExists(table, condition);
+        } catch (Exception e) {
+            log.error("Error when fetch exist record: {}", e.getMessage());
+            throw new QueryException(e.getMessage());
         }
-        return condition;
+    }
+
+    @Override
+    public <T> QueryResponse<T> fetch(QueryRequest request, Table<?> table, Condition condition, Class<? extends T> type) {
+        try (CustomDSLContext context = getDslContext()) {
+            condition = condition
+                    .and(getSearchCondition(request.getSearchBy(), request.getSearchValue()))
+                    .and(getFilterCondition(request.getFilterBy(), request.getFilterValue()));
+            return QueryResponse.<T>builder()
+                    .list(context.selectFrom(table)
+                            .where(condition)
+                            .orderBy(getSortCondition(request.getOrder(), request.getBy()))
+                            .limit(request.getLimit())
+                            .offset(request.getFrom())
+                            .fetchInto(type))
+                    .total(context.fetchCount(table, condition))
+                    .build();
+        } catch (Exception e) {
+            log.error("Error when fetch records: {}", e.getMessage());
+            throw new QueryException(e.getMessage());
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // XXX Private
+    // -------------------------------------------------------------------------
+
+    protected Condition getSearchCondition(String searchBy, String searchValue) {
+        if (States.isBlank(searchBy) || States.isBlank(searchValue)) {
+            return DSL.noCondition();
+        }
+
+        String[] searchInput = searchBy.split(Pattern.quote("."));
+        Field<Object> searchField = DSL.field(DSL.name(searchInput[0], searchInput[1]));
+        return searchField.contains(searchValue);
+    }
+
+    protected Condition getFilterCondition(String filterBy, String filterValue) {
+        if (States.isBlank(filterBy) || States.isBlank(filterValue)) {
+            return DSL.noCondition();
+        }
+
+        String[] filterInput = filterBy.split(Pattern.quote("."));
+        Field<Object> filterField = DSL.field(DSL.name(filterInput[0], filterInput[1]));
+        return filterField.eq(filterValue);
+    }
+
+    protected SortField<?> getSortCondition(String sortBy, String sortType) {
+        if (States.isBlank(sortBy) || States.isBlank(sortType)) {
+            return null;
+        }
+
+        return "desc".equals(sortType)
+                ? DSL.field(sortBy, String.class).desc()
+                : DSL.field(sortBy, String.class).asc();
     }
 
     private Table<?> getTable(Record record) {

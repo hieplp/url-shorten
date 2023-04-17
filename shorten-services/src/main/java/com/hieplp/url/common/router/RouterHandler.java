@@ -26,6 +26,20 @@ public interface RouterHandler {
     void anonymousHandler(RoutingContext context);
 
     /**
+     * Handle request with authentication - user
+     *
+     * @param context routing context
+     */
+    void userHandler(RoutingContext context);
+
+    /**
+     * Handle request with refresh token
+     *
+     * @param context routing context
+     */
+    void refreshTokenHandler(RoutingContext context);
+
+    /**
      * Handle service. Should be called after postHandler or getHandler
      *
      * @param context        routing context
@@ -64,12 +78,36 @@ public interface RouterHandler {
     void badRequest(RoutingContext context, Exception e);
 
     /**
+     * Send back a response with status code 404 Not Found
+     *
+     * @param context routing context
+     * @param e       exception
+     */
+    void notFound(RoutingContext context, Exception e);
+
+    /**
      * Send back a response with status code 409 Conflict
      *
      * @param context routing context
      * @param e       exception
      */
     void conflict(RoutingContext context, Exception e);
+
+    /**
+     * Send back a response with status code 401 Unauthorized
+     *
+     * @param context routing context
+     * @param e       exception
+     */
+    void unauthorized(RoutingContext context, Exception e);
+
+    /**
+     * Send back a response with status code 401 Unauthorized
+     *
+     * @param context routing context
+     * @param e       exception
+     */
+    void invalidPassword(RoutingContext context, Exception e);
 
     /**
      * Send back a response with status code 500 Internal Server Error

@@ -1,21 +1,23 @@
 package com.hieplp.url.common.payload.response;
 
 import com.hieplp.url.common.constants.statusCode.ResponseCode;
-import lombok.Builder;
 import lombok.Data;
 
 @Data
-@Builder
 public class CommonResponse {
     protected String code;
     protected Object data;
-    protected String messages;
+    protected String message;
 
-    public static class CommonResponseBuilder {
-        public CommonResponseBuilder response(ResponseCode response) {
-            this.code = response.getCode();
-            this.messages = response.getMessage();
-            return this;
-        }
+    public CommonResponse(ResponseCode responseCode) {
+        this.code = responseCode.getCode();
+        this.message = responseCode.getMessage();
+        this.data = new Object();
+    }
+
+    public CommonResponse(ResponseCode response, Object data) {
+        this.code = response.getCode();
+        this.message = response.getMessage();
+        this.data = data;
     }
 }
