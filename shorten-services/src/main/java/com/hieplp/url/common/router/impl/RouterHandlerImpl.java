@@ -1,23 +1,35 @@
 package com.hieplp.url.common.router.impl;
 
 import com.google.gson.JsonObject;
+import com.google.inject.Inject;
+import com.hieplp.url.common.constants.auth.TokenType;
 import com.hieplp.url.common.constants.statusCode.HttpStatusCode;
 import com.hieplp.url.common.exception.BadRequestException;
+import com.hieplp.url.common.exception.auth.InvalidPasswordException;
+import com.hieplp.url.common.exception.auth.InvalidTokenException;
+import com.hieplp.url.common.exception.auth.UnauthorizedException;
 import com.hieplp.url.common.exception.data.DuplicateException;
+import com.hieplp.url.common.exception.data.NotFoundException;
+import com.hieplp.url.common.payload.HeaderInformation;
 import com.hieplp.url.common.payload.request.CommonRequest;
 import com.hieplp.url.common.payload.response.CommonResponse;
 import com.hieplp.url.common.router.RouterHandler;
 import com.hieplp.url.common.router.ServiceHandler;
 import com.hieplp.url.common.util.JsonUtil;
+import com.hieplp.url.handler.AuthHandler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.ext.web.RoutingContext;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@RequiredArgsConstructor(onConstructor = @__({@Inject}))
 public class RouterHandlerImpl implements RouterHandler {
 
     private final static String REQUEST = "request";
     private final static String RESPONSE = "response";
+
+    private final AuthHandler authHandler;
 
     @Override
     public void postHandler(RoutingContext context) {
@@ -40,10 +52,60 @@ public class RouterHandlerImpl implements RouterHandler {
     public void anonymousHandler(RoutingContext context) {
         log.debug("Anonymous handler with body");
         CommonRequest request = CommonRequest.builder()
-                .request(JsonUtil.fromJson(context.getBodyAsString(), JsonObject.class))
+                .request(JsonUtil.fromJson(context.body().asString(), JsonObject.class))
                 .build();
         context.put(REQUEST, request);
         context.next();
+    }
+
+    @Override
+    public void userHandler(RoutingContext context) {
+        try {
+            log.debug("User handler with body");
+
+            final String token = context.request().getHeader("Authorization");
+            HeaderInformation headers = authHandler.validateToken(token);
+
+            if (!TokenType.ACCESS.getType().equals(headers.getTokenType())) {
+                log.debug("Invalid token type: {}", headers.getTokenType());
+                throw new UnauthorizedException("Invalid token type");
+            }
+
+            CommonRequest request = CommonRequest.builder()
+                    .request(JsonUtil.fromJson(context.body().asString(), JsonObject.class))
+                    .headers(headers)
+                    .build();
+            context.put(REQUEST, request);
+
+            context.next();
+        } catch (Exception e) {
+            handleException(context, e);
+        }
+    }
+
+    @Override
+    public void refreshTokenHandler(RoutingContext context) {
+        try {
+            log.debug("User handler with body");
+
+            final String token = context.request().getHeader("Authorization");
+            HeaderInformation headers = authHandler.validateToken(token);
+
+            if (!TokenType.REFRESH.getType().equals(headers.getTokenType())) {
+                log.debug("Invalid token type: {}", headers.getTokenType());
+                throw new UnauthorizedException("Invalid token type");
+            }
+
+            CommonRequest request = CommonRequest.builder()
+                    .request(JsonUtil.fromJson(context.body().asString(), JsonObject.class))
+                    .headers(headers)
+                    .build();
+            context.put(REQUEST, request);
+
+            context.next();
+        } catch (Exception e) {
+            handleException(context, e);
+        }
     }
 
     @Override
@@ -65,7 +127,7 @@ public class RouterHandlerImpl implements RouterHandler {
 
         Object response = context.get(RESPONSE);
         context.response()
-                .setStatusCode(HttpStatusCode.OK.getValue())
+                .setStatusCode(HttpStatusCode.OK.getCodeAsInteger())
                 .putHeader("content-type", "application/json")
                 .end(JsonUtil.toJson(response));
     }
@@ -76,7 +138,7 @@ public class RouterHandlerImpl implements RouterHandler {
 
         Object response = context.get(RESPONSE);
         context.response()
-                .setStatusCode(HttpStatusCode.CREATED.getValue())
+                .setStatusCode(HttpStatusCode.CREATED.getCodeAsInteger())
                 .putHeader("content-type", "application/json")
                 .end(JsonUtil.toJson(response));
     }
@@ -87,8 +149,14 @@ public class RouterHandlerImpl implements RouterHandler {
             throw exception;
         } catch (BadRequestException e) {
             badRequest(context, e);
+        } catch (NotFoundException e) {
+            notFound(context, e);
         } catch (DuplicateException e) {
             conflict(context, e);
+        } catch (InvalidPasswordException e) {
+            invalidPassword(context, e);
+        } catch (UnauthorizedException | InvalidTokenException e) {
+            unauthorized(context, e);
         } catch (Exception e) {
             log.error("Error when handle request", e);
             internalError(context);
@@ -98,14 +166,19 @@ public class RouterHandlerImpl implements RouterHandler {
     @Override
     public void badRequest(RoutingContext context, Exception e) {
         log.error("Bad request: {}", e.getMessage());
-        CommonResponse response = CommonResponse.builder()
-                .code(String.valueOf(HttpStatusCode.BAD_REQUEST.getValue()))
-                .data(e.getMessage())
-                .messages(HttpStatusCode.BAD_REQUEST.getDescription())
-                .build();
-
+        CommonResponse response = new CommonResponse(HttpStatusCode.BAD_REQUEST, e.getMessage());
         context.response()
-                .setStatusCode(HttpStatusCode.BAD_REQUEST.getValue())
+                .setStatusCode(HttpStatusCode.BAD_REQUEST.getCodeAsInteger())
+                .putHeader("content-type", "application/json")
+                .end(JsonUtil.toJson(response));
+    }
+
+    @Override
+    public void notFound(RoutingContext context, Exception e) {
+        log.error("Not found: {}", e.getMessage());
+        CommonResponse response = new CommonResponse(HttpStatusCode.NOT_FOUND, e.getMessage());
+        context.response()
+                .setStatusCode(HttpStatusCode.NOT_FOUND.getCodeAsInteger())
                 .putHeader("content-type", "application/json")
                 .end(JsonUtil.toJson(response));
     }
@@ -113,28 +186,38 @@ public class RouterHandlerImpl implements RouterHandler {
     @Override
     public void conflict(RoutingContext context, Exception e) {
         log.error("Conflict: {}", e.getMessage());
-
-        CommonResponse response = CommonResponse.builder()
-                .code(String.valueOf(HttpStatusCode.CONFLICT.getValue()))
-                .data(e.getMessage())
-                .messages(HttpStatusCode.CONFLICT.getDescription())
-                .build();
-
+        CommonResponse response = new CommonResponse(HttpStatusCode.CONFLICT, e.getMessage());
         context.response()
-                .setStatusCode(HttpStatusCode.CONFLICT.getValue())
+                .setStatusCode(HttpStatusCode.CONFLICT.getCodeAsInteger())
+                .putHeader("content-type", "application/json")
+                .end(JsonUtil.toJson(response));
+    }
+
+    @Override
+    public void unauthorized(RoutingContext context, Exception e) {
+        log.error("Unauthorized: {}", e.getMessage());
+        CommonResponse response = new CommonResponse(HttpStatusCode.UNAUTHORIZED, e.getMessage());
+        context.response()
+                .setStatusCode(HttpStatusCode.UNAUTHORIZED.getCodeAsInteger())
+                .putHeader("content-type", "application/json")
+                .end(JsonUtil.toJson(response));
+    }
+
+    @Override
+    public void invalidPassword(RoutingContext context, Exception e) {
+        log.error("Invalid password: {}", e.getMessage());
+        CommonResponse response = new CommonResponse(HttpStatusCode.UNAUTHORIZED, e.getMessage());
+        context.response()
+                .setStatusCode(HttpStatusCode.UNAUTHORIZED.getCodeAsInteger())
                 .putHeader("content-type", "application/json")
                 .end(JsonUtil.toJson(response));
     }
 
     @Override
     public void internalError(RoutingContext context) {
-        CommonResponse response = CommonResponse.builder()
-                .code(String.valueOf(HttpStatusCode.INTERNAL_SERVER_ERROR.getValue()))
-                .messages(HttpStatusCode.INTERNAL_SERVER_ERROR.getDescription())
-                .build();
-
+        CommonResponse response = new CommonResponse(HttpStatusCode.INTERNAL_SERVER_ERROR, "Internal error");
         context.response()
-                .setStatusCode(HttpStatusCode.INTERNAL_SERVER_ERROR.getValue())
+                .setStatusCode(HttpStatusCode.INTERNAL_SERVER_ERROR.getCodeAsInteger())
                 .putHeader("content-type", "application/json")
                 .end(JsonUtil.toJson(response));
     }

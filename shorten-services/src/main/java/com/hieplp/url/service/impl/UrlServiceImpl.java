@@ -4,26 +4,26 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.inject.Inject;
 import com.hieplp.url.common.constants.statusCode.SuccessCode;
-import com.hieplp.url.common.constants.url.UrlStatus;
+import com.hieplp.url.common.constants.url.UrlIsDeleted;
 import com.hieplp.url.common.exception.BadRequestException;
 import com.hieplp.url.common.exception.data.DuplicateException;
 import com.hieplp.url.common.model.UrlModel;
 import com.hieplp.url.common.payload.request.CommonRequest;
-import com.hieplp.url.common.payload.request.url.CreateUrlRequest;
+import com.hieplp.url.common.payload.request.QueryRequest;
+import com.hieplp.url.common.payload.request.url.CreateUrlByAuthRequest;
+import com.hieplp.url.common.payload.request.url.CreateUrlByPublicRequest;
+import com.hieplp.url.common.payload.request.url.UpdateUrlByAuthRequest;
 import com.hieplp.url.common.payload.response.CommonResponse;
-import com.hieplp.url.common.util.GenerateUtil;
-import com.hieplp.url.common.util.JsonUtil;
-import com.hieplp.url.common.util.States;
-import com.hieplp.url.common.util.ValidationUtil;
+import com.hieplp.url.common.payload.response.QueryResponse;
+import com.hieplp.url.common.util.*;
 import com.hieplp.url.config.ConfigInfo;
+import com.hieplp.url.handler.UrlHandler;
 import com.hieplp.url.repository.generate.tables.records.UrlRecord;
 import com.hieplp.url.repository.source.UrlRepository;
 import com.hieplp.url.service.UrlService;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -32,9 +32,12 @@ public class UrlServiceImpl implements UrlService {
     private final ConfigInfo configInfo;
     private final UrlRepository urlRepo;
     private final Cache<String, UrlModel> urlCache;
+    private final UrlHandler urlHandler;
 
     @Inject
-    public UrlServiceImpl(ConfigInfo configInfo, UrlRepository urlRepo) {
+    public UrlServiceImpl(ConfigInfo configInfo,
+                          UrlRepository urlRepo,
+                          UrlHandler urlHandler) {
         this.configInfo = configInfo;
         this.urlRepo = urlRepo;
         // Use redis instead of guava cache
@@ -42,78 +45,158 @@ public class UrlServiceImpl implements UrlService {
                 .maximumSize(configInfo.getCacheConfig().getMaximumSize())
                 .expireAfterWrite(configInfo.getCacheConfig().getExpireAfterWrite(), TimeUnit.SECONDS)
                 .build();
+        this.urlHandler = urlHandler;
     }
 
     @Override
-    public CommonResponse createUrl(CommonRequest commonRequest) {
-        log.info("Create url with request: {}", commonRequest);
-        CreateUrlRequest request = JsonUtil.fromJson(commonRequest.getRequest(), CreateUrlRequest.class);
+    public CommonResponse createUrlByPublic(CommonRequest commonRequest) {
+        log.info("Create url by public with request: {}", commonRequest);
 
+        CreateUrlByPublicRequest request = JsonUtil.fromJson(commonRequest.getRequest(), CreateUrlByPublicRequest.class);
+
+        ValidationUtil.checkNotNullAll(request);
+        ValidationUtil.checkUrlIsValid(request.getLongUrl());
+
+
+        UrlModel urlModel = UrlModel.builder()
+                .longUrl(request.getLongUrl())
+                .shortUrl(GenerateUtil.generate(configInfo.getShortUrlLength()))
+                .createdBy("public") // TODO: Use deviceId or something else to identify url owner
+                .build();
+        UrlModel response = urlHandler.saveUrl(urlModel);
+
+        return new CommonResponse(SuccessCode.SUCCESS, response);
+    }
+
+    @Override
+    public CommonResponse getUrlByPublic(CommonRequest commonRequest) {
+        log.info("Get url by public with request: {}", commonRequest);
+
+        UrlModel request = JsonUtil.fromJson(commonRequest.getRequest(), UrlModel.class);
+        ValidationUtil.checkNotNull(request);
+
+        UrlModel response = urlCache.getIfPresent(request.getShortUrl());
+        if (States.isNull(response)) {
+            response = urlRepo.getUrlModelByPublic(request.getShortUrl());
+            urlCache.put(request.getShortUrl(), response);
+        }
+
+        // TODO: Push to queue to update statistics
+
+        return new CommonResponse(SuccessCode.SUCCESS, response);
+    }
+
+    @Override
+    public CommonResponse createUrlByAuth(CommonRequest commonRequest) {
+        log.info("Create url by auth with request: {}", commonRequest);
+
+        CreateUrlByAuthRequest request = JsonUtil.fromJson(commonRequest.getRequest(), CreateUrlByAuthRequest.class);
         ValidationUtil.checkNotNullWithAnnotation(request);
         ValidationUtil.checkUrlIsValid(request.getLongUrl());
 
-        if (urlRepo.doesShortUrlExist(request.getShortUrl())) {
+        if (States.isNotBlank(request.getShortUrl()) && urlRepo.doesShortUrlExist(request.getShortUrl())) {
+            log.debug("Short url: {} already exist", request.getShortUrl());
+            throw new DuplicateException(String.format("Short url: %s already exist", request.getShortUrl()));
+        } else {
+            request.setShortUrl(GenerateUtil.generate(configInfo.getShortUrlLength()));
+        }
+
+        if (States.isNotNull(request.getExpiredAt())) {
+            final Long currentTime = DateUtil.getCurrentTime();
+            if (States.isLessThan(request.getExpiredAt(), currentTime)) {
+                log.debug("Expired at: {} is less than current time: {}", request.getExpiredAt(), currentTime);
+                throw new BadRequestException(String.format("Expired at: %s is less than current time: %s", request.getExpiredAt(), currentTime));
+            }
+        }
+
+        UrlModel urlModel = UrlModel.builder()
+                .longUrl(request.getLongUrl())
+                .shortUrl(request.getShortUrl())
+                .expiredAt(request.getExpiredAt())
+                .createdBy(commonRequest.getHeaders().getUserId())
+                .build();
+        UrlModel response = urlHandler.saveUrl(urlModel);
+
+        return new CommonResponse(SuccessCode.SUCCESS, response);
+    }
+
+    @Override
+    public CommonResponse updateUrlByAuth(CommonRequest commonRequest) {
+        log.info("Update url by auth with request: {}", commonRequest);
+
+        UpdateUrlByAuthRequest request = JsonUtil.fromJson(commonRequest.getRequest(), UpdateUrlByAuthRequest.class);
+        ValidationUtil.checkNotNullWithAnnotation(request);
+
+        UrlRecord urlRecord = urlRepo.getActiveUrlRecordByOwner(request.getUrlId(), commonRequest.getHeaders().getUserId());
+
+        if (States.isNotBlank(request.getShortUrl())
+                && States.isNotEquals(request.getShortUrl(), urlRecord.getShorturl())
+                && urlRepo.doesShortUrlExist(request.getShortUrl())) {
             log.debug("Short url: {} already exist", request.getShortUrl());
             throw new DuplicateException(String.format("Short url: %s already exist", request.getShortUrl()));
         }
 
-        UrlRecord urlRecord = new UrlRecord()
-                .setShorturl(States.isNull(request.getShortUrl())
-                        ? GenerateUtil.generate(configInfo.getShortUrlLength())
-                        : request.getShortUrl())
+        if (States.isNotNull(request.getExpiredAt()) && States.isNotEquals(request.getExpiredAt(), urlRecord.getExpiredat())) {
+            final Long currentTime = DateUtil.getCurrentTime();
+            if (States.isLessThan(request.getExpiredAt(), currentTime)) {
+                log.debug("Expired at: {} is less than current time: {}", request.getExpiredAt(), currentTime);
+                throw new BadRequestException(String.format("Expired at: %s is less than current time: %s", request.getExpiredAt(), currentTime));
+            }
+        }
+
+        if (States.isNotNull(request.getLongUrl()) && States.isNotEquals(request.getLongUrl(), urlRecord.getLongurl())) {
+            ValidationUtil.checkUrlIsValid(request.getLongUrl());
+        }
+
+        UrlRecord updatedUrlRecord = new UrlRecord()
+                .setUrlid(urlRecord.getUrlid())
+                .setShorturl(request.getShortUrl())
                 .setLongurl(request.getLongUrl())
-                .setStatus(UrlStatus.ACTIVE.getStatus())
-                .setCreatedat(LocalDateTime.now())
-                .setModifiedat(LocalDateTime.now());
-        UrlModel response = urlRepo.saveAndReturn(urlRecord, UrlModel.class);
+                .setExpiredat(States.isNull(request.getExpiredAt())
+                        ? null : DateUtil.toLocalDateTime(request.getExpiredAt()))
+                .setModifiedat(LocalDateTime.now())
+                .setModifiedby(commonRequest.getHeaders().getUserId());
+        urlRepo.updateNotNull(updatedUrlRecord);
 
-        return CommonResponse.builder()
-                .code(SuccessCode.SUCCESS.getCode())
-                .data(response)
-                .build();
+        UrlModel response = urlRepo.getUrlModelByOwner(request.getUrlId(), commonRequest.getHeaders().getUserId());
+        return new CommonResponse(SuccessCode.SUCCESS, response);
     }
 
     @Override
-    public CommonResponse getUrl(CommonRequest commonRequest) {
-        log.info("Get url with request: {}", commonRequest);
+    public CommonResponse deleteUrlByAuth(CommonRequest commonRequest) {
+        log.info("Delete url by auth with request: {}", commonRequest);
+
         UrlModel request = JsonUtil.fromJson(commonRequest.getRequest(), UrlModel.class);
+        ValidationUtil.checkNotNull(request.getUrlId());
 
-        if (States.isNull(request.getShortUrl())) {
-            log.debug("Short url is null");
-            throw new BadRequestException("Short url is null");
-        }
+        UrlRecord urlRecord = urlRepo.getActiveUrlRecordByOwner(request.getUrlId(), commonRequest.getHeaders().getUserId());
+        UrlRecord deletedUrlRecord = new UrlRecord()
+                .setUrlid(urlRecord.getUrlid())
+                .setIsdeleted(UrlIsDeleted.DELETED.getValue())
+                .setDeletedby(commonRequest.getHeaders().getUserId())
+                .setDeletedat(LocalDateTime.now());
+        urlRepo.updateNotNull(deletedUrlRecord);
 
-        UrlModel response = urlCache.getIfPresent(request.getShortUrl());
-        if (States.isNull(response)) {
-            UrlRecord urlRecord = urlRepo.getActiveUrlRecordByShortUrl(request.getShortUrl());
-
-            response = new UrlModel();
-            urlRecord.into(response);
-
-            urlCache.put(request.getShortUrl(), response);
-        }
-
-        return CommonResponse.builder()
-                .response(SuccessCode.SUCCESS)
-                .data(response)
-                .build();
+        return new CommonResponse(SuccessCode.SUCCESS);
     }
 
     @Override
-    public CommonResponse getUrls(CommonRequest commonRequest) {
-        log.info("Get urls with request: {}", commonRequest);
+    public CommonResponse getUrlByAuth(CommonRequest commonRequest) {
+        log.info("Get url by auth with request: {}", commonRequest);
 
-        List<UrlRecord> urlRecords = urlRepo.getAllActiveUrlRecords();
-        List<UrlModel> urlModels = new ArrayList<>();
-        for (UrlRecord urlRecord : urlRecords) {
-            UrlModel urlModel = new UrlModel();
-            urlRecord.into(urlModel);
-            urlModels.add(urlModel);
-        }
+        UrlModel request = JsonUtil.fromJson(commonRequest.getRequest(), UrlModel.class);
+        ValidationUtil.checkNotNull(request.getUrlId());
 
-        return CommonResponse.builder()
-                .response(SuccessCode.SUCCESS)
-                .data(urlModels)
-                .build();
+        UrlModel response = urlRepo.getUrlModelByOwner(request.getUrlId(), commonRequest.getHeaders().getUserId());
+
+        return new CommonResponse(SuccessCode.SUCCESS, response);
+    }
+
+    @Override
+    public CommonResponse getUrlsByAuth(CommonRequest commonRequest) {
+        log.info("Get urls by auth with request: {}", commonRequest);
+        QueryRequest request = JsonUtil.fromJson(commonRequest.getRequest(), QueryRequest.class);
+        QueryResponse<UrlModel> response = urlRepo.getUrlsByOwner(request, commonRequest.getHeaders().getUserId());
+        return new CommonResponse(SuccessCode.SUCCESS, response);
     }
 }

@@ -9,6 +9,10 @@ import java.math.BigInteger;
 
 @Slf4j
 public class ConfigUtil {
+    public ConfigUtil() {
+        throw new IllegalStateException("Utility class: ConfigUtil");
+    }
+
     public static <T> T loadConfig(String jsonConfig, Class<T> clazz) {
         log.info("Load config: {}", jsonConfig);
 

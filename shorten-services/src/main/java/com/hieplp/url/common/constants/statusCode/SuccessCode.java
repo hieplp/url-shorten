@@ -13,11 +13,11 @@ public enum SuccessCode implements ResponseCode {
 
     @Override
     public String getCode() {
-        return null;
+        return code;
     }
 
     @Override
     public String getMessage() {
-        return null;
+        return message;
     }
 }
