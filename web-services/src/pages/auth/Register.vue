@@ -1,107 +1,126 @@
 <template>
-	<div class="w-screen h-screen bg-gray-50">
+  <div class="w-screen h-screen bg-gray-50">
 
-		<div class="flex flex-col
+    <div class="flex flex-col
                 items-center justify-center
                 h-screen
                 px-6 py-8
                 lg:py-0
                 m-auto">
 
-			<router-link class="flex items-center mb-6 text-2xl font-semibold text-blue-600" to="/">
-				SHORTEN.IT
-			</router-link>
+      <router-link class="flex items-center mb-6 text-2xl font-semibold text-blue-600" to="/">
+        SHORTEN.IT
+      </router-link>
 
-			<div class="w-full
+      <div class="w-full
                   bg-white rounded-lg
                   shadow
                   md:mt-0
                   sm:max-w-md
                   xl:p-0">
-				<div class="p-6 space-y-4 md:space-y-6 sm:p-8">
+        <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
 
-					<h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
-						Register your account
-					</h1>
+          <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
+            Register your account
+          </h1>
 
-					<form class="space-y-4 md:space-y-6">
+          <form class="space-y-2 md:space-y-2">
 
-						<div>
-							<label class="block mb-2 text-sm font-medium text-gray-900" for="username">
-								Your username
-							</label>
-							<input :disabled="isLoading"
-							       class="bg-gray-50
-                            border border-gray-300
-                            text-gray-900 sm:text-sm rounded-lg
-                            focus:outline-blue-600
-                            block w-full p-2.5"
-							       name="username"
-							       placeholder="Username"
-							       required type="text">
-						</div>
+            <TextInput type="text"
+                       v-model="username.value"
+                       :is-disabled="isLoading"
+                       label="Your Username"
+                       placeholder="Username"
+                       :is-required="true"
+                       :is-error="username.isError"
+                       :error-message="username.errorMessage" />
 
-						<div>
-							<label class="block mb-2 text-sm font-medium text-gray-900"
-							       for="password">
-								Password
-							</label>
-							<input :disabled="isLoading"
-							       class="bg-gray-50
-                            border border-gray-300
-                            text-gray-900 sm:text-sm rounded-lg
-                            focus:outline-blue-600
-                            block w-full p-2.5"
-							       name="password"
-							       placeholder="••••••••"
-							       required="" type="password">
-						</div>
+            <TextInput type="password"
+                       v-model="password.value"
+                       :is-disabled="isLoading"
+                       label="Password"
+                       placeholder="••••••••"
+                       :is-required="true"
+                       :is-error="password.isError"
+                       :error-message="password.errorMessage" />
 
+            <TextInput type="password"
+                       v-model="confirmPassword.value"
+                       :is-disabled="isLoading"
+                       label="Confirm Password"
+                       placeholder="••••••••"
+                       :is-required="true"
+                       :is-error="confirmPassword.isError"
+                       :error-message="confirmPassword.errorMessage" />
 
-						<div>
-							<label class="block mb-2 text-sm font-medium text-gray-900"
-							       for="confirm-password">
-								Confirm Password
-							</label>
-							<input :disabled="isLoading"
-							       class="bg-gray-50
-                            border border-gray-300
-                            text-gray-900 sm:text-sm rounded-lg
-                            focus:outline-blue-600
-                            block w-full p-2.5"
-							       name="confirm-password"
-							       placeholder="••••••••"
-							       required="" type="password">
-						</div>
+            <LoadingButton :is-loading="isLoading" text="Sign up" @click="register" />
 
-						<LoadingButton :is-loading="isLoading" text="Sign up" @click="register"/>
+            <p class="text-sm text-center font-light text-gray-500 dark:text-gray-400">
+              Already have an account?
+              <router-link class="font-bold text-blue-600 hover:underline"
+                           to="/login">
+                Sign in
+              </router-link>
+            </p>
 
-						<p class="text-sm text-center font-light text-gray-500 dark:text-gray-400">
-							Already have an account?
-							<router-link class="font-bold text-blue-600 hover:underline"
-							             to="/login">
-								Sign in
-							</router-link>
-						</p>
-					</form>
-				</div>
-			</div>
-		</div>
+          </form>
 
-	</div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
 </template>
 
 <script lang="ts" setup>
 import LoadingButton from "../../components/button/LoadingButton.vue";
-import {ref} from "vue";
+import { ref } from "vue";
+import TextInput from "../../components/input/TextInput.vue";
 
 const isLoading = ref(false);
 
-function register() {
-    isLoading.value = true;
-    setTimeout(() => {
-        isLoading.value = false;
-    }, 2000);
+const username = ref({
+  value: "",
+  isError: false,
+  errorMessage: "Username is required"
+});
+
+const password = ref({
+  value: "",
+  isError: true,
+  errorMessage: "Password is required"
+});
+
+const confirmPassword = ref({
+  value: "",
+  isError: true,
+  errorMessage: "Confirm password is required"
+});
+
+function register(): void {
+  isLoading.value = true;
+
+  console.log(username.value);
+
+  // if (!checkPassword()) {
+  //   isLoading.value = false;
+  //   return;
+  // }
+
+  setTimeout(() => {
+    isLoading.value = false;
+  }, 2000);
+}
+
+function checkPassword(): boolean {
+  // if (password.value.length < 8) {
+  //   alert("Password must be at least 8 characters long");
+  //   return false;
+  // }
+  // return password.value.value === confirmPassword.value;
+  return false;
 }
 
 </script>

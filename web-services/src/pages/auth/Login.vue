@@ -74,7 +74,6 @@
 import LoadingButton from "../../components/button/LoadingButton.vue";
 import {ref} from "vue";
 
-
 const isLoading = ref(false);
 
 
