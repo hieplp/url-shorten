@@ -1,5 +1,5 @@
-export interface HeaderTabModel {
-    name: string;
-    path: string;
-    isAuth: boolean;
+export default interface HeaderTabModel {
+  name: string;
+  path: string;
+  isAuth: boolean;
 }

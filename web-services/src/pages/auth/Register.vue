@@ -24,34 +24,34 @@
             Register your account
           </h1>
 
-          <form class="space-y-2 md:space-y-2">
+          <div class="space-y-2 md:space-y-2">
 
-            <TextInput type="text"
-                       v-model="username.value"
+            <TextInput v-model="username.value"
+                       :error-message="username.errorMessage"
                        :is-disabled="isLoading"
+                       :is-error="username.isError"
+                       :is-required="true"
                        label="Your Username"
                        placeholder="Username"
-                       :is-required="true"
-                       :is-error="username.isError"
-                       :error-message="username.errorMessage" />
+                       type="text" />
 
-            <TextInput type="password"
-                       v-model="password.value"
+            <TextInput v-model="password.value"
+                       :error-message="password.errorMessage"
                        :is-disabled="isLoading"
+                       :is-error="password.isError"
+                       :is-required="true"
                        label="Password"
                        placeholder="••••••••"
-                       :is-required="true"
-                       :is-error="password.isError"
-                       :error-message="password.errorMessage" />
+                       type="password" />
 
-            <TextInput type="password"
-                       v-model="confirmPassword.value"
+            <TextInput v-model="confirmPassword.value"
+                       :error-message="confirmPassword.errorMessage"
                        :is-disabled="isLoading"
+                       :is-error="confirmPassword.isError"
+                       :is-required="true"
                        label="Confirm Password"
                        placeholder="••••••••"
-                       :is-required="true"
-                       :is-error="confirmPassword.isError"
-                       :error-message="confirmPassword.errorMessage" />
+                       type="password" />
 
             <LoadingButton :is-loading="isLoading" text="Sign up" @click="register" />
 
@@ -63,7 +63,7 @@
               </router-link>
             </p>
 
-          </form>
+          </div>
 
         </div>
 
@@ -78,51 +78,117 @@
 import LoadingButton from "../../components/button/LoadingButton.vue";
 import { ref } from "vue";
 import TextInput from "../../components/input/TextInput.vue";
+import EncryptUtil from "../../common/util/encrypt.util";
+import { saveToken } from "../../common/util/cookie.util";
+import { useRouter } from "vue-router";
+import { RegisterRequest } from "../../common/payload/auth/request/RegisterRequest";
+import { tokenConstant } from "../../common/constant/Constant";
+import { BadRequestException } from "../../common/exception/BadRequestException";
+import Localize from "../../common/constant/Localize";
+import { useToastStore } from "../../store/toast";
+import { useUserStore } from "../../store/user";
+
+// -------------------------------------------------------------------------
+// XXX Common
+// -------------------------------------------------------------------------
+
+const router = useRouter();
+
+// -------------------------------------------------------------------------
+// XXX Store
+// -------------------------------------------------------------------------
+
+const userStore = useUserStore();
+const toastStore = useToastStore();
+
+// -------------------------------------------------------------------------
+// XXX Inner State
+// -------------------------------------------------------------------------
 
 const isLoading = ref(false);
 
 const username = ref({
   value: "",
   isError: false,
-  errorMessage: "Username is required"
+  errorMessage: Localize.Register.invalidUsername
 });
 
 const password = ref({
   value: "",
-  isError: true,
-  errorMessage: "Password is required"
+  isError: false,
+  errorMessage: Localize.Register.invalidPassword
 });
 
 const confirmPassword = ref({
   value: "",
-  isError: true,
-  errorMessage: "Confirm password is required"
+  isError: false,
+  errorMessage: Localize.Register.invalidConfirmPassword
 });
 
+// -------------------------------------------------------------------------
+// XXX Function
+// -------------------------------------------------------------------------
+
 function register(): void {
+
+  validateUsername();
+  validatePassword();
+  validateConfirmPassword();
+
+  if (!isValid()) {
+    return;
+  }
+
   isLoading.value = true;
-
-  console.log(username.value);
-
-  // if (!checkPassword()) {
-  //   isLoading.value = false;
-  //   return;
-  // }
-
-  setTimeout(() => {
-    isLoading.value = false;
-  }, 2000);
+  let request = {
+    username: username.value.value,
+    password: EncryptUtil.encryptPassword(password.value.value)
+  } as RegisterRequest;
+  userStore.register(request)
+    .then((response) => {
+      saveToken(tokenConstant.accessToken, response.accessToken);
+      saveToken(tokenConstant.refreshToken, response.refreshToken);
+      router.push("/");
+    })
+    .catch((error) => {
+      if (error instanceof BadRequestException) {
+        username.value.isError = true;
+        username.value.errorMessage = Localize.Register.duplicatedUsername;
+      } else {
+        toastStore.error(Localize.Error.unknownError);
+      }
+    })
+    .finally(() => {
+      isLoading.value = false;
+    });
 }
 
-function checkPassword(): boolean {
-  // if (password.value.length < 8) {
-  //   alert("Password must be at least 8 characters long");
-  //   return false;
-  // }
-  // return password.value.value === confirmPassword.value;
-  return false;
+// -------------------------------------------------------------------------
+// XXX Validation
+// -------------------------------------------------------------------------
+
+function isValid(): boolean {
+  return !(username.value.isError
+    || password.value.isError
+    || confirmPassword.value.isError);
 }
 
+function validateUsername(): void {
+  if (username.value.value.length < 3) {
+    username.value.isError = true;
+    username.value.errorMessage = Localize.Register.invalidUsername;
+  } else {
+    username.value.isError = false;
+  }
+}
+
+function validatePassword(): void {
+  password.value.isError = password.value.value.length < 8;
+}
+
+function validateConfirmPassword(): void {
+  confirmPassword.value.isError = confirmPassword.value.value !== password.value.value;
+}
 </script>
 
 <style lang="scss" scoped>

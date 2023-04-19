@@ -1,17 +1,19 @@
 <template>
-	<div v-for="toast in toasts" :key="toast.id">
-		<transition name="fade">
-			<SuccessToast v-if="toast.type === 'success'" :toast="toast"/>
-		</transition>
+  <div v-for="toast in toasts" :key="toast.id">
+    <transition name="fade">
+      <SuccessToast v-if="toast.type === 'success'" :toast="toast" />
+      <ErrorToast v-else-if="toast.type === 'error'" :toast="toast" />
+    </transition>
 
-	</div>
+  </div>
 
 </template>
 
 <script lang="ts" setup>
-import {useToastStore} from "../../store/toast";
-import {computed} from "vue";
+import { useToastStore } from "../../store/toast";
+import { computed } from "vue";
 import SuccessToast from "./SuccessToast.vue";
+import ErrorToast from "./ErrorToast.vue";
 
 const toastStore = useToastStore();
 

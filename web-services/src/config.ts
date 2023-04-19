@@ -1,7 +1,7 @@
-export const CONFIG = {
-  API_HOST: import.meta.env.API_HOST || "http://localhost:9900",
+export const Config = {
+  apiHost: import.meta.env.apiHost || "http://localhost:9900",
 
-  PASSWORD_PUBLIC_KEY: import.meta.env.PASSWORD_PUBLIC_KEY ||
+  passwordPublicKey: import.meta.env.passwordPublicKey ||
     `-----BEGIN PUBLIC KEY-----
      MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxrhiHoJj4Rr4WqbKc7TB
      S5/gsx08PTnBZSD320lVtQeuakPXyojp1OVSWrxz/2k8Scn7DjGZlgPfHgh8/Rmr
@@ -12,7 +12,7 @@ export const CONFIG = {
      TwIDAQAB
      -----END PUBLIC KEY-----`,
 
-  TOKEN_PUBLIC_KEY: import.meta.env.TOKEN_PUBLIC_KEY ||
+  tokenPublicKey: import.meta.env.tokenPublicKey ||
     `-----BEGIN PUBLIC KEY-----
     MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqssGZwp4q9grDkztlx9P
     pMz6A/WwVqblFihNnMH6MsZ+4f1E4D4xbZLFFWPRPdpJCacAGP13le9/oPzsHY9j
@@ -22,4 +22,5 @@ export const CONFIG = {
     5askEsF5a4mFQuwpKO4vUVac8kDzN078RjXeR8dBL0sCcfgyFg8qWOE91vIThRS8
     6wIDAQAB
     -----END PUBLIC KEY-----`
+
 };

@@ -4,27 +4,27 @@
       {{ label }} <span v-if="isRequired" class="text-red-600">(*)</span>
     </label>
 
-    <input :disabled="isDisabled"
-           class="bg-gray-50
-                  text-gray-900 sm:text-sm rounded-lg
-                  focus:outline-blue-600
-                  block w-full p-2.5"
+    <input v-model="inputValue"
            :class="{
               'border border-red-500 focus:outline-red-600': isError,
               'border-gray-300 focus:outline-blue-600': !isError
            }"
-           name="username"
-           :type="type"
+           :disabled="isDisabled"
            :placeholder="placeholder"
-           required type="text"
-           v-model="inputValue">
+           :type="type"
+           class="bg-gray-50
+                  text-gray-900 sm:text-sm rounded-lg
+                  focus:outline-blue-600
+                  block w-full p-2.5"
+           name="username"
+           type="text">
 
-    <p class="text-sm
+    <p v-if="isError"
+       class="text-sm
               px-2
               leading-tight
               tracking-tight
-              text-red-600"
-       v-if="isError">
+              text-red-600">
       {{ errorMessage }}
     </p>
 

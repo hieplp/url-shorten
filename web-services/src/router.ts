@@ -1,4 +1,4 @@
-import {createRouter, createWebHistory} from "vue-router";
+import { createRouter, createWebHistory } from "vue-router";
 import Home from "./pages/Home.vue";
 import Login from "./pages/auth/Login.vue";
 import Register from "./pages/auth/Register.vue";
@@ -9,46 +9,46 @@ import UpdateUrl from "./pages/url/UpdateUrl.vue";
 
 
 export const router = createRouter({
-    history: createWebHistory(),
-    routes: [
-        {
-            path: "/",
-            name: "Home",
-            component: Home
-        },
+  history: createWebHistory(),
+  routes: [
+    {
+      path: "/",
+      name: "Home",
+      component: Home
+    },
 
-        //
-        {
-            path: "/login",
-            name: "Login",
-            component: Login
-        },
-        {
-            path: "/register",
-            name: "Register",
-            component: Register
-        },
-        {
-            path: "/profile",
-            name: "Profile",
-            component: Profile
-        },
+    //
+    {
+      path: "/login",
+      name: "Login",
+      component: Login
+    },
+    {
+      path: "/register",
+      name: "Register",
+      component: Register
+    },
+    {
+      path: "/profile",
+      name: "Profile",
+      component: Profile
+    },
 
-        //
-        {
-            path: "/urls",
-            name: "Urls",
-            component: Urls
-        },
-        {
-            path: "/urls/:urlId",
-            name: "Url",
-            component: Url
-        },
-        {
-            path: "/urls/:urlId/update",
-            name: "UpdateUrl",
-            component: UpdateUrl
-        }
-    ]
+    //
+    {
+      path: "/urls",
+      name: "Urls",
+      component: Urls
+    },
+    {
+      path: "/urls/:urlId",
+      name: "Url",
+      component: Url
+    },
+    {
+      path: "/urls/:urlId/update",
+      name: "UpdateUrl",
+      component: UpdateUrl
+    }
+  ]
 });
