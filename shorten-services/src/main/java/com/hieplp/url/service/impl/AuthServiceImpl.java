@@ -71,12 +71,12 @@ public class AuthServiceImpl implements AuthService {
             TokenModel accessToken = authHandler.generateToken(GenerateTokenRequest.builder()
                     .user(userModel)
                     .tokenType(TokenType.ACCESS)
-                    .activeTime(configInfo.getTokenConfig().getActiveTime())
+                    .activeTime(configInfo.getTokenConfig().getAccessActiveTime())
                     .build());
             TokenModel refreshToken = authHandler.generateToken(GenerateTokenRequest.builder()
                     .user(userModel)
                     .tokenType(TokenType.REFRESH)
-                    .activeTime(configInfo.getTokenConfig().getTimeToLive())
+                    .activeTime(configInfo.getTokenConfig().getRefreshActiveTime())
                     .build());
 
             LoginResponse response = LoginResponse.builder()
@@ -133,12 +133,12 @@ public class AuthServiceImpl implements AuthService {
         TokenModel accessToken = authHandler.generateToken(GenerateTokenRequest.builder()
                 .user(userModel)
                 .tokenType(TokenType.ACCESS)
-                .activeTime(configInfo.getTokenConfig().getActiveTime())
+                .activeTime(configInfo.getTokenConfig().getAccessActiveTime())
                 .build());
         TokenModel refreshToken = authHandler.generateToken(GenerateTokenRequest.builder()
                 .user(userModel)
                 .tokenType(TokenType.REFRESH)
-                .activeTime(configInfo.getTokenConfig().getTimeToLive())
+                .activeTime(configInfo.getTokenConfig().getRefreshActiveTime())
                 .build());
 
         RegisterResponse response = RegisterResponse.builder()
@@ -156,7 +156,7 @@ public class AuthServiceImpl implements AuthService {
         final HeaderInformation headers = commonRequest.getHeaders();
 
         TokenModel accessToken = authHandler.generateToken(GenerateTokenRequest.builder()
-                .activeTime(configInfo.getTokenConfig().getActiveTime())
+                .activeTime(configInfo.getTokenConfig().getAccessActiveTime())
                 .tokenType(TokenType.ACCESS)
                 .user(UserModel.builder()
                         .userId(headers.getUserId())

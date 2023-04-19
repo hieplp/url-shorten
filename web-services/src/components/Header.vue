@@ -1,5 +1,5 @@
 <template>
-	<nav class="max-w-screen-xl
+  <nav class="max-w-screen-xl
 							flex flex-wrap
 	            justify-between
 	            items-center
@@ -12,33 +12,33 @@
               z-50
 	            ">
 
-		<router-link class="self-center
+    <router-link class="self-center
                                text-2xl
                                font-semibold
                                text-blue-600
                                hover:text-blue-700
                                whitespace-nowrap" to="/">
-			SHORTEN.IT
-		</router-link>
+      SHORTEN.IT
+    </router-link>
 
-		<label class="pointer-cursor md:hidden block"
-		       for="menu-toggle">
-			<svg aria-hidden="true"
-			     class="w-6 h-6"
-			     fill="currentColor"
-			     viewBox="0 0 20 20"
-			     xmlns="http://www.w3.org/2000/svg">
-				<path clip-rule="evenodd"
-				      d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
-				      fill-rule="evenodd"></path>
-			</svg>
-		</label>
-		<input id="menu-toggle"
-		       class="hidden"
-		       type="checkbox"/>
+    <label class="pointer-cursor md:hidden block"
+           for="menu-toggle">
+      <svg aria-hidden="true"
+           class="w-6 h-6"
+           fill="currentColor"
+           viewBox="0 0 20 20"
+           xmlns="http://www.w3.org/2000/svg">
+        <path clip-rule="evenodd"
+              d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+              fill-rule="evenodd"></path>
+      </svg>
+    </label>
+    <input id="menu-toggle"
+           class="hidden"
+           type="checkbox" />
 
-		<div id="menu"
-		     class="hidden
+    <div id="menu"
+         class="hidden
 								w-full
 								bg-white
 								p-1
@@ -50,7 +50,7 @@
                 md:p-0
 								md:mt-0">
 
-			<ul class="font-bold
+      <ul class="font-bold
                  flex
                  flex-col
                  md:flex-row
@@ -63,56 +63,58 @@
                  md:mt-0
                  md:border-0">
 
-				<li v-for="tab in tabs"
-				    :key="tab.name"
-				    :class="{
+        <li v-for="tab in tabs"
+            :key="tab.name"
+            :class="{
                         'hidden': tab.isAuth !== isAuth,
 				    }">
-					<router-link :class="{
+          <router-link :class="{
                               'text-white bg-blue-600': currentTab === tab.path,
 					             }"
-					             :to="tab.path"
-					             class="block
+                       :to="tab.path"
+                       class="block
                               px-6 py-2
                               text-gray-500
                               rounded
                               hover:text-white
                               hover:bg-blue-600"
-					             @click="updateCurrentTab(tab)">
-						{{ tab.name }}
-					</router-link>
-				</li>
+                       @click="updateCurrentTab(tab)">
+            {{ tab.name }}
+          </router-link>
+        </li>
 
-			</ul>
-		</div>
+      </ul>
+    </div>
 
-	</nav>
+  </nav>
 </template>
 
 <script lang="ts" setup>
-import {onMounted, ref} from "vue";
-import {HeaderTabModel} from "../common/model/HeaderTabModel";
+import { computed, onMounted, ref } from "vue";
+import HeaderTabModel from "../common/model/HeaderTabModel";
+import { tokenConstant } from "../common/constant/Constant";
+import { doesCookieExist } from "../common/util/cookie.util";
 
 onMounted(() => {
-    const currentPath = window.location.pathname;
-    const currentTab = tabs.find(tab => currentPath.includes(tab.path));
-    if (currentTab) {
-        updateCurrentTab(currentTab);
-    }
+  const currentPath = window.location.pathname;
+  const currentTab = tabs.find(tab => currentPath.includes(tab.path));
+  if (currentTab) {
+    updateCurrentTab(currentTab);
+  }
 });
 
 const tabs = [
-    {name: 'My Urls', path: '/urls', isAuth: true},
-    {name: 'Profile', path: '/profile', isAuth: true},
-    {name: 'Login', path: '/login', isAuth: false},
+  { name: "My Urls", path: "/urls", isAuth: true },
+  { name: "Profile", path: "/profile", isAuth: true },
+  { name: "Login", path: "/login", isAuth: false }
 ] as HeaderTabModel[];
 
 const currentTab = ref("");
 
-const isAuth = ref(false);
+const isAuth = computed(() => doesCookieExist(tokenConstant.accessToken));
 
 function updateCurrentTab(tab: HeaderTabModel): void {
-    currentTab.value = tab.path;
+  currentTab.value = tab.path;
 }
 
 </script>

@@ -25,6 +25,9 @@ public class Application extends AbstractVerticle {
         injector = Guice.createInjector(new ConfigModule(context));
         Consumer consumer = injector.getInstance(Consumer.class);
         consumer
-                .api();
+                .init()
+                .cors()
+                .api()
+                .start();
     }
 }

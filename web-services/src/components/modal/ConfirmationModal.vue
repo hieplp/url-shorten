@@ -1,6 +1,6 @@
 <template>
-	<div id="popup-modal"
-	     class="fixed
+  <div id="popup-modal"
+       class="fixed
 	            top-0
 	            left-0
 	            right-0
@@ -13,18 +13,18 @@
 	            md:inset-0
 	            h-[calc(100%-1rem)]
 	            max-h-full"
-	     tabindex="-1">
+       tabindex="-1">
 
-		<div class="relative
+    <div class="relative
                 flex flex-col
                 justify-center items-center
 								min-h-full">
-			<div class="relative
+      <div class="relative
                   bg-white
                   rounded-lg
                   shadow">
 
-				<button class="absolute
+        <button class="absolute
                        top-3
                        right-2.5
                        text-gray-400
@@ -37,27 +37,27 @@
                        ml-auto
                        inline-flex
                        items-center"
-				        data-modal-hide="popup-modal"
-				        type="button"
-				        @click="cancel">
+                data-modal-hide="popup-modal"
+                type="button"
+                @click="cancel">
 
-					<XMarkIcon class="w-5 h-5 text-gray-500 text-lg"/>
-					<span class="sr-only">Close modal</span>
-				</button>
+          <XMarkIcon class="w-5 h-5 text-gray-500 text-lg" />
+          <span class="sr-only">Close modal</span>
+        </button>
 
-				<div class="p-6 md:px-16
+        <div class="p-6 md:px-16
                     text-center">
 
-					<InformationCircleIcon class="mx-auto mb-4 text-gray-400 w-14 h-14 dark:text-gray-200"/>
+          <InformationCircleIcon class="mx-auto mb-4 text-gray-400 w-14 h-14 dark:text-gray-200" />
 
-					<h3 class="mb-5
+          <h3 class="mb-5
                      text-lg
                      font-normal
                      text-gray-500">
-						{{ message }}
-					</h3>
+            {{ message }}
+          </h3>
 
-					<button :class="confirmClass" class="text-white
+          <button :class="confirmClass" class="text-white
                          bg-red-600
                          hover:bg-red-800
                          focus:ring-4
@@ -72,14 +72,14 @@
                          py-2.5
                          text-center
                          mr-2"
-					        data-modal-hide="popup-modal"
-					        type="button"
-					        @click="confirm">
-						{{ confirmText }}
-					</button>
+                  data-modal-hide="popup-modal"
+                  type="button"
+                  @click="confirm">
+            {{ confirmText }}
+          </button>
 
-					<button :class="cancelClass"
-					        class="text-gray-500
+          <button :class="cancelClass"
+                  class="text-gray-500
                          bg-white
                          hover:bg-gray-100
                          focus:ring-4
@@ -94,50 +94,50 @@
                          py-2.5
                          hover:text-gray-900
                          focus:z-10"
-					        data-modal-hide="popup-modal"
-					        type="button"
-					        @click="cancel">
-						{{ cancelText }}
-					</button>
-				</div>
-			</div>
-		</div>
-	</div>
+                  data-modal-hide="popup-modal"
+                  type="button"
+                  @click="cancel">
+            {{ cancelText }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import {InformationCircleIcon, XMarkIcon} from "@heroicons/vue/24/outline";
+import { InformationCircleIcon, XMarkIcon } from "@heroicons/vue/24/outline";
 
 const props = defineProps({
-    message: {
-        type: String,
-        required: true
-    },
-    confirmText: {
-        type: String,
-        required: true
-    },
-    cancelText: {
-        type: String,
-        required: true
-    },
-    confirm: {
-        type: Function,
-        required: true
-    },
-    cancel: {
-        type: Function,
-        required: true
-    },
-    //
-    confirmClass: {
-        type: String,
-        required: false
-    },
-    cancelClass: {
-        type: String,
-        required: false
-    }
+  message: {
+    type: String,
+    required: true
+  },
+  confirmText: {
+    type: String,
+    required: true
+  },
+  cancelText: {
+    type: String,
+    required: true
+  },
+  confirm: {
+    type: Function,
+    required: true
+  },
+  cancel: {
+    type: Function,
+    required: true
+  },
+  //
+  confirmClass: {
+    type: String,
+    required: false
+  },
+  cancelClass: {
+    type: String,
+    required: false
+  }
 });
 </script>
 

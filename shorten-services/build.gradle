@@ -89,25 +89,25 @@ shadowJar {
 // XXX Generate JOOQ tables
 // -------------------------------------------------------------------------
 
-import org.jooq.codegen.GenerationTool
-import org.jooq.meta.jaxb.*
-
-GenerationTool.generate(new Configuration()
-        .withJdbc(new Jdbc()
-                .withDriver('org.mariadb.jdbc.Driver')
-                .withUrl('jdbc:mysql://127.0.0.1:3306/shortenUrl')
-                .withUser('root')
-                .withPassword('123456'))
-        .withGenerator(new Generator()
-                .withDatabase(new Database()
-                        .withName("org.jooq.meta.mariadb.MariaDBDatabase")
-                        .withInputSchema("shortenUrl")
-                        .withOutputSchema("shortenUrl"))
-                .withGenerate(new Generate()
-                        .withFluentSetters(true)
-                        .withPojos(true)
-                        .withDaos(true))
-                .withTarget(new Target()
-                        .withPackageName('com.hieplp.url.repository.generate')
-                        .withDirectory('/home/hieplp/Project/url-shorten/shorten-services/src/main/java'))))
-//                        .withDirectory('/home/hieplp/Intellin/own-project/url-shorten/shorten-services/src/main/java'))))
+//import org.jooq.codegen.GenerationTool
+//import org.jooq.meta.jaxb.*
+//
+//GenerationTool.generate(new Configuration()
+//        .withJdbc(new Jdbc()
+//                .withDriver('org.mariadb.jdbc.Driver')
+//                .withUrl('jdbc:mysql://127.0.0.1:3306/shortenUrl')
+//                .withUser('root')
+//                .withPassword('123456'))
+//        .withGenerator(new Generator()
+//                .withDatabase(new Database()
+//                        .withName("org.jooq.meta.mariadb.MariaDBDatabase")
+//                        .withInputSchema("shortenUrl")
+//                        .withOutputSchema("shortenUrl"))
+//                .withGenerate(new Generate()
+//                        .withFluentSetters(true)
+//                        .withPojos(true)
+//                        .withDaos(true))
+//                .withTarget(new Target()
+//                        .withPackageName('com.hieplp.url.repository.generate')
+//                        .withDirectory('/home/hieplp/Project/url-shorten/shorten-services/src/main/java'))))
+////                        .withDirectory('/home/hieplp/Intellin/own-project/url-shorten/shorten-services/src/main/java'))))

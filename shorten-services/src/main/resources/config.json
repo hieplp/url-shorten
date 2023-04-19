@@ -22,8 +22,8 @@
     "privateKey": "/src/main/resources/rsa/token/token_private_key.der",
     "publicKey": "/src/main/resources/rsa/token/token_public_key.der",
     "issuer": "todo",
-    "activeTime": 360000,
-    "timeToLive": 144000
+    "accessActiveTime": 360000,
+    "refreshActiveTime": 144000
   },
   "passwordConfig": {
     "privateKey": "/src/main/resources/rsa/password/password_private_key.der"
