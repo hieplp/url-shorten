@@ -7,6 +7,6 @@ public class TokenConfig {
     private String privateKey;
     private String publicKey;
     private String issuer;
-    private Integer activeTime;
-    private Integer timeToLive;
+    private Integer accessActiveTime;
+    private Integer refreshActiveTime;
 }

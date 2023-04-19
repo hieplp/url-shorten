@@ -9,7 +9,6 @@ import com.google.inject.name.Named;
 import com.hieplp.url.common.constants.auth.JwtHeader;
 import com.hieplp.url.common.constants.auth.PasswordKey;
 import com.hieplp.url.common.constants.auth.TokenKey;
-import com.hieplp.url.common.constants.auth.TokenType;
 import com.hieplp.url.common.exception.auth.InvalidTokenException;
 import com.hieplp.url.common.model.TokenModel;
 import com.hieplp.url.common.model.UserModel;
@@ -75,36 +74,6 @@ public class AuthHandlerImpl implements AuthHandler {
         byte[] salt = GenerateUtil.generateSalt();
         byte[] rawPassword = RsaUtil.generatePassword(password, passwordPrivateKey, salt);
         return new PasswordRecord(userId, rawPassword, salt);
-    }
-
-    @Override
-    public TokenModel generateToken(UserModel user, TokenType tokenType) {
-        log.info("Generate token for user: {} and tokenType: {}", user.getUserId(), tokenType);
-
-        // Expiration time
-        Date currentDate = DateUtil.getCurrentDate();
-        Date expiredAt = DateUtil.addSeconds(currentDate, configInfo.getTokenConfig().getTimeToLive());
-        Date refreshedAt = DateUtil.addSeconds(currentDate, configInfo.getTokenConfig().getActiveTime());
-
-        // Headers
-        Map<String, Object> headers = new HashMap<>();
-        headers.put(JwtHeader.USER, user);
-        headers.put(JwtHeader.TYPE, tokenType.getType());
-
-        // JWT builder
-        String jwt = Jwts.builder()
-                .setHeader(headers)
-                .setAudience(user.getUserId())
-                .setExpiration(expiredAt)
-                .setIssuedAt(currentDate)
-                .signWith(SignatureAlgorithm.RS256, tokenPrivateKey)
-                .compact();
-
-        return TokenModel.builder()
-                .token(jwt)
-                .expiredAt(expiredAt.getTime())
-                .refreshedAt(refreshedAt.getTime())
-                .build();
     }
 
     @Override

@@ -57,7 +57,7 @@ public class ValidationUtil {
     public static void checkNotNull(Object... objects) {
         for (Object object : objects) {
             if (States.isNull(object)) {
-                throw new BadRequestException(String.format("Field is null"));
+                throw new BadRequestException("Field is null");
             }
         }
     }
