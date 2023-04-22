@@ -106,27 +106,32 @@ public class AuthHandlerImpl implements AuthHandler {
 
     @Override
     public HeaderInformation validateToken(String token) {
-        log.info("Validate token {}", token);
+        try {
+            log.info("Validate token {}", token);
 
-        if (States.isBlank(token)) {
-            throw new InvalidTokenException("Token is empty");
+            if (States.isBlank(token)) {
+                throw new InvalidTokenException("Token is empty");
+            }
+
+            // Verify token
+            Algorithm algorithm = Algorithm.RSA256((RSAPublicKey) tokenPublicKey, (RSAPrivateKey) tokenPrivateKey);
+            JWTVerifier verifier = JWT.require(algorithm)
+                    .build();
+            verifier.verify(token);
+
+            // Get user information from token
+            DecodedJWT decodedJWT = JWT.decode(token);
+            UserModel user = JsonUtil.fromMap(decodedJWT.getHeaderClaim(JwtHeader.USER).asMap(), UserModel.class);
+            Byte tokenType = decodedJWT.getHeaderClaim(JwtHeader.TYPE).asInt().byteValue();
+
+            return HeaderInformation.builder()
+                    .token(token)
+                    .tokenType(tokenType)
+                    .userId(user.getUserId())
+                    .build();
+
+        } catch (Exception e) {
+            throw new InvalidTokenException(e.getMessage());
         }
-
-        // Verify token
-        Algorithm algorithm = Algorithm.RSA256((RSAPublicKey) tokenPublicKey, (RSAPrivateKey) tokenPrivateKey);
-        JWTVerifier verifier = JWT.require(algorithm)
-                .build();
-        verifier.verify(token);
-
-        // Get user information from token
-        DecodedJWT decodedJWT = JWT.decode(token);
-        UserModel user = JsonUtil.fromMap(decodedJWT.getHeaderClaim(JwtHeader.USER).asMap(), UserModel.class);
-        Byte tokenType = decodedJWT.getHeaderClaim(JwtHeader.TYPE).asInt().byteValue();
-
-        return HeaderInformation.builder()
-                .token(token)
-                .tokenType(tokenType)
-                .userId(user.getUserId())
-                .build();
     }
 }
