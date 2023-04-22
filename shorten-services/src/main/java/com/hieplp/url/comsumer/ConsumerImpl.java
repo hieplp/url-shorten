@@ -50,11 +50,15 @@ public class ConsumerImpl implements Consumer {
         log.info("Init cors");
 
         router.route().handler(CorsHandler.create("*")
+
                 .allowedMethod(io.vertx.core.http.HttpMethod.GET)
                 .allowedMethod(io.vertx.core.http.HttpMethod.POST)
                 .allowedMethod(io.vertx.core.http.HttpMethod.PUT)
                 .allowedMethod(io.vertx.core.http.HttpMethod.DELETE)
-                .allowedHeader("Content-Type"));
+
+                .allowedHeader("Content-Type")
+                .allowedHeader("Authorization")
+        );
 
         return this;
     }

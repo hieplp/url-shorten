@@ -14,6 +14,7 @@ export default class Localize {
 
   public static readonly Error = {
     unknownError: "Unknown error",
-    apiError: "An error occurred while making the request"
+    apiError: "An error occurred while making the request",
+    unauthorized: "Unauthorized"
   };
 }

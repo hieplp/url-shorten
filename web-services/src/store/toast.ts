@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 
-import { ToastMessageModel } from "../common/model/ToastMessageModel";
+import ToastMessageModel from "../common/model/ToastMessageModel";
 
 export const useToastStore = defineStore("toast", {
   state: () => ({

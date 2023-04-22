@@ -93,7 +93,7 @@
 import { computed, onMounted, ref } from "vue";
 import HeaderTabModel from "../common/model/HeaderTabModel";
 import { tokenConstant } from "../common/constant/Constant";
-import { doesCookieExist } from "../common/util/cookie.util";
+import { doesCookieExist } from "../common/util/CookieUtil";
 
 onMounted(() => {
   const currentPath = window.location.pathname;
@@ -111,7 +111,7 @@ const tabs = [
 
 const currentTab = ref("");
 
-const isAuth = computed(() => doesCookieExist(tokenConstant.accessToken));
+const isAuth = computed(() => doesCookieExist(tokenConstant.accessToken) || doesCookieExist(tokenConstant.refreshToken));
 
 function updateCurrentTab(tab: HeaderTabModel): void {
   currentTab.value = tab.path;

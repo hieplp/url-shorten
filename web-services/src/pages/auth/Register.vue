@@ -78,10 +78,10 @@
 import LoadingButton from "../../components/button/LoadingButton.vue";
 import { ref } from "vue";
 import TextInput from "../../components/input/TextInput.vue";
-import EncryptUtil from "../../common/util/encrypt.util";
-import { saveToken } from "../../common/util/cookie.util";
+import EncryptUtil from "../../common/util/EncryptUtil";
+import { saveToken } from "../../common/util/CookieUtil";
 import { useRouter } from "vue-router";
-import { RegisterRequest } from "../../common/payload/auth/request/RegisterRequest";
+import RegisterRequest from "../../common/payload/auth/request/RegisterRequest";
 import { tokenConstant } from "../../common/constant/Constant";
 import { BadRequestException } from "../../common/exception/BadRequestException";
 import Localize from "../../common/constant/Localize";
