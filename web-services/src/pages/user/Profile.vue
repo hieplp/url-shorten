@@ -30,11 +30,13 @@
                      for="url-alias">
                 Username
               </label>
-              <input class="bg-gray-50
+              <input v-model="profile.username" class="bg-gray-50
                             border border-gray-300
                             text-gray-900 sm:text-sm rounded-lg
                             focus:outline-blue-600
-                            block w-full p-2.5" name="url-alias"
+                            block w-full p-2.5"
+                     disabled
+                     name="url-alias"
                      placeholder="Username"
                      type="text"
               >
@@ -61,22 +63,43 @@
 
 <script lang="ts" setup>
 import Header from "../../components/Header.vue";
-import { deleteCookie } from "../../common/util/cookie.util";
+import { deleteCookie } from "../../common/util/CookieUtil";
 import { tokenConstant } from "../../common/constant/Constant";
 import { useRouter } from "vue-router";
+import { useUserStore } from "../../store/user";
+import { computed, onMounted } from "vue";
 
 // -------------------------------------------------------------------------
 // XXX Common
 // -------------------------------------------------------------------------
 const router = useRouter();
 
+onMounted(() => {
+  getProfile();
+});
+
 // -------------------------------------------------------------------------
 // XXX Store
 // -------------------------------------------------------------------------
+const userStore = useUserStore();
+
+// -------------------------------------------------------------------------
+// XXX Local States
+// -------------------------------------------------------------------------
+const profile = computed(() => userStore.user);
 
 // -------------------------------------------------------------------------
 // XXX Function
 // -------------------------------------------------------------------------
+
+function getProfile() {
+  userStore.getProfile()
+    .then(() => {
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+}
 
 function logout() {
   deleteCookie(tokenConstant.accessToken);
