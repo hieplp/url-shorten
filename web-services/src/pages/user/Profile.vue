@@ -68,6 +68,8 @@ import { tokenConstant } from "../../common/constant/Constant";
 import { useRouter } from "vue-router";
 import { useUserStore } from "../../store/user";
 import { computed, onMounted } from "vue";
+import { useToastStore } from "../../store/toast";
+import Localize from "../../common/constant/Localize";
 
 // -------------------------------------------------------------------------
 // XXX Common
@@ -82,6 +84,7 @@ onMounted(() => {
 // XXX Store
 // -------------------------------------------------------------------------
 const userStore = useUserStore();
+const toastStore = useToastStore();
 
 // -------------------------------------------------------------------------
 // XXX Local States
@@ -97,7 +100,7 @@ function getProfile() {
     .then(() => {
     })
     .catch((err) => {
-      console.log(err);
+      toastStore.error(Localize.Error.unknownError);
     });
 }
 

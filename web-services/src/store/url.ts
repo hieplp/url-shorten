@@ -1,7 +1,9 @@
 import { defineStore } from "pinia";
 import UrlModel from "../common/model/UrlModel";
 import { postWithoutAuth } from "../common/util/axios/NonAuthAxiosUtil";
-import { CreateUrlByPublicRequest } from "../common/payload/url/request/CreateUrlByPublicRequest";
+import CreateUrlByPublicRequest from "../common/payload/url/request/CreateUrlByPublicRequest";
+import CreateUrlByAuthRequest from "../common/payload/url/request/CreateUrlByAuthRequest";
+import { postWithAuth } from "../common/util/axios/AuthAxiosUtil";
 
 export const useUrlStore = defineStore("url", {
   state: () => ({
@@ -48,6 +50,22 @@ export const useUrlStore = defineStore("url", {
             reject(error);
           });
       });
+    },
+
+    createUrlByAuth(request: CreateUrlByAuthRequest) {
+      return new Promise((resolve, reject) => {
+        postWithAuth("/user/url", request)
+          .then((response) => {
+            this.isShortened = true;
+            let url = response.data as UrlModel;
+            this.url = url;
+            resolve(url);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
     }
+
   }
 });

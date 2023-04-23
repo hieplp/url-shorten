@@ -2,6 +2,7 @@ import { AxiosError, AxiosResponse } from "axios";
 import { BadRequestException } from "../../exception/BadRequestException";
 import Localize from "../../constant/Localize";
 import { UnauthorizedException } from "../../exception/UnauthorizedException";
+import { ConflictException } from "../../exception/ConflictException";
 
 
 // export default {
@@ -45,6 +46,8 @@ export const error = (error: AxiosError): any => {
       throw new BadRequestException(error.message || Localize.Error.apiError);
     case 401:
       throw new UnauthorizedException(error.message || Localize.Error.apiError);
+    case 409:
+      throw new ConflictException(error.message || Localize.Error.apiError);
     default:
       throw new Error(error.message || Localize.Error.apiError);
   }

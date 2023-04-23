@@ -10,6 +10,7 @@
               'border-gray-300 focus:outline-blue-600': !isError
            }"
            :disabled="isDisabled"
+           :min="min"
            :placeholder="placeholder"
            :type="type"
            class="bg-gray-50
@@ -79,6 +80,13 @@ const props = defineProps({
     default: false
   },
   errorMessage: {
+    type: String,
+    required: false,
+    default: ""
+  },
+
+  //
+  min: {
     type: String,
     required: false,
     default: ""

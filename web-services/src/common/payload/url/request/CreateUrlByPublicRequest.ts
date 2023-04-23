@@ -1,3 +1,3 @@
-export interface CreateUrlByPublicRequest {
+export default interface CreateUrlByPublicRequest {
   longUrl: string;
 }

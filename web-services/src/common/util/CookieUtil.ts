@@ -3,7 +3,6 @@ import TokenModel from "../model/TokenModel";
 export const saveCookie = (name: string, value: string, time: number): void => {
   const date = new Date(time);
   let expires = "; expires=" + date.toUTCString();
-  console.log(date.getTime());
   document.cookie = name + "=" + (value || "") + expires + "; path=/";
 };
 
