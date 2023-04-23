@@ -19,6 +19,7 @@ public class Url implements Serializable {
     private String urlid;
     private String shorturl;
     private String longurl;
+    private String alias;
     private LocalDateTime expiredat;
     private Byte status;
     private String createdby;
@@ -36,6 +37,7 @@ public class Url implements Serializable {
         this.urlid = value.urlid;
         this.shorturl = value.shorturl;
         this.longurl = value.longurl;
+        this.alias = value.alias;
         this.expiredat = value.expiredat;
         this.status = value.status;
         this.createdby = value.createdby;
@@ -51,6 +53,7 @@ public class Url implements Serializable {
             String urlid,
             String shorturl,
             String longurl,
+            String alias,
             LocalDateTime expiredat,
             Byte status,
             String createdby,
@@ -64,6 +67,7 @@ public class Url implements Serializable {
         this.urlid = urlid;
         this.shorturl = shorturl;
         this.longurl = longurl;
+        this.alias = alias;
         this.expiredat = expiredat;
         this.status = status;
         this.createdby = createdby;
@@ -117,6 +121,21 @@ public class Url implements Serializable {
      */
     public Url setLongurl(String longurl) {
         this.longurl = longurl;
+        return this;
+    }
+
+    /**
+     * Getter for <code>shortenUrl.url.alias</code>.
+     */
+    public String getAlias() {
+        return this.alias;
+    }
+
+    /**
+     * Setter for <code>shortenUrl.url.alias</code>.
+     */
+    public Url setAlias(String alias) {
+        this.alias = alias;
         return this;
     }
 
@@ -262,6 +281,7 @@ public class Url implements Serializable {
         sb.append(urlid);
         sb.append(", ").append(shorturl);
         sb.append(", ").append(longurl);
+        sb.append(", ").append(alias);
         sb.append(", ").append(expiredat);
         sb.append(", ").append(status);
         sb.append(", ").append(createdby);

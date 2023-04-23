@@ -7,6 +7,6 @@ import lombok.Data;
 public class CreateUrlByAuthRequest {
     @NotNull
     private String longUrl;
-    private String shortUrl;
+    private String alias;
     private Long expiredAt;
 }

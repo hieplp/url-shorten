@@ -6,17 +6,11 @@ import com.hieplp.url.common.payload.response.QueryResponse;
 import com.hieplp.url.repository.base.BaseRepository;
 import com.hieplp.url.repository.generate.tables.records.UrlRecord;
 
-import java.util.List;
-
 public interface UrlRepository extends BaseRepository {
-    boolean doesShortUrlExist(String shortUrl);
-
-    UrlRecord getActiveUrlRecordByShortUrl(String shortUrl);
-
-    List<UrlRecord> getAllActiveUrlRecords();
+    boolean doesAliasExist(String alias);
 
     // XXX Public
-    UrlModel getUrlModelByPublic(String shortUrl);
+    UrlModel getUrlModelByPublic(String alias);
 
     // XXX Auth
     UrlRecord getActiveUrlRecordByOwner(String urlId, String ownerId);

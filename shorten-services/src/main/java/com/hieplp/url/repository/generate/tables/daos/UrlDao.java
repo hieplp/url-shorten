@@ -88,6 +88,20 @@ public class UrlDao extends DAOImpl<UrlRecord, com.hieplp.url.repository.generat
     }
 
     /**
+     * Fetch records that have <code>alias BETWEEN lowerInclusive AND upperInclusive</code>
+     */
+    public List<com.hieplp.url.repository.generate.tables.pojos.Url> fetchRangeOfAlias(String lowerInclusive, String upperInclusive) {
+        return fetchRange(Url.URL.ALIAS, lowerInclusive, upperInclusive);
+    }
+
+    /**
+     * Fetch records that have <code>alias IN (values)</code>
+     */
+    public List<com.hieplp.url.repository.generate.tables.pojos.Url> fetchByAlias(String... values) {
+        return fetch(Url.URL.ALIAS, values);
+    }
+
+    /**
      * Fetch records that have <code>expiredAt BETWEEN lowerInclusive AND upperInclusive</code>
      */
     public List<com.hieplp.url.repository.generate.tables.pojos.Url> fetchRangeOfExpiredat(LocalDateTime lowerInclusive, LocalDateTime upperInclusive) {

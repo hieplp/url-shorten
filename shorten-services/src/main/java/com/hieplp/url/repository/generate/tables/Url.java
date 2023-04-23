@@ -43,6 +43,10 @@ public class Url extends TableImpl<UrlRecord> {
      */
     public final TableField<UrlRecord, String> LONGURL = createField(DSL.name("longUrl"), SQLDataType.CLOB.defaultValue(DSL.field("NULL", SQLDataType.CLOB)), this, "");
     /**
+     * The column <code>shortenUrl.url.alias</code>.
+     */
+    public final TableField<UrlRecord, String> ALIAS = createField(DSL.name("alias"), SQLDataType.VARCHAR(50).defaultValue(DSL.field("NULL", SQLDataType.VARCHAR)), this, "");
+    /**
      * The column <code>shortenUrl.url.expiredAt</code>.
      */
     public final TableField<UrlRecord, LocalDateTime> EXPIREDAT = createField(DSL.name("expiredAt"), SQLDataType.LOCALDATETIME(0).defaultValue(DSL.field("NULL", SQLDataType.LOCALDATETIME)), this, "");
@@ -167,11 +171,11 @@ public class Url extends TableImpl<UrlRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row12 type methods
+    // Row13 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row12<String, String, String, LocalDateTime, Byte, String, LocalDateTime, String, LocalDateTime, Byte, String, LocalDateTime> fieldsRow() {
-        return (Row12) super.fieldsRow();
+    public Row13<String, String, String, String, LocalDateTime, Byte, String, LocalDateTime, String, LocalDateTime, Byte, String, LocalDateTime> fieldsRow() {
+        return (Row13) super.fieldsRow();
     }
 }
