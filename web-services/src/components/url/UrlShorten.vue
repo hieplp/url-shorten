@@ -18,32 +18,25 @@
         </h1>
         <div class="space-y-4 md:space-y-6">
 
-          <div>
-            <label class="block mb-2 text-sm font-medium text-gray-900" for="your-url">
-              Your URL
-            </label>
-            <textarea class="bg-gray-50
-                             border border-gray-300
-                             text-gray-900 sm:text-sm rounded-lg
-                             focus:outline-blue-600
-                             block w-full p-2.5" name="your-url"
-                      placeholder="Username"
-                      required type="text" />
-          </div>
+          <TextAreaInput v-model="longUrl.value"
+                         :error-message="longUrl.errorMessage"
+                         :is-disabled="isLoading"
+                         :is-error="longUrl.isError"
+                         :is-required="true"
+                         label="Your URL"
+                         placeholder="https://example.com"
+          />
 
-          <div>
-            <label class="block mb-2 text-sm font-medium text-gray-900"
-                   for="url-alias">
-              URL Alias
-            </label>
-            <input class="bg-gray-50
-                          border border-gray-300
-                          text-gray-900 sm:text-sm rounded-lg
-                          focus:outline-blue-600
-                          block w-full p-2.5" name="url-alias"
-                   placeholder="Alias"
-                   type="text">
-          </div>
+          <TextInput v-if="isAuth"
+                     v-model="alias.value"
+                     :error-message="alias.errorMessage"
+                     :is-disabled="isLoading"
+                     :is-error="alias.isError"
+                     :is-required="true"
+                     label="URL Alias"
+                     placeholder="Alias"
+                     type="text"
+          />
 
           <LoadingButton
             :is-loading="isLoading"
@@ -60,21 +53,107 @@
 
 import { useUrlStore } from "../../store/url";
 import LoadingButton from "../button/LoadingButton.vue";
-import { ref } from "vue";
+import { computed, ref } from "vue";
+import { doesCookieExist } from "../../common/util/CookieUtil";
+import { tokenConstant } from "../../common/constant/Constant";
+import TextInput from "../input/TextInput.vue";
+import TextAreaInput from "../input/TextAreaInput.vue";
+import Localize from "../../common/constant/Localize";
+import { isUrlValid } from "../../common/util/ValidationUtil";
+import { CreateUrlByPublicRequest } from "../../common/payload/url/request/CreateUrlByPublicRequest";
+import { useToastStore } from "../../store/toast";
+
+
+// -------------------------------------------------------------------------
+// XXX Common
+// -------------------------------------------------------------------------
+
+const isAuth = computed(() => doesCookieExist(tokenConstant.refreshToken));
+
+// -------------------------------------------------------------------------
+// XXX Store
+// -------------------------------------------------------------------------
 
 const urlStore = useUrlStore();
+const toastStore = useToastStore();
+
+// -------------------------------------------------------------------------
+// XXX Inner State
+// -------------------------------------------------------------------------
 
 const isLoading = ref(false);
 
+const longUrl = ref({
+  value: "",
+  isError: false,
+  errorMessage: ""
+});
+
+const alias = ref({
+  value: "",
+  isError: false,
+  errorMessage: ""
+});
+
+// -------------------------------------------------------------------------
+// XXX Function
+// -------------------------------------------------------------------------
+
 function shortenUrl() {
+
+  validateLongUrl();
+
+  if (!isValid()) {
+    return;
+  }
+
   isLoading.value = true;
+  if (isAuth) {
+
+    let request = {
+      longUrl: longUrl.value.value
+    } as CreateUrlByPublicRequest;
+
+    urlStore.createUrlByPublic(request)
+      .then((response) => {
+      })
+      .catch((error) => {
+        toastStore.error(Localize.Error.unknownError);
+      })
+      .finally(() => {
+        isLoading.value = false;
+      });
+
+  } else {
+
+  }
+
 
   // TODO: Make API call to shorten URL
 
-  setTimeout(() => {
-    urlStore.isShortened = true;
-    isLoading.value = false;
-  }, 2000);
+  // setTimeout(() => {
+  //   urlStore.isShortened = true;
+  //   isLoading.value = false;
+  // }, 2000);
+}
+
+// -------------------------------------------------------------------------
+// XXX Validation
+// -------------------------------------------------------------------------
+
+function isValid(): boolean {
+  return !longUrl.value.isError
+    && !alias.value.isError;
+}
+
+function validateLongUrl(): void {
+  const url = longUrl.value.value;
+  if (!isUrlValid(url)) {
+    longUrl.value.isError = true;
+    longUrl.value.errorMessage = Localize.Url.invalidUrl;
+  } else {
+    longUrl.value.isError = false;
+  }
 }
 
 </script>

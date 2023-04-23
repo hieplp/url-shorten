@@ -12,6 +12,10 @@ export default class Localize {
     invalidCredentials: "Invalid username or password"
   };
 
+  public static readonly Url = {
+    invalidUrl: "Invalid URL. Please enter a valid URL."
+  };
+
   public static readonly Error = {
     unknownError: "Unknown error",
     apiError: "An error occurred while making the request",
