@@ -94,9 +94,11 @@ public class UrlServiceImpl implements UrlService {
         ValidationUtil.checkNotNullWithAnnotation(request);
         ValidationUtil.checkUrlIsValid(request.getLongUrl());
 
-        if (States.isNotBlank(request.getAlias()) && urlRepo.doesAliasExist(request.getAlias())) {
-            log.debug("Alias: {} already exist", request.getAlias());
-            throw new DuplicateException(String.format("Alias: %s already exist", request.getAlias()));
+        if (States.isNotBlank(request.getAlias())) {
+            if (urlRepo.doesAliasExist(request.getAlias())) {
+                log.debug("Alias: {} already exist", request.getAlias());
+                throw new DuplicateException(String.format("Alias: %s already exist", request.getAlias()));
+            }
         } else {
             request.setAlias(GenerateUtil.generate(configInfo.getAliasLength()));
         }
