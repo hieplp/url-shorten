@@ -13,6 +13,7 @@ public class UrlModel {
     private String urlId;
     private String shortUrl;
     private String longUrl;
+    private String alias;
     private Long expiredAt;
     private Byte status;
     private String createdBy;

@@ -18,32 +18,37 @@
         </h1>
         <div class="space-y-4 md:space-y-6">
 
-          <div>
-            <label class="block mb-2 text-sm font-medium text-gray-900" for="your-url">
-              Your URL
-            </label>
-            <textarea class="bg-gray-50
-                             border border-gray-300
-                             text-gray-900 sm:text-sm rounded-lg
-                             focus:outline-blue-600
-                             block w-full p-2.5" name="your-url"
-                      placeholder="Username"
-                      required type="text" />
-          </div>
+          <TextAreaInput v-model="longUrl.value"
+                         :error-message="longUrl.errorMessage"
+                         :is-disabled="isLoading"
+                         :is-error="longUrl.isError"
+                         :is-required="true"
+                         label="Your URL"
+                         placeholder="https://example.com"
+          />
 
-          <div>
-            <label class="block mb-2 text-sm font-medium text-gray-900"
-                   for="url-alias">
-              URL Alias
-            </label>
-            <input class="bg-gray-50
-                          border border-gray-300
-                          text-gray-900 sm:text-sm rounded-lg
-                          focus:outline-blue-600
-                          block w-full p-2.5" name="url-alias"
-                   placeholder="Alias"
-                   type="text">
-          </div>
+          <TextInput v-if="isAuth"
+                     v-model="alias.value"
+                     :error-message="alias.errorMessage"
+                     :is-disabled="isLoading"
+                     :is-error="alias.isError"
+                     :is-required="false"
+                     label="URL Alias"
+                     placeholder="Alias"
+                     type="text"
+          />
+
+          <TextInput v-if="isAuth"
+                     v-model="expirationTime.value"
+                     :error-message="expirationTime.errorMessage"
+                     :is-disabled="isLoading"
+                     :is-error="expirationTime.isError"
+                     :is-required="false"
+                     :min="currentDatetime()"
+                     label="Expiration Time"
+                     placeholder="Expiration Time"
+                     type="datetime-local"
+          />
 
           <LoadingButton
             :is-loading="isLoading"
@@ -60,21 +65,153 @@
 
 import { useUrlStore } from "../../store/url";
 import LoadingButton from "../button/LoadingButton.vue";
-import { ref } from "vue";
+import { computed, ref } from "vue";
+import { doesCookieExist } from "../../common/util/CookieUtil";
+import { tokenConstant } from "../../common/constant/Constant";
+import TextInput from "../input/TextInput.vue";
+import TextAreaInput from "../input/TextAreaInput.vue";
+import Localize from "../../common/constant/Localize";
+import { isUrlValid } from "../../common/util/ValidationUtil";
+import CreateUrlByPublicRequest from "../../common/payload/url/request/CreateUrlByPublicRequest";
+import { useToastStore } from "../../store/toast";
+import { currentDatetime } from "../../common/util/DateUtil";
+import CreateUrlByAuthRequest from "../../common/payload/url/request/CreateUrlByAuthRequest";
+import { ConflictException } from "../../common/exception/ConflictException";
+
+// -------------------------------------------------------------------------
+// XXX Common
+// -------------------------------------------------------------------------
+
+const isAuth = computed(() => doesCookieExist(tokenConstant.refreshToken));
+
+// -------------------------------------------------------------------------
+// XXX Store
+// -------------------------------------------------------------------------
 
 const urlStore = useUrlStore();
+const toastStore = useToastStore();
+
+// -------------------------------------------------------------------------
+// XXX Inner State
+// -------------------------------------------------------------------------
 
 const isLoading = ref(false);
 
+const longUrl = ref({
+  value: "",
+  isError: false,
+  errorMessage: ""
+});
+
+const alias = ref({
+  value: "",
+  isError: false,
+  errorMessage: ""
+});
+
+const expirationTime = ref({
+  value: "",
+  isError: false,
+  errorMessage: ""
+});
+
+// -------------------------------------------------------------------------
+// XXX Function
+// -------------------------------------------------------------------------
+
 function shortenUrl() {
+
+  validateLongUrl();
+
+  if (isAuth) {
+    validateAlias();
+  }
+
+  if (!isValid()) {
+    return;
+  }
+
   isLoading.value = true;
+  if (isAuth) {
+
+    console.log(new Date(expirationTime.value.value).getTime());
+
+    let request = {
+      longUrl: longUrl.value.value,
+      alias: alias.value.value
+    } as CreateUrlByAuthRequest;
+
+    if (expirationTime.value.value) {
+      request.expiredAt = new Date(expirationTime.value.value).getTime();
+    }
+
+    urlStore.createUrlByAuth(request)
+      .then((response) => {
+      })
+      .catch((error) => {
+        if (error instanceof ConflictException) {
+          alias.value.isError = true;
+          alias.value.errorMessage = Localize.Url.duplicatedAlias;
+        } else {
+          toastStore.error(Localize.Error.unknownError);
+        }
+      })
+      .finally(() => {
+        isLoading.value = false;
+      });
+  } else {
+
+    let request = {
+      longUrl: longUrl.value.value
+    } as CreateUrlByPublicRequest;
+
+    urlStore.createUrlByPublic(request)
+      .then((response) => {
+      })
+      .catch((error) => {
+        toastStore.error(Localize.Error.unknownError);
+      })
+      .finally(() => {
+        isLoading.value = false;
+      });
+  }
+
 
   // TODO: Make API call to shorten URL
 
-  setTimeout(() => {
-    urlStore.isShortened = true;
-    isLoading.value = false;
-  }, 2000);
+  // setTimeout(() => {
+  //   urlStore.isShortened = true;
+  //   isLoading.value = false;
+  // }, 2000);
+}
+
+// -------------------------------------------------------------------------
+// XXX Validation
+// -------------------------------------------------------------------------
+
+function isValid(): boolean {
+  return !longUrl.value.isError
+    && !alias.value.isError;
+}
+
+function validateLongUrl(): void {
+  const url = longUrl.value.value;
+  if (!isUrlValid(url)) {
+    longUrl.value.isError = true;
+    longUrl.value.errorMessage = Localize.Url.invalidUrl;
+  } else {
+    longUrl.value.isError = false;
+  }
+}
+
+function validateAlias(): void {
+  const value = alias.value.value;
+  if (value.length < 6) {
+    alias.value.isError = true;
+    alias.value.errorMessage = Localize.Url.invalidAlias;
+  } else {
+    alias.value.isError = false;
+  }
 }
 
 </script>

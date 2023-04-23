@@ -60,7 +60,7 @@ public class UrlServiceImpl implements UrlService {
 
         UrlModel urlModel = UrlModel.builder()
                 .longUrl(request.getLongUrl())
-                .shortUrl(GenerateUtil.generate(configInfo.getShortUrlLength()))
+                .alias(GenerateUtil.generate(configInfo.getAliasLength()))
                 .createdBy("public") // TODO: Use deviceId or something else to identify url owner
                 .build();
         UrlModel response = urlHandler.saveUrl(urlModel);
@@ -75,10 +75,10 @@ public class UrlServiceImpl implements UrlService {
         UrlModel request = JsonUtil.fromJson(commonRequest.getRequest(), UrlModel.class);
         ValidationUtil.checkNotNull(request);
 
-        UrlModel response = urlCache.getIfPresent(request.getShortUrl());
+        UrlModel response = urlCache.getIfPresent(request.getAlias());
         if (States.isNull(response)) {
-            response = urlRepo.getUrlModelByPublic(request.getShortUrl());
-            urlCache.put(request.getShortUrl(), response);
+            response = urlRepo.getUrlModelByPublic(request.getAlias());
+            urlCache.put(request.getAlias(), response);
         }
 
         // TODO: Push to queue to update statistics
@@ -94,11 +94,13 @@ public class UrlServiceImpl implements UrlService {
         ValidationUtil.checkNotNullWithAnnotation(request);
         ValidationUtil.checkUrlIsValid(request.getLongUrl());
 
-        if (States.isNotBlank(request.getShortUrl()) && urlRepo.doesShortUrlExist(request.getShortUrl())) {
-            log.debug("Short url: {} already exist", request.getShortUrl());
-            throw new DuplicateException(String.format("Short url: %s already exist", request.getShortUrl()));
+        if (States.isNotBlank(request.getAlias())) {
+            if (urlRepo.doesAliasExist(request.getAlias())) {
+                log.debug("Alias: {} already exist", request.getAlias());
+                throw new DuplicateException(String.format("Alias: %s already exist", request.getAlias()));
+            }
         } else {
-            request.setShortUrl(GenerateUtil.generate(configInfo.getShortUrlLength()));
+            request.setAlias(GenerateUtil.generate(configInfo.getAliasLength()));
         }
 
         if (States.isNotNull(request.getExpiredAt())) {
@@ -111,7 +113,7 @@ public class UrlServiceImpl implements UrlService {
 
         UrlModel urlModel = UrlModel.builder()
                 .longUrl(request.getLongUrl())
-                .shortUrl(request.getShortUrl())
+                .alias(request.getAlias())
                 .expiredAt(request.getExpiredAt())
                 .createdBy(commonRequest.getHeaders().getUserId())
                 .build();
@@ -129,11 +131,11 @@ public class UrlServiceImpl implements UrlService {
 
         UrlRecord urlRecord = urlRepo.getActiveUrlRecordByOwner(request.getUrlId(), commonRequest.getHeaders().getUserId());
 
-        if (States.isNotBlank(request.getShortUrl())
-                && States.isNotEquals(request.getShortUrl(), urlRecord.getShorturl())
-                && urlRepo.doesShortUrlExist(request.getShortUrl())) {
-            log.debug("Short url: {} already exist", request.getShortUrl());
-            throw new DuplicateException(String.format("Short url: %s already exist", request.getShortUrl()));
+        if (States.isNotBlank(request.getAlias())
+                && States.isNotEquals(request.getAlias(), urlRecord.getShorturl())
+                && urlRepo.doesAliasExist(request.getAlias())) {
+            log.debug("Alias: {} already exist", request.getAlias());
+            throw new DuplicateException(String.format("Alias: %s already exist", request.getAlias()));
         }
 
         if (States.isNotNull(request.getExpiredAt()) && States.isNotEquals(request.getExpiredAt(), urlRecord.getExpiredat())) {
@@ -150,7 +152,7 @@ public class UrlServiceImpl implements UrlService {
 
         UrlRecord updatedUrlRecord = new UrlRecord()
                 .setUrlid(urlRecord.getUrlid())
-                .setShorturl(request.getShortUrl())
+                .setAlias(request.getAlias())
                 .setLongurl(request.getLongUrl())
                 .setExpiredat(States.isNull(request.getExpiredAt())
                         ? null : DateUtil.toLocalDateTime(request.getExpiredAt()))

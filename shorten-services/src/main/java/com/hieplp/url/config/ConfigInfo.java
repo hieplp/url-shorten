@@ -10,7 +10,8 @@ public class ConfigInfo {
     private CacheConfig cacheConfig;
     private TokenConfig tokenConfig;
     private PasswordConfig passwordConfig;
-    private Integer shortUrlLength;
+    private Integer aliasLength;
+    private String urlHost;
     private Integer workerPoolSize;
     private Long workerMaxExecuteTime;
 }

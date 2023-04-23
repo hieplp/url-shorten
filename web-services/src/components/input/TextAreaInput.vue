@@ -4,22 +4,20 @@
       {{ label }} <span v-if="isRequired" class="text-red-600">(*)</span>
     </label>
 
-    <input v-model="inputValue"
-           :class="{
-              'border-red-500 focus:outline-red-600': isError,
-              'border-gray-300 focus:outline-blue-600': !isError
-           }"
-           :disabled="isDisabled"
-           :min="min"
-           :placeholder="placeholder"
-           :type="type"
-           class="bg-gray-50
-                  border
-                  text-gray-900 sm:text-sm rounded-lg
-                  focus:outline-blue-600
-                  block w-full p-2.5"
-           name="username"
-           type="text">
+    <textarea v-model="inputValue"
+              :class="{
+                  'border-red-500 focus:outline-red-600': isError,
+                  'border-gray-300 focus:outline-blue-600': !isError
+              }"
+              :disabled="isDisabled"
+              :placeholder="placeholder"
+              class="bg-gray-50
+                     border
+                     text-gray-900 sm:text-sm rounded-lg
+                     focus:outline-blue-600
+                     block w-full p-2.5"
+              name="username"
+              type="text" />
 
     <p v-if="isError"
        class="text-sm
@@ -52,11 +50,7 @@ const props = defineProps({
     required: true,
     default: ""
   },
-  type: {
-    type: String,
-    required: true,
-    default: "text"
-  },
+
   //
   label: {
     type: String,
@@ -73,6 +67,7 @@ const props = defineProps({
     required: false,
     default: ""
   },
+
   //
   isError: {
     type: Boolean,
@@ -80,13 +75,6 @@ const props = defineProps({
     default: false
   },
   errorMessage: {
-    type: String,
-    required: false,
-    default: ""
-  },
-
-  //
-  min: {
     type: String,
     required: false,
     default: ""

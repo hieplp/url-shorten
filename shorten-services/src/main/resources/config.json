@@ -28,7 +28,8 @@
   "passwordConfig": {
     "privateKey": "/src/main/resources/rsa/password/password_private_key.der"
   },
-  "shortUrlLength": 6,
+  "aliasLength": 6,
+  "urlHost": "http://localhost:5173",
   "workerPoolSize": 16,
   "workerMaxExecuteTime": 5000
 }

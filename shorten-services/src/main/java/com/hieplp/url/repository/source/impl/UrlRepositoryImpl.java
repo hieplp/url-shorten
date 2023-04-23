@@ -2,12 +2,10 @@ package com.hieplp.url.repository.source.impl;
 
 import com.hieplp.url.common.constants.url.UrlIsDeleted;
 import com.hieplp.url.common.constants.url.UrlStatus;
-import com.hieplp.url.common.exception.data.QueryException;
 import com.hieplp.url.common.model.UrlModel;
 import com.hieplp.url.common.payload.request.QueryRequest;
 import com.hieplp.url.common.payload.response.QueryResponse;
 import com.hieplp.url.repository.base.BaseRepositoryImpl;
-import com.hieplp.url.repository.base.CustomDSLContext;
 import com.hieplp.url.repository.generate.tables.records.UrlRecord;
 import com.hieplp.url.repository.source.UrlRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +13,6 @@ import org.jooq.Condition;
 import org.jooq.Field;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import static com.hieplp.url.repository.generate.Tables.URL;
 
@@ -25,40 +22,21 @@ public class UrlRepositoryImpl extends BaseRepositoryImpl implements UrlReposito
     private static final Condition ACTIVE_URL_CONDITION = URL.STATUS.eq(UrlStatus.ACTIVE.getStatus())
             .and(URL.ISDELETED.eq(UrlIsDeleted.NOT_DELETED.getValue()));
     private static final Field<?>[] ACTIVE_PUBLIC_URL_FIELDS = new Field[]{
-            URL.URLID, URL.LONGURL, URL.SHORTURL
+            URL.URLID, URL.LONGURL, URL.SHORTURL, URL.ALIAS
     };
 
     @Override
-    public boolean doesShortUrlExist(String shortUrl) {
-        log.info("Check short url: {} exist", shortUrl);
-        return isExistent(URL, URL.SHORTURL.eq(shortUrl)
+    public boolean doesAliasExist(String alias) {
+        log.info("Check alias: {} exist", alias);
+        return isExistent(URL, URL.ALIAS.eq(alias)
                 .and(ACTIVE_URL_CONDITION)
                 .and(URL.EXPIREDAT.isNull().or(URL.EXPIREDAT.greaterThan(LocalDateTime.now()))));
     }
 
     @Override
-    public UrlRecord getActiveUrlRecordByShortUrl(String shortUrl) {
-        log.info("Get active url record by short url: {}", shortUrl);
-        return fetchOneNotNull(URL, URL.SHORTURL.eq(shortUrl).and(URL.STATUS.eq(UrlStatus.ACTIVE.getStatus())));
-    }
-
-    @Override
-    public List<UrlRecord> getAllActiveUrlRecords() {
-        try (CustomDSLContext context = getDslContext()) {
-            log.info("Get all active url records");
-            return context.selectFrom(URL)
-                    .where(URL.STATUS.eq(UrlStatus.ACTIVE.getStatus()))
-                    .fetch();
-        } catch (Exception e) {
-            log.error("Error when get all active url records: {}", e.getMessage());
-            throw new QueryException(e.getMessage());
-        }
-    }
-
-    @Override
-    public UrlModel getUrlModelByPublic(String shortUrl) {
-        log.info("Get url by public with shortUrl: {}", shortUrl);
-        return fetchOneNotNull(URL, URL.SHORTURL.eq(shortUrl)
+    public UrlModel getUrlModelByPublic(String alias) {
+        log.info("Get url by public with alias: {}", alias);
+        return fetchOneNotNull(URL, URL.ALIAS.eq(alias)
                         .and(ACTIVE_URL_CONDITION)
                         .and(URL.EXPIREDAT.isNull().or(URL.EXPIREDAT.greaterThan(LocalDateTime.now()))),
                 UrlModel.class, ACTIVE_PUBLIC_URL_FIELDS);

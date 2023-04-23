@@ -7,6 +7,7 @@ import com.hieplp.url.common.model.UrlModel;
 import com.hieplp.url.common.util.DateUtil;
 import com.hieplp.url.common.util.GenerateUtil;
 import com.hieplp.url.common.util.States;
+import com.hieplp.url.config.ConfigInfo;
 import com.hieplp.url.handler.UrlHandler;
 import com.hieplp.url.repository.generate.tables.records.UrlRecord;
 import com.hieplp.url.repository.source.UrlRepository;
@@ -20,6 +21,7 @@ import java.time.LocalDateTime;
 public class UrlHandlerImpl implements UrlHandler {
     private final static int DEFAULT_URL_ID_LENGTH = 6;
 
+    private final ConfigInfo configInfo;
     private final UrlRepository urlRepo;
 
     @Override
@@ -28,10 +30,12 @@ public class UrlHandlerImpl implements UrlHandler {
 
         UrlRecord urlRecord = new UrlRecord()
                 .setUrlid(GenerateUtil.generate(DEFAULT_URL_ID_LENGTH))
-                .setShorturl(urlModel.getShortUrl())
+                .setAlias(urlModel.getAlias())
+                .setShorturl(String.format("%s/%s", configInfo.getUrlHost(), urlModel.getAlias()))
                 .setLongurl(urlModel.getLongUrl())
                 .setExpiredat(States.isNull(urlModel.getExpiredAt())
-                        ? null : DateUtil.toLocalDateTime(urlModel.getExpiredAt()))
+                        ? null
+                        : DateUtil.toLocalDateTime(urlModel.getExpiredAt()))
                 .setStatus(UrlStatus.ACTIVE.getStatus())
                 .setCreatedby(urlModel.getCreatedBy())
                 .setCreatedat(LocalDateTime.now())

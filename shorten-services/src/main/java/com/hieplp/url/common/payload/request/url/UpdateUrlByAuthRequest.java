@@ -8,6 +8,6 @@ public class UpdateUrlByAuthRequest {
     @NotNull
     private String urlId;
     private String longUrl;
-    private String shortUrl;
+    private String alias;
     private Long expiredAt;
 }

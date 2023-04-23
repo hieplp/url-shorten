@@ -37,7 +37,6 @@ instance.interceptors.response.use((response: AxiosResponse) => {
   }
 
   if (error.response?.status === 401) {
-    console.log("error", error);
 
     // If another request is already refreshing the access token,
     // wait and retry the original request after refresh
@@ -122,6 +121,20 @@ export const getWithAuth = <T = any>(url: string, config?: AxiosRequestConfig): 
   };
 
   return instance.get(url, authConfig)
+    .then(success)
+    .catch(error);
+};
+
+export const postWithAuth = <T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> => {
+  // Add authentication headers to the request config
+  const authConfig: AxiosRequestConfig = {
+    ...config,
+    headers: {
+      ...config?.headers // Include any existing headers from the config
+    }
+  };
+
+  return instance.post(url, data, config)
     .then(success)
     .catch(error);
 };
