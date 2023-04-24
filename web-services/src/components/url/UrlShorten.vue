@@ -175,14 +175,6 @@ function shortenUrl() {
         isLoading.value = false;
       });
   }
-
-
-  // TODO: Make API call to shorten URL
-
-  // setTimeout(() => {
-  //   urlStore.isShortened = true;
-  //   isLoading.value = false;
-  // }, 2000);
 }
 
 // -------------------------------------------------------------------------

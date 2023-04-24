@@ -19,6 +19,9 @@
         <th class="px-6 py-3" scope="col">
           Status
         </th>
+        <th class="px-6 py-3" scope="col">
+          Expired At
+        </th>
         <th class="px-6 py-3 w-fit" scope="col">
           Created At
         </th>
@@ -31,7 +34,7 @@
       <tr v-for="(url, index) in urls" :key="url.urlId" class="bg-white border-b">
 
         <th class="px-6 py-4 font-medium  whitespace-nowrap" scope="row">
-          {{ index + 1 }}
+          {{ from + index + 1 }}
         </th>
 
         <td class="px-6 py-4 whitespace-nowrap">
@@ -39,11 +42,21 @@
         </td>
 
         <td class="px-6 py-4">
-          {{ url.status }}
+          <span :class="getStatusColor(url)"
+                class="bg-blue-700
+                       p-1.5
+                       text-white
+                       rounded">
+           {{ formatStatus(url) }}
+          </span>
         </td>
 
         <td class="px-6 py-4">
-          {{ url.createdAt }}
+          {{ url.expiredAt ? formatDatetime(url.expiredAt) : "Never" }}
+        </td>
+
+        <td class="px-6 py-4">
+          {{ formatDatetime(url.createdAt) }}
         </td>
 
         <td class="px-6 py-4 flex flex-row gap-2">
@@ -80,13 +93,48 @@
 import { MagnifyingGlassIcon, PencilIcon } from "@heroicons/vue/24/outline";
 import { PropType } from "vue";
 import UrlModel from "../../common/model/UrlModel";
+import { formatDatetime } from "../../common/util/DateUtil";
+import { urlStatus } from "../../common/constant/Constant";
+import Localize from "../../common/constant/Localize";
 
 const props = defineProps({
   urls: {
     type: Array as PropType<UrlModel[]>,
     required: true
+  },
+  from: {
+    type: Number,
+    required: true
   }
 });
+
+function formatStatus(url: UrlModel) {
+
+  if (url.expiredAt < Date.now()) {
+    return Localize.Url.expired;
+  }
+
+  switch (url.status) {
+    case urlStatus.active:
+      return Localize.Url.active;
+    default:
+      return Localize.Url.inactive;
+  }
+}
+
+function getStatusColor(url: UrlModel) {
+
+  if (url.expiredAt < Date.now()) {
+    return "bg-red-500";
+  }
+
+  switch (url.status) {
+    case urlStatus.active:
+      return "bg-blue-500";
+    default:
+      return "bg-red-500";
+  }
+}
 
 
 </script>
