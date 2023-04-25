@@ -134,8 +134,6 @@ function shortenUrl() {
   isLoading.value = true;
   if (isAuth) {
 
-    console.log(new Date(expirationTime.value.value).getTime());
-
     let request = {
       longUrl: longUrl.value.value,
       alias: alias.value.value

@@ -19,8 +19,9 @@ export default class Localize {
     //
     active: "Active",
     inactive: "Inactive",
-    expired: "Expired"
+    expired: "Expired",
     //
+    updateSuccess: "Update successfully"
   };
 
   public static readonly Error = {

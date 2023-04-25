@@ -17,7 +17,8 @@
                   border
                   text-gray-900 sm:text-sm rounded-lg
                   focus:outline-blue-600
-                  block w-full p-2.5"
+                  block w-full p-2.5
+                  disabled:bg-gray-200"
            name="username"
            type="text">
 

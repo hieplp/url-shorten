@@ -3,8 +3,9 @@ import UrlModel from "../common/model/UrlModel";
 import { postWithoutAuth } from "../common/util/axios/NonAuthAxiosUtil";
 import CreateUrlByPublicRequest from "../common/payload/url/request/CreateUrlByPublicRequest";
 import CreateUrlByAuthRequest from "../common/payload/url/request/CreateUrlByAuthRequest";
-import { getWithAuth, postWithAuth } from "../common/util/axios/AuthAxiosUtil";
+import { getWithAuth, patchWithAuth, postWithAuth } from "../common/util/axios/AuthAxiosUtil";
 import GetUrlsRequest from "../common/payload/url/request/GetUrlsRequest";
+import UpdateUrlByAuthRequest from "../common/payload/url/request/UpdateUrlByAuthRequest";
 
 export const useUrlStore = defineStore("url", {
   state: () => ({
@@ -12,16 +13,7 @@ export const useUrlStore = defineStore("url", {
       longUrl: "" as string,
       shortUrl: "" as string,
       url: {} as UrlModel,
-      urls: [
-        {
-          urlId: "12321",
-          longUrl: "https://www.google.com",
-          shortUrl: "https://www.google.com",
-          createdAt: 0,
-          modifiedAt: 1,
-          status: "ACTIVE"
-        }
-      ] as UrlModel[],
+      urls: [] as UrlModel[],
       total: 0
     }
   ),
@@ -69,6 +61,20 @@ export const useUrlStore = defineStore("url", {
       });
     },
 
+    updateUrlByAuth(request: UpdateUrlByAuthRequest): Promise<any> {
+      return new Promise((resolve, reject) => {
+        patchWithAuth("/user/url", request)
+          .then((response) => {
+            let url = response.data as UrlModel;
+            this.url = url;
+            resolve(url);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
+
     getUrlsByAuth(params: GetUrlsRequest): Promise<any> {
       return new Promise((resolve, reject) => {
         getWithAuth("/user/url", params)
@@ -82,7 +88,22 @@ export const useUrlStore = defineStore("url", {
             reject(error);
           });
       });
+    },
+
+    getUrlByAuth(urlId: string): Promise<any> {
+      return new Promise((resolve, reject) => {
+        getWithAuth("/user/url/" + urlId)
+          .then((response) => {
+            let url = response.data as UrlModel;
+            this.url = url;
+            resolve(url);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
     }
+
 
   }
 });

@@ -8,6 +8,7 @@
                  text-white text-center
                  bg-blue-600
                  hover:bg-blue-700
+                 disabled:bg-blue-300
                  rounded-lg
                  px-5 py-2.5"
           type="submit">
