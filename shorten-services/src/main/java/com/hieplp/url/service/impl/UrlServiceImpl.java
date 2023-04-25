@@ -153,6 +153,8 @@ public class UrlServiceImpl implements UrlService {
         UrlRecord updatedUrlRecord = new UrlRecord()
                 .setUrlid(urlRecord.getUrlid())
                 .setAlias(request.getAlias())
+                .setShorturl(States.isNull(request.getAlias())
+                        ? null : String.format("%s/%s", configInfo.getUrlHost(), request.getAlias()))
                 .setLongurl(request.getLongUrl())
                 .setExpiredat(States.isNull(request.getExpiredAt())
                         ? null : DateUtil.toLocalDateTime(request.getExpiredAt()))
