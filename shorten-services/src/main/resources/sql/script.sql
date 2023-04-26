@@ -1,4 +1,4 @@
-create table password
+create table shortenUrl.password
 (
     userId   varchar(100) not null
         primary key,
@@ -6,12 +6,13 @@ create table password
     salt     binary(64) null
 );
 
-create table url
+create table shortenUrl.url
 (
     urlId      varchar(50) not null
         primary key,
     shortUrl   varchar(50) null,
     longUrl    text null,
+    alias      varchar(50) null,
     expiredAt  datetime null,
     status     tinyint default 0 null,
     createdBy  varchar(50) null,
@@ -24,9 +25,9 @@ create table url
 );
 
 create index url_shortUrl_status_index
-    on url (shortUrl, status);
+    on shortenUrl.url (shortUrl, status);
 
-create table user
+create table shortenUrl.user
 (
     userId     varchar(100) not null
         primary key,
