@@ -123,7 +123,8 @@ function shortenUrl() {
 
   validateLongUrl();
 
-  if (isAuth) {
+  if (isAuth.value) {
+    console.log(isAuth.value);
     validateAlias();
   }
 
@@ -132,7 +133,7 @@ function shortenUrl() {
   }
 
   isLoading.value = true;
-  if (isAuth) {
+  if (isAuth.value) {
 
     let request = {
       longUrl: longUrl.value.value,

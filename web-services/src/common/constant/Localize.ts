@@ -21,7 +21,8 @@ export default class Localize {
     inactive: "Inactive",
     expired: "Expired",
     //
-    updateSuccess: "Update successfully"
+    updateSuccess: "Update successfully",
+    deleteSuccess: "Delete successfully"
   };
 
   public static readonly Error = {

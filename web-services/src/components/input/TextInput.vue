@@ -18,7 +18,7 @@
                   text-gray-900 sm:text-sm rounded-lg
                   focus:outline-blue-600
                   block w-full p-2.5
-                  disabled:bg-gray-200"
+                  disabled:bg-gray-100"
            name="username"
            type="text">
 
@@ -48,16 +48,16 @@ const props = defineProps({
     required: true,
     default: false
   },
-  modelValue: {
-    type: String,
-    required: true,
-    default: ""
-  },
   type: {
     type: String,
     required: true,
     default: "text"
   },
+  modelValue: {
+    required: false,
+    default: ""
+  },
+
   //
   label: {
     type: String,

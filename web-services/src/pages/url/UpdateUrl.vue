@@ -1,20 +1,19 @@
 <template>
   <Header />
 
-  <ConfirmationModal
-    v-if="isConfirmModalVisible"
-    :cancel="changeConfirmModalVisibility"
-    :confirm="update"
-    cancel-text="No, cancel"
-    confirm-text="Yes, I'm sure"
-    message="Are you want to update this url?" />
+  <ConfirmationModal v-if="isConfirmModalVisible"
+                     :cancel="changeConfirmModalVisibility"
+                     :confirm="update"
+                     cancel-text="No, cancel"
+                     confirm-text="Yes, I'm sure"
+                     message="Are you want to update this url?" />
 
   <div class="max-w-screen-xl
 	            mx-auto
 	            md:px-8 px-2
 	           ">
 
-    <Breadcrumb :items="breadcrumbs" last-item="Update" />
+    <Breadcrumb :items="breadcrumbs" :last-item="`Update (${urlId})`" />
 
     <div class="w-full
                 flex flex-col
@@ -35,50 +34,46 @@
           </h1>
           <div class="space-y-4 md:space-y-6">
 
-            <TextInput
-              v-model="url.urlId"
-              :is-disabled="true"
-              label="URL Id"
-              type="text"
+            <Text :value="url.urlId"
+                  label="URL Id"
             />
 
-            <TextAreaInput v-model="longUrl.value"
-                           :error-message="longUrl.errorMessage"
-                           :is-disabled="isLoading"
-                           :is-error="longUrl.isError"
-                           :is-required="false"
-                           label="Your URL"
-                           placeholder="https://example.com"
+            <TextArea :value="longUrl.value"
+                      label="Your URL"
+                      placeholder="https://example.com"
             />
 
-            <TextInput
-              v-model="alias.value"
-              :error-message="alias.errorMessage"
-              :is-disabled="isLoading"
-              :is-error="alias.isError"
-              :is-required="false"
-              label="URL Alias"
-              placeholder="Alias"
-              type="text"
+            <TextInput v-model="alias.value"
+                       :error-message="alias.errorMessage"
+                       :is-disabled="isLoading"
+                       :is-error="alias.isError"
+                       :is-required="false"
+                       label="URL Alias"
+                       placeholder="Alias"
+                       type="text"
             />
 
-            <TextInput
-              v-model="expirationTime.value"
-              :error-message="expirationTime.errorMessage"
-              :is-disabled="isLoading"
-              :is-error="expirationTime.isError"
-              :is-required="false"
-              :min="currentDatetime()"
-              label="Expiration Time"
-              placeholder="Expiration Time"
-              type="datetime-local"
+            <TextInput v-model="expirationTime.value"
+                       :error-message="expirationTime.errorMessage"
+                       :is-disabled="isLoading"
+                       :is-error="expirationTime.isError"
+                       :is-required="false"
+                       :min="currentDatetime()"
+                       label="Expiration Time"
+                       placeholder="Expiration Time"
+                       type="datetime-local"
             />
 
-            <LoadingButton
-              :disabled="!isDataChanged()"
-              :is-loading="isLoading"
-              text="Update"
-              @click="changeConfirmModalVisibility" />
+            <LoadingButton v-if="!isUrlExpired(url)"
+                           :disabled="!isDataChanged()"
+                           :is-loading="isLoading"
+                           text="Update"
+                           @click="changeConfirmModalVisibility"
+            />
+
+            <div v-if="isUrlExpired(url)">
+              <p class="text-red-500 text-center">This url is expired.</p>
+            </div>
 
           </div>
         </div>
@@ -97,13 +92,15 @@ import { useRoute } from "vue-router";
 import ConfirmationModal from "../../components/modal/ConfirmationModal.vue";
 import TextInput from "../../components/input/TextInput.vue";
 import { currentDatetime, getInputDateTime } from "../../common/util/DateUtil";
-import TextAreaInput from "../../components/input/TextAreaInput.vue";
 import UpdateUrlByAuthRequest from "../../common/payload/url/request/UpdateUrlByAuthRequest";
 import { isUrlValid } from "../../common/util/ValidationUtil";
 import Localize from "../../common/constant/Localize";
 import LoadingButton from "../../components/button/LoadingButton.vue";
 import { useToastStore } from "../../store/toast";
 import { ConflictException } from "../../common/exception/ConflictException";
+import TextArea from "../../components/text/TextArea.vue";
+import { isUrlExpired } from "../../common/util/UrlUtil";
+import Text from "../../components/text/Text.vue";
 
 // -------------------------------------------------------------------------
 // XXX Common
@@ -111,6 +108,7 @@ import { ConflictException } from "../../common/exception/ConflictException";
 
 onMounted(() => {
   loadUrl();
+
 });
 
 const route = useRoute();
@@ -158,7 +156,7 @@ const breadcrumbs = [
     path: "/"
   },
   {
-    name: "URL",
+    name: "URLS",
     path: "/urls"
   }
 ] as BreadcrumbModel[];
@@ -173,6 +171,11 @@ function loadUrl(): void {
       longUrl.value.value = url.value.longUrl;
       alias.value.value = url.value.alias;
       expirationTime.value.value = getInputDateTime(url.value.expiredAt);
+
+      if (isUrlExpired(url.value)) {
+        isLoading.value = true;
+      }
+
     })
     .catch((error) => {
       console.log(error);

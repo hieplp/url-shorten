@@ -1,6 +1,7 @@
 <template>
   <div class="overflow-x-auto
 							shadow-md sm:rounded-lg">
+
     <table class="w-full
 									text-sm
 									text-left
@@ -71,15 +72,29 @@
             <MagnifyingGlassIcon class="h-4 w-4 text-white" />
           </router-link>
 
-          <router-link :to="`/urls/${url.urlId}/update`"
+          <router-link v-if="!isUrlExpired(url)"
+                       :to="`/urls/${url.urlId}/update`"
                        class="h-fit w-fit
 						                  py-1.5 px-2.5
 										          rounded
 										          flex items-center justify-center
 										          bg-yellow-500
-										          hover:bg-yellow-600">
+										          hover:bg-yellow-600"
+          >
             <PencilIcon class="h-4 w-4 text-white" />
           </router-link>
+
+          <button class="h-fit w-fit
+						             py-1.5 px-2.5
+										     rounded
+										     flex items-center justify-center
+										     bg-red-500
+										     hover:bg-red-600
+										     disabled:bg-red-400"
+                  @click="deleteUrl?.(url)">
+            <TrashIcon class="h-4 w-4 text-white" />
+          </button>
+
 
         </td>
       </tr>
@@ -90,12 +105,14 @@
 </template>
 
 <script lang="ts" setup>
-import { MagnifyingGlassIcon, PencilIcon } from "@heroicons/vue/24/outline";
+import { MagnifyingGlassIcon, PencilIcon, TrashIcon } from "@heroicons/vue/24/outline";
 import { PropType } from "vue";
 import UrlModel from "../../common/model/UrlModel";
 import { formatDatetime } from "../../common/util/DateUtil";
 import { urlStatus } from "../../common/constant/Constant";
 import Localize from "../../common/constant/Localize";
+import { isUrlExpired } from "../../common/util/UrlUtil";
+import { useToastStore } from "../../store/toast";
 
 const props = defineProps({
   urls: {
@@ -105,12 +122,18 @@ const props = defineProps({
   from: {
     type: Number,
     required: true
+  },
+  deleteUrl: {
+    type: Function as PropType<(url: UrlModel) => void>,
+    required: false
   }
 });
 
-function formatStatus(url: UrlModel) {
+const toastStore = useToastStore();
 
-  if (url.expiredAt < Date.now()) {
+function formatStatus(url: UrlModel): string {
+
+  if (isUrlExpired(url)) {
     return Localize.Url.expired;
   }
 
@@ -122,9 +145,9 @@ function formatStatus(url: UrlModel) {
   }
 }
 
-function getStatusColor(url: UrlModel) {
+function getStatusColor(url: UrlModel): string {
 
-  if (url.expiredAt < Date.now()) {
+  if (isUrlExpired(url)) {
     return "bg-red-500";
   }
 
@@ -135,7 +158,6 @@ function getStatusColor(url: UrlModel) {
       return "bg-red-500";
   }
 }
-
 
 </script>
 

@@ -7,8 +7,10 @@
     />
 
     <span class="mt-4 lg:mt-8
-								 italic
+                 px-2
+								 w-11/12
 								 text-gray-400
+								 break-words
 								 hover:cursor-pointer hover:text-gray-500"
           @click="copyToClipboard">
 			{{ shortUrl }} &#x2398;

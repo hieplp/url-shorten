@@ -3,7 +3,7 @@ import UrlModel from "../common/model/UrlModel";
 import { postWithoutAuth } from "../common/util/axios/NonAuthAxiosUtil";
 import CreateUrlByPublicRequest from "../common/payload/url/request/CreateUrlByPublicRequest";
 import CreateUrlByAuthRequest from "../common/payload/url/request/CreateUrlByAuthRequest";
-import { getWithAuth, patchWithAuth, postWithAuth } from "../common/util/axios/AuthAxiosUtil";
+import { deleteWithAuth, getWithAuth, patchWithAuth, postWithAuth } from "../common/util/axios/AuthAxiosUtil";
 import GetUrlsRequest from "../common/payload/url/request/GetUrlsRequest";
 import UpdateUrlByAuthRequest from "../common/payload/url/request/UpdateUrlByAuthRequest";
 
@@ -97,6 +97,18 @@ export const useUrlStore = defineStore("url", {
             let url = response.data as UrlModel;
             this.url = url;
             resolve(url);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
+
+    deleteUrlByAuth(urlId: string): Promise<void> {
+      return new Promise((resolve, reject) => {
+        deleteWithAuth("/user/url/" + urlId)
+          .then((response) => {
+            resolve();
           })
           .catch((error) => {
             reject(error);

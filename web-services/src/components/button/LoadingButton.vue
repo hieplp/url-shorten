@@ -52,6 +52,11 @@ const props = defineProps(
       type: Boolean,
       required: false,
       default: false
+    },
+    customClass: {
+      type: String,
+      required: false,
+      default: ""
     }
   }
 );

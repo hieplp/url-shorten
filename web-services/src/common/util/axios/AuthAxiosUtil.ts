@@ -154,4 +154,19 @@ export const patchWithAuth = <T = any>(url: string, data?: any, config?: AxiosRe
     .catch(error);
 };
 
+export const deleteWithAuth = <T = any>(url: string, params?: any, config?: AxiosRequestConfig): Promise<T> => {
+  // Add authentication headers to the request config
+  const authConfig: AxiosRequestConfig = {
+    ...config,
+    headers: {
+      ...config?.headers // Include any existing headers from the config
+    },
+    params
+  };
+
+  return instance.delete(url, authConfig)
+    .then(success)
+    .catch(error);
+};
+
 

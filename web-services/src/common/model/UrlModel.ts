@@ -9,4 +9,5 @@ export default interface UrlModel {
   createdBy: string,
   modifiedAt: number,
   modifiedBy: string,
+  isDeleted: number,
 }

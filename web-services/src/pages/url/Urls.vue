@@ -8,16 +8,28 @@
          redirect-url="/"
          sub-header="UrlModel list is empty." />
 
+
   <div v-else
        class="flex flex-col
 							items-center
               w-screen
               px-2 md:px-4">
-    <UrlTable :from="params.from"
-              :urls="urls"
-              class="w-full max-w-screen-xl" />
 
-    <Pagination v-if="total > 10"
+    <ConfirmationModal v-if="isConfirmModalVisible"
+                       :cancel="changeConfirmModalVisibility"
+                       :confirm="deleteUrl"
+                       cancel-text="No, cancel"
+                       confirm-text="Yes, I'm sure"
+                       message="Are you want to delete this url?" />
+
+
+    <UrlTable :delete-url="openDeleteModal"
+              :from="params.from"
+              :urls="urls"
+              class="w-full max-w-screen-xl"
+    />
+
+    <Pagination v-if="total > params.limit"
                 :current-page="currentPage"
                 :from="params.from"
                 :page-range="1"
@@ -37,6 +49,8 @@ import Pagination from "../../components/Pagination.vue";
 import GetUrlsRequest from "../../common/payload/url/request/GetUrlsRequest";
 import { useToastStore } from "../../store/toast";
 import Localize from "../../common/constant/Localize";
+import ConfirmationModal from "../../components/modal/ConfirmationModal.vue";
+import UrlModel from "../../common/model/UrlModel";
 
 // -------------------------------------------------------------------------
 // XXX Common
@@ -55,19 +69,23 @@ const toastStore = useToastStore();
 const urls = computed(() => urlStore.urls);
 const total = computed(() => urlStore.total);
 
+
 // -------------------------------------------------------------------------
 // XXX Local States
 // -------------------------------------------------------------------------
 
-const currentPage = ref(1 as number);
-const params = ref(
+
+const currentPage = ref<number>(1);
+const params = ref<GetUrlsRequest>(
   {
     from: 0,
     limit: 10,
     order: "createdAt",
     by: "desc"
-  } as GetUrlsRequest
+  }
 );
+
+const isConfirmModalVisible = ref<boolean>(false);
 
 // -------------------------------------------------------------------------
 // XXX Methods
@@ -88,6 +106,35 @@ function loadUrls() {
       toastStore.error(Localize.Error.unknownError);
     });
 }
+
+function openDeleteModal(url: UrlModel) {
+  isConfirmModalVisible.value = true;
+  urlStore.url = url;
+}
+
+function deleteUrl() {
+  changeConfirmModalVisibility();
+
+  // TODO: Add loading
+
+  if (!urlStore.url) {
+    return;
+  }
+
+  urlStore.deleteUrlByAuth(urlStore.url.urlId)
+    .then(() => {
+      toastStore.success(Localize.Url.deleteSuccess);
+      loadUrls();
+    })
+    .catch((error) => {
+      toastStore.error(Localize.Error.unknownError);
+    });
+}
+
+function changeConfirmModalVisibility(): void {
+  isConfirmModalVisible.value = !isConfirmModalVisible.value;
+}
+
 
 </script>
 
