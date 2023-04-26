@@ -33,6 +33,13 @@ public class DateUtil {
         return toLocalDateTime(new Date(date));
     }
 
+    public static Long toMilliSeconds(LocalDateTime localDateTime) {
+        return localDateTime
+                .atZone(ZoneId.systemDefault())
+                .toInstant()
+                .toEpochMilli();
+    }
+
     public static Date addSeconds(Long date, int seconds) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(date);
