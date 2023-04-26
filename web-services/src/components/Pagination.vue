@@ -193,10 +193,7 @@ const props = defineProps({
     type: Number,
     required: true
   },
-  to: {
-    type: Number,
-    required: true
-  },
+
   perPage: {
     type: Number,
     required: true
@@ -206,7 +203,7 @@ const props = defineProps({
     required: true
   }
 });
-const { currentPage, total, from, to, perPage, pageRange } = toRefs(props);
+const { currentPage, total, from, perPage, pageRange } = toRefs(props);
 
 // Emits
 const emit = defineEmits(["page-changed"]);

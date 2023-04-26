@@ -13,11 +13,11 @@
 	            ">
 
     <router-link class="self-center
-                               text-2xl
-                               font-semibold
-                               text-blue-600
-                               hover:text-blue-700
-                               whitespace-nowrap" to="/">
+                        text-2xl
+                        font-semibold
+                        text-blue-600
+                        hover:text-blue-700
+                        whitespace-nowrap" to="/">
       SHORTEN.IT
     </router-link>
 

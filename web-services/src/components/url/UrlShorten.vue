@@ -123,7 +123,8 @@ function shortenUrl() {
 
   validateLongUrl();
 
-  if (isAuth) {
+  if (isAuth.value) {
+    console.log(isAuth.value);
     validateAlias();
   }
 
@@ -132,9 +133,7 @@ function shortenUrl() {
   }
 
   isLoading.value = true;
-  if (isAuth) {
-
-    console.log(new Date(expirationTime.value.value).getTime());
+  if (isAuth.value) {
 
     let request = {
       longUrl: longUrl.value.value,
@@ -175,14 +174,6 @@ function shortenUrl() {
         isLoading.value = false;
       });
   }
-
-
-  // TODO: Make API call to shorten URL
-
-  // setTimeout(() => {
-  //   urlStore.isShortened = true;
-  //   isLoading.value = false;
-  // }, 2000);
 }
 
 // -------------------------------------------------------------------------

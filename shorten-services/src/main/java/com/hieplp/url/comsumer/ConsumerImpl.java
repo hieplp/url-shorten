@@ -7,6 +7,7 @@ import com.hieplp.url.controller.AuthController;
 import com.hieplp.url.controller.UrlController;
 import com.hieplp.url.controller.UserController;
 import io.vertx.core.Vertx;
+import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.CorsHandler;
@@ -51,10 +52,11 @@ public class ConsumerImpl implements Consumer {
 
         router.route().handler(CorsHandler.create("*")
 
-                .allowedMethod(io.vertx.core.http.HttpMethod.GET)
-                .allowedMethod(io.vertx.core.http.HttpMethod.POST)
-                .allowedMethod(io.vertx.core.http.HttpMethod.PUT)
-                .allowedMethod(io.vertx.core.http.HttpMethod.DELETE)
+                .allowedMethod(HttpMethod.GET)
+                .allowedMethod(HttpMethod.POST)
+                .allowedMethod(HttpMethod.PUT)
+                .allowedMethod(HttpMethod.PATCH)
+                .allowedMethod(HttpMethod.DELETE)
 
                 .allowedHeader("Content-Type")
                 .allowedHeader("Authorization")

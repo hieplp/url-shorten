@@ -6,7 +6,7 @@
 	            md:px-8 px-2
 	           ">
 
-    <Breadcrumb :items="breadcrumbs" :last-item="urlId" />
+    <Breadcrumb :items="breadcrumbs" :last-item="`DETAIL ( ${urlId} )`" />
 
     <div class="w-full
 								grid
@@ -22,10 +22,11 @@
         <PercentageCard :amount=100 :is-increase="false" :percentage=10 title="clicks last 30 days" />
       </div>
 
-      <UrlInfo :url="url"
+      <UrlInfo :url-id="urlId"
                class="bg-white
 											shadow
 									    rounded-lg" />
+
 
       <div class="grid grid-cols-1 gap-2">
         <div class="hidden
@@ -46,7 +47,8 @@
 																	     row-span-6
 									                     rounded-lg" />
 
-          <UrlQr :short-url="url.shortUrl"
+          <UrlQr v-if="url.urlId"
+                 :short-url="url.shortUrl"
                  class="bg-white
 												shadow
 												row-span-6
@@ -91,7 +93,7 @@ const breadcrumbs = [
     path: "/"
   },
   {
-    name: "URL",
+    name: "URLS",
     path: "/urls"
   }
 ] as BreadcrumbModel[];

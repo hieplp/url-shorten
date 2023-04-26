@@ -15,7 +15,14 @@ export default class Localize {
   public static readonly Url = {
     invalidUrl: "Invalid URL. Please enter a valid URL.",
     invalidAlias: "Alias must be at least 6 characters",
-    duplicatedAlias: "Alias already exists"
+    duplicatedAlias: "Alias already exists",
+    //
+    active: "Active",
+    inactive: "Inactive",
+    expired: "Expired",
+    //
+    updateSuccess: "Update successfully",
+    deleteSuccess: "Delete successfully"
   };
 
   public static readonly Error = {
@@ -23,4 +30,5 @@ export default class Localize {
     apiError: "An error occurred while making the request",
     unauthorized: "Unauthorized"
   };
+
 }

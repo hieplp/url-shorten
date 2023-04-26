@@ -131,6 +131,12 @@ public class UrlServiceImpl implements UrlService {
 
         UrlRecord urlRecord = urlRepo.getActiveUrlRecordByOwner(request.getUrlId(), commonRequest.getHeaders().getUserId());
 
+        final Long currentTime = DateUtil.getCurrentTime();
+        if (States.isLessThan(DateUtil.toMilliSeconds(urlRecord.getExpiredat()), currentTime)) {
+            log.debug("Url: {} is expired", urlRecord.getUrlid());
+            throw new BadRequestException(String.format("Url: %s is expired", urlRecord.getUrlid()));
+        }
+
         if (States.isNotBlank(request.getAlias())
                 && States.isNotEquals(request.getAlias(), urlRecord.getShorturl())
                 && urlRepo.doesAliasExist(request.getAlias())) {
@@ -138,12 +144,10 @@ public class UrlServiceImpl implements UrlService {
             throw new DuplicateException(String.format("Alias: %s already exist", request.getAlias()));
         }
 
-        if (States.isNotNull(request.getExpiredAt()) && States.isNotEquals(request.getExpiredAt(), urlRecord.getExpiredat())) {
-            final Long currentTime = DateUtil.getCurrentTime();
-            if (States.isLessThan(request.getExpiredAt(), currentTime)) {
-                log.debug("Expired at: {} is less than current time: {}", request.getExpiredAt(), currentTime);
-                throw new BadRequestException(String.format("Expired at: %s is less than current time: %s", request.getExpiredAt(), currentTime));
-            }
+        if (States.isNotNull(request.getExpiredAt())
+                && States.isLessThan(request.getExpiredAt(), currentTime)) {
+            log.debug("Expired at: {} is less than current time: {}", request.getExpiredAt(), currentTime);
+            throw new BadRequestException(String.format("Expired at: %s is less than current time: %s", request.getExpiredAt(), currentTime));
         }
 
         if (States.isNotNull(request.getLongUrl()) && States.isNotEquals(request.getLongUrl(), urlRecord.getLongurl())) {
@@ -153,6 +157,8 @@ public class UrlServiceImpl implements UrlService {
         UrlRecord updatedUrlRecord = new UrlRecord()
                 .setUrlid(urlRecord.getUrlid())
                 .setAlias(request.getAlias())
+                .setShorturl(States.isNull(request.getAlias())
+                        ? null : String.format("%s/%s", configInfo.getUrlHost(), request.getAlias()))
                 .setLongurl(request.getLongUrl())
                 .setExpiredat(States.isNull(request.getExpiredAt())
                         ? null : DateUtil.toLocalDateTime(request.getExpiredAt()))

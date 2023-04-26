@@ -111,13 +111,14 @@ const getRefreshToken = (): string => {
 // XXX Auth
 // -------------------------------------------------------------------------
 
-export const getWithAuth = <T = any>(url: string, config?: AxiosRequestConfig): Promise<T> => {
+export const getWithAuth = <T = any>(url: string, params?: any, config?: AxiosRequestConfig): Promise<T> => {
   // Add authentication headers to the request config
   const authConfig: AxiosRequestConfig = {
     ...config,
     headers: {
       ...config?.headers // Include any existing headers from the config
-    }
+    },
+    params
   };
 
   return instance.get(url, authConfig)
@@ -138,4 +139,34 @@ export const postWithAuth = <T = any>(url: string, data?: any, config?: AxiosReq
     .then(success)
     .catch(error);
 };
+
+export const patchWithAuth = <T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> => {
+  // Add authentication headers to the request config
+  const authConfig: AxiosRequestConfig = {
+    ...config,
+    headers: {
+      ...config?.headers // Include any existing headers from the config
+    }
+  };
+
+  return instance.patch(url, data, config)
+    .then(success)
+    .catch(error);
+};
+
+export const deleteWithAuth = <T = any>(url: string, params?: any, config?: AxiosRequestConfig): Promise<T> => {
+  // Add authentication headers to the request config
+  const authConfig: AxiosRequestConfig = {
+    ...config,
+    headers: {
+      ...config?.headers // Include any existing headers from the config
+    },
+    params
+  };
+
+  return instance.delete(url, authConfig)
+    .then(success)
+    .catch(error);
+};
+
 

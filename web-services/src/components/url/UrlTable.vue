@@ -1,6 +1,7 @@
 <template>
   <div class="overflow-x-auto
 							shadow-md sm:rounded-lg">
+
     <table class="w-full
 									text-sm
 									text-left
@@ -19,6 +20,9 @@
         <th class="px-6 py-3" scope="col">
           Status
         </th>
+        <th class="px-6 py-3" scope="col">
+          Expired At
+        </th>
         <th class="px-6 py-3 w-fit" scope="col">
           Created At
         </th>
@@ -31,7 +35,7 @@
       <tr v-for="(url, index) in urls" :key="url.urlId" class="bg-white border-b">
 
         <th class="px-6 py-4 font-medium  whitespace-nowrap" scope="row">
-          {{ index + 1 }}
+          {{ from + index + 1 }}
         </th>
 
         <td class="px-6 py-4 whitespace-nowrap">
@@ -39,11 +43,21 @@
         </td>
 
         <td class="px-6 py-4">
-          {{ url.status }}
+          <span :class="getStatusColor(url)"
+                class="bg-blue-700
+                       p-1.5
+                       text-white
+                       rounded">
+           {{ formatStatus(url) }}
+          </span>
         </td>
 
         <td class="px-6 py-4">
-          {{ url.createdAt }}
+          {{ url.expiredAt ? formatDatetime(url.expiredAt) : "Never" }}
+        </td>
+
+        <td class="px-6 py-4">
+          {{ formatDatetime(url.createdAt) }}
         </td>
 
         <td class="px-6 py-4 flex flex-row gap-2">
@@ -58,15 +72,29 @@
             <MagnifyingGlassIcon class="h-4 w-4 text-white" />
           </router-link>
 
-          <router-link :to="`/urls/${url.urlId}/update`"
+          <router-link v-if="!isUrlExpired(url)"
+                       :to="`/urls/${url.urlId}/update`"
                        class="h-fit w-fit
 						                  py-1.5 px-2.5
 										          rounded
 										          flex items-center justify-center
 										          bg-yellow-500
-										          hover:bg-yellow-600">
+										          hover:bg-yellow-600"
+          >
             <PencilIcon class="h-4 w-4 text-white" />
           </router-link>
+
+          <button class="h-fit w-fit
+						             py-1.5 px-2.5
+										     rounded
+										     flex items-center justify-center
+										     bg-red-500
+										     hover:bg-red-600
+										     disabled:bg-red-400"
+                  @click="deleteUrl?.(url)">
+            <TrashIcon class="h-4 w-4 text-white" />
+          </button>
+
 
         </td>
       </tr>
@@ -77,17 +105,59 @@
 </template>
 
 <script lang="ts" setup>
-import { MagnifyingGlassIcon, PencilIcon } from "@heroicons/vue/24/outline";
+import { MagnifyingGlassIcon, PencilIcon, TrashIcon } from "@heroicons/vue/24/outline";
 import { PropType } from "vue";
 import UrlModel from "../../common/model/UrlModel";
+import { formatDatetime } from "../../common/util/DateUtil";
+import { urlStatus } from "../../common/constant/Constant";
+import Localize from "../../common/constant/Localize";
+import { isUrlExpired } from "../../common/util/UrlUtil";
+import { useToastStore } from "../../store/toast";
 
 const props = defineProps({
   urls: {
     type: Array as PropType<UrlModel[]>,
     required: true
+  },
+  from: {
+    type: Number,
+    required: true
+  },
+  deleteUrl: {
+    type: Function as PropType<(url: UrlModel) => void>,
+    required: false
   }
 });
 
+const toastStore = useToastStore();
+
+function formatStatus(url: UrlModel): string {
+
+  if (isUrlExpired(url)) {
+    return Localize.Url.expired;
+  }
+
+  switch (url.status) {
+    case urlStatus.active:
+      return Localize.Url.active;
+    default:
+      return Localize.Url.inactive;
+  }
+}
+
+function getStatusColor(url: UrlModel): string {
+
+  if (isUrlExpired(url)) {
+    return "bg-red-500";
+  }
+
+  switch (url.status) {
+    case urlStatus.active:
+      return "bg-blue-500";
+    default:
+      return "bg-red-500";
+  }
+}
 
 </script>
 

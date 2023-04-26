@@ -1,20 +1,19 @@
 <template>
   <Header />
 
-  <ConfirmationModal
-    v-if="isConfirmModalVisible"
-    :cancel="changeConfirmModalVisibility"
-    :confirm="confirm"
-    cancel-text="No, cancel"
-    confirm-text="Yes, I'm sure"
-    message="Are you want to update this url?" />
+  <ConfirmationModal v-if="isConfirmModalVisible"
+                     :cancel="changeConfirmModalVisibility"
+                     :confirm="update"
+                     cancel-text="No, cancel"
+                     confirm-text="Yes, I'm sure"
+                     message="Are you want to update this url?" />
 
   <div class="max-w-screen-xl
 	            mx-auto
 	            md:px-8 px-2
 	           ">
 
-    <Breadcrumb :items="breadcrumbs" :last-item="urlId" />
+    <Breadcrumb :items="breadcrumbs" :last-item="`Update (${urlId})`" />
 
     <div class="w-full
                 flex flex-col
@@ -35,50 +34,46 @@
           </h1>
           <div class="space-y-4 md:space-y-6">
 
-            <div>
-              <label class="block mb-2 text-sm font-medium text-gray-900" for="your-url">
-                Your URL
-              </label>
-              <textarea v-model="url.longUrl"
-                        class="bg-gray-50
-                               border border-gray-300
-                               text-gray-900 sm:text-sm rounded-lg
-                               focus:outline-blue-600
-                               block w-full p-2.5"
-                        disabled
-                        name="your-url"
-                        placeholder="Username"
-                        type="text"
-              />
-            </div>
+            <Text :value="url.urlId"
+                  label="URL Id"
+            />
 
-            <div>
-              <label class="block mb-2 text-sm font-medium text-gray-900"
-                     for="url-alias">
-                URL Alias
-              </label>
-              <input v-model="url.shortUrl"
-                     class="bg-gray-50
-                            border border-gray-300
-                            text-gray-900 sm:text-sm rounded-lg
-                            focus:outline-blue-600
-                            block w-full p-2.5"
-                     name="url-alias"
-                     placeholder="Alias"
-                     type="text">
-            </div>
+            <TextArea :value="longUrl.value"
+                      label="Your URL"
+                      placeholder="https://example.com"
+            />
 
-            <button class="w-full
-                           font-medium text-sm
-                           text-white text-center
-                           bg-blue-600
-                           hover:bg-blue-700
-                           rounded-lg
-                           px-5 py-2.5"
-                    type="submit"
-                    @click="update">
-              Update
-            </button>
+            <TextInput v-model="alias.value"
+                       :error-message="alias.errorMessage"
+                       :is-disabled="isLoading"
+                       :is-error="alias.isError"
+                       :is-required="false"
+                       label="URL Alias"
+                       placeholder="Alias"
+                       type="text"
+            />
+
+            <TextInput v-model="expirationTime.value"
+                       :error-message="expirationTime.errorMessage"
+                       :is-disabled="isLoading"
+                       :is-error="expirationTime.isError"
+                       :is-required="false"
+                       :min="currentDatetime()"
+                       label="Expiration Time"
+                       placeholder="Expiration Time"
+                       type="datetime-local"
+            />
+
+            <LoadingButton v-if="!isUrlExpired(url)"
+                           :disabled="!isDataChanged()"
+                           :is-loading="isLoading"
+                           text="Update"
+                           @click="changeConfirmModalVisibility"
+            />
+
+            <div v-if="isUrlExpired(url)">
+              <p class="text-red-500 text-center">This url is expired.</p>
+            </div>
 
           </div>
         </div>
@@ -90,38 +85,176 @@
 <script lang="ts" setup>
 import Header from "../../components/Header.vue";
 import { useUrlStore } from "../../store/url";
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import Breadcrumb from "../../components/Breadcrumb.vue";
 import BreadcrumbModel from "../../common/model/BreadcrumbModel";
 import { useRoute } from "vue-router";
 import ConfirmationModal from "../../components/modal/ConfirmationModal.vue";
+import TextInput from "../../components/input/TextInput.vue";
+import { currentDatetime, getInputDateTime } from "../../common/util/DateUtil";
+import UpdateUrlByAuthRequest from "../../common/payload/url/request/UpdateUrlByAuthRequest";
+import { isUrlValid } from "../../common/util/ValidationUtil";
+import Localize from "../../common/constant/Localize";
+import LoadingButton from "../../components/button/LoadingButton.vue";
+import { useToastStore } from "../../store/toast";
+import { ConflictException } from "../../common/exception/ConflictException";
+import TextArea from "../../components/text/TextArea.vue";
+import { isUrlExpired } from "../../common/util/UrlUtil";
+import Text from "../../components/text/Text.vue";
+
+// -------------------------------------------------------------------------
+// XXX Common
+// -------------------------------------------------------------------------
+
+onMounted(() => {
+  loadUrl();
+
+});
 
 const route = useRoute();
-const urlStore = useUrlStore();
-const url = computed(() => urlStore.url);
 
 const urlId = computed(() => route.params.urlId as string);
+
+// -------------------------------------------------------------------------
+// XXX Store
+// -------------------------------------------------------------------------
+
+const urlStore = useUrlStore();
+const toastStore = useToastStore();
+
+const url = computed(() => urlStore.url);
+
+// -------------------------------------------------------------------------
+// XXX Inner State
+// -------------------------------------------------------------------------
+
+const isLoading = ref(false);
+
+const isConfirmModalVisible = ref(false);
+
+const longUrl = ref({
+  value: "",
+  isError: false,
+  errorMessage: ""
+});
+
+const alias = ref({
+  value: "",
+  isError: false,
+  errorMessage: ""
+});
+
+const expirationTime = ref({
+  value: "",
+  isError: false,
+  errorMessage: ""
+});
+
 const breadcrumbs = [
   {
     name: "Home",
     path: "/"
   },
   {
-    name: "URL",
+    name: "URLS",
     path: "/urls"
   }
 ] as BreadcrumbModel[];
 
-const isConfirmModalVisible = ref(false);
+// -------------------------------------------------------------------------
+// XXX Functions
+// -------------------------------------------------------------------------
 
+function loadUrl(): void {
+  urlStore.getUrlByAuth(urlId.value)
+    .then(() => {
+      longUrl.value.value = url.value.longUrl;
+      alias.value.value = url.value.alias;
+      expirationTime.value.value = getInputDateTime(url.value.expiredAt);
+
+      if (isUrlExpired(url.value)) {
+        isLoading.value = true;
+      }
+
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
+
+function isDataChanged() {
+  return longUrl.value.value !== url.value.longUrl
+    || alias.value.value !== url.value.alias
+    || expirationTime.value.value !== getInputDateTime(url.value.expiredAt);
+}
 
 function update(): void {
   changeConfirmModalVisibility();
+
+  let request = {
+    urlId: url.value.urlId
+  } as UpdateUrlByAuthRequest;
+
+  if (longUrl.value.value != url.value.longUrl) {
+    validateLongUrl();
+    request.longUrl = longUrl.value.value;
+  }
+
+  if (alias.value.value != url.value.alias) {
+    validateAlias();
+    request.alias = alias.value.value;
+  }
+
+  if (expirationTime.value.value != getInputDateTime(url.value.expiredAt)) {
+    request.expiredAt = new Date(expirationTime.value.value).getTime();
+  }
+
+  if (!isValid()) {
+    return;
+  }
+
+  isLoading.value = true;
+  urlStore.updateUrlByAuth(request)
+    .then(() => {
+      toastStore.success(Localize.Url.updateSuccess);
+    })
+    .catch((error) => {
+      if (error instanceof ConflictException) {
+        alias.value.isError = true;
+        alias.value.errorMessage = Localize.Url.duplicatedAlias;
+      } else {
+        toastStore.error(Localize.Error.unknownError);
+      }
+    })
+    .finally(() => {
+      isLoading.value = false;
+    });
 }
 
-function confirm(): void {
-  changeConfirmModalVisibility();
+function validateLongUrl(): void {
+  const url = longUrl.value.value;
+  if (!isUrlValid(url)) {
+    longUrl.value.isError = true;
+    longUrl.value.errorMessage = Localize.Url.invalidUrl;
+  } else {
+    longUrl.value.isError = false;
+  }
 }
+
+function validateAlias(): void {
+  const value = alias.value.value;
+  if (value.length < 6) {
+    alias.value.isError = true;
+    alias.value.errorMessage = Localize.Url.invalidAlias;
+  } else {
+    alias.value.isError = false;
+  }
+}
+
+function isValid(): boolean {
+  return !longUrl.value.isError && !alias.value.isError;
+}
+
 
 function changeConfirmModalVisibility(): void {
   isConfirmModalVisible.value = !isConfirmModalVisible.value;

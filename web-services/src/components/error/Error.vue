@@ -56,7 +56,6 @@
 <script lang="ts" setup>
 
 import { PropType } from "vue";
-import UrlModel from "../../common/model/UrlModel";
 
 const props = defineProps({
   header: {
@@ -76,7 +75,7 @@ const props = defineProps({
     required: true
   },
   redirectUrl: {
-    type: Object as PropType<UrlModel>,
+    type: String as PropType<string>,
     required: true
   }
 });
