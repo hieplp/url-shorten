@@ -1,6 +1,6 @@
 {
   "serverConfig": {
-    "port": 9900,
+    "port": 9901,
     "host": "0.0.0.0"
   },
   "sqlConfig": {
@@ -18,7 +18,7 @@
     "privateKey": "/src/main/resources/rsa/token/token_private_key.der",
     "publicKey": "/src/main/resources/rsa/token/token_public_key.der",
     "issuer": "todo",
-    "accessActiveTime": 36,
+    "accessActiveTime": 144000,
     "refreshActiveTime": 144000
   },
   "passwordConfig": {

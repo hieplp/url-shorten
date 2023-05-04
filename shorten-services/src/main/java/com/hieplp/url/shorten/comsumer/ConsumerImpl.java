@@ -2,15 +2,14 @@ package com.hieplp.url.shorten.comsumer;
 
 
 import com.google.inject.Inject;
+import com.hieplp.url.common.util.DiscoveryUtil;
 import com.hieplp.url.shorten.config.ConfigInfo;
-import com.hieplp.url.shorten.controller.AuthController;
 import com.hieplp.url.shorten.controller.UrlController;
-import com.hieplp.url.shorten.controller.UserController;
 import io.vertx.core.Vertx;
-import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.ext.web.Router;
-import io.vertx.ext.web.handler.CorsHandler;
+import io.vertx.servicediscovery.Record;
+import io.vertx.servicediscovery.ServiceDiscovery;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,9 +19,9 @@ public class ConsumerImpl implements Consumer {
 
     private final Vertx vertx;
     private final ConfigInfo configInfo;
+    private final ServiceDiscovery serviceDiscovery;
+    private final Record discoveryRecord;
     //
-    private final AuthController authController;
-    private final UserController userController;
     private final UrlController urlController;
 
     private Router router;
@@ -39,28 +38,7 @@ public class ConsumerImpl implements Consumer {
     public Consumer api() {
         log.info("Init api");
 
-        authController.init(router);
-        userController.init(router);
         urlController.init(router);
-
-        return this;
-    }
-
-    @Override
-    public Consumer cors() {
-        log.info("Init cors");
-
-        router.route().handler(CorsHandler.create("*")
-
-                .allowedMethod(HttpMethod.GET)
-                .allowedMethod(HttpMethod.POST)
-                .allowedMethod(HttpMethod.PUT)
-                .allowedMethod(HttpMethod.PATCH)
-                .allowedMethod(HttpMethod.DELETE)
-
-                .allowedHeader("Content-Type")
-                .allowedHeader("Authorization")
-        );
 
         return this;
     }
@@ -80,6 +58,13 @@ public class ConsumerImpl implements Consumer {
                         log.error("Listen failed on port {} cause by {}", configInfo.getServerConfig().getPort(), event.cause().getMessage());
                     }
                 });
+        return this;
+    }
+
+    @Override
+    public Consumer stop() {
+        log.info("Stop consumer");
+        DiscoveryUtil.unPublicService(serviceDiscovery, discoveryRecord);
         return this;
     }
 }

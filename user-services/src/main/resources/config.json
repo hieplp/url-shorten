@@ -1,0 +1,19 @@
+{
+  "serverConfig": {
+    "port": 9902,
+    "host": "0.0.0.0"
+  },
+  "sqlConfig": {
+    "driverClassName": "org.mariadb.jdbc.Driver",
+    "jdbcUrl": "jdbc:mariadb://127.0.0.1:3306/ecommerce",
+    "maxPoolSize": "16",
+    "username": "root",
+    "password": "123456",
+    "serverTimezone": "Asia/Ho_Chi_Minh",
+    "autoCommit": true,
+    "useLegacyDatetimeCode": "false",
+    "connectionTimeout": 3600
+  },
+  "workerPoolSize": 16,
+  "workerMaxExecuteTime": 5000
+}

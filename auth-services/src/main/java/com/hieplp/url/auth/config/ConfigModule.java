@@ -10,6 +10,7 @@ import com.hieplp.url.common.constants.ApiConfig;
 import com.hieplp.url.common.constants.discovery.DiscoveryServiceName;
 import com.hieplp.url.common.util.DiscoveryUtil;
 import io.vertx.core.Vertx;
+import io.vertx.servicediscovery.Record;
 import io.vertx.servicediscovery.ServiceDiscovery;
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,6 +20,7 @@ public class ConfigModule extends AbstractModule {
     private final ConfigInfo configInfo;
     private final Vertx vertx;
     private final ServiceDiscovery discovery;
+    private final Record discoveryRecord;
 
     public ConfigModule(Vertx vertx,
                         ConfigInfo configInfo) {
@@ -26,7 +28,7 @@ public class ConfigModule extends AbstractModule {
         this.configInfo = configInfo;
         //
         this.discovery = ServiceDiscovery.create(vertx);
-        DiscoveryUtil.publicService(this.discovery,
+        this.discoveryRecord = DiscoveryUtil.publicService(this.discovery,
                 DiscoveryServiceName.AUTH,
                 configInfo.getServerConfig().getHost(),
                 configInfo.getServerConfig().getPort(),
@@ -49,6 +51,12 @@ public class ConfigModule extends AbstractModule {
     @Singleton
     public ServiceDiscovery getDiscovery() {
         return discovery;
+    }
+
+    @Provides
+    @Singleton
+    public Record getDiscoveryRecord() {
+        return discoveryRecord;
     }
 
     @Override

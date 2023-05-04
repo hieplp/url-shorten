@@ -5,6 +5,7 @@ import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.hieplp.url.gateway.config.module.HandlerModule;
 import com.hieplp.url.gateway.config.module.RouterModule;
+import com.hieplp.url.gateway.config.module.RsaModule;
 import com.hieplp.url.gateway.config.module.ServiceModule;
 import com.hieplp.url.gateway.consumer.Consumer;
 import com.hieplp.url.gateway.consumer.ConsumerImpl;
@@ -52,5 +53,6 @@ public class ConfigModule extends AbstractModule {
         install(new ServiceModule());
         install(new RouterModule());
         install(new HandlerModule());
+        install(new RsaModule(getConfigInfo()));
     }
 }

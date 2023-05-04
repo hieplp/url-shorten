@@ -2,6 +2,8 @@ package com.hieplp.url.common.constants.discovery;
 
 public enum DiscoveryServiceName {
     AUTH("auth"),
+    USER("user"),
+    URL("url"),
     ;
 
     private final String name;
@@ -13,4 +15,5 @@ public enum DiscoveryServiceName {
     public String getName() {
         return name;
     }
+
 }

@@ -4,9 +4,7 @@
 package com.hieplp.url.common.repository.url;
 
 
-import com.hieplp.url.common.repository.url.tables.Password;
 import com.hieplp.url.common.repository.url.tables.Url;
-import com.hieplp.url.common.repository.url.tables.User;
 import org.jooq.Catalog;
 import org.jooq.Table;
 import org.jooq.impl.SchemaImpl;
@@ -27,19 +25,9 @@ public class Shortenurl extends SchemaImpl {
     public static final Shortenurl SHORTENURL = new Shortenurl();
     private static final long serialVersionUID = 1L;
     /**
-     * The table <code>shortenUrl.password</code>.
-     */
-    public final Password PASSWORD = Password.PASSWORD;
-
-    /**
      * The table <code>shortenUrl.url</code>.
      */
     public final Url URL = Url.URL;
-
-    /**
-     * The table <code>shortenUrl.user</code>.
-     */
-    public final User USER = User.USER;
 
     /**
      * No further instances allowed
@@ -57,8 +45,6 @@ public class Shortenurl extends SchemaImpl {
     @Override
     public final List<Table<?>> getTables() {
         return Arrays.<Table<?>>asList(
-                Password.PASSWORD,
-                Url.URL,
-                User.USER);
+                Url.URL);
     }
 }
