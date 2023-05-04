@@ -1,8 +1,7 @@
 package com.hieplp.url.common.constants.auth;
 
 public enum HeaderKey {
-    USERID("userId")
-    ;
+    USERID("userId");
 
     private final String name;
 

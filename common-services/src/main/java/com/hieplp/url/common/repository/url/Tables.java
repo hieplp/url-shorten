@@ -4,9 +4,7 @@
 package com.hieplp.url.common.repository.url;
 
 
-import com.hieplp.url.common.repository.url.tables.Password;
 import com.hieplp.url.common.repository.url.tables.Url;
-import com.hieplp.url.common.repository.url.tables.User;
 
 
 /**
@@ -16,17 +14,7 @@ import com.hieplp.url.common.repository.url.tables.User;
 public class Tables {
 
     /**
-     * The table <code>shortenUrl.password</code>.
-     */
-    public static final Password PASSWORD = Password.PASSWORD;
-
-    /**
      * The table <code>shortenUrl.url</code>.
      */
     public static final Url URL = Url.URL;
-
-    /**
-     * The table <code>shortenUrl.user</code>.
-     */
-    public static final User USER = User.USER;
 }

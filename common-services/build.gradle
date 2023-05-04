@@ -86,6 +86,11 @@ test {
 
 //import org.jooq.codegen.GenerationTool
 //import org.jooq.meta.jaxb.*
+
+
+// -------------------------------------------------------------------------
+// XXX ShortenUrl
+// -------------------------------------------------------------------------
 //
 //GenerationTool.generate(new Configuration()
 //        .withJdbc(new Jdbc()
@@ -105,4 +110,26 @@ test {
 //                .withTarget(new Target()
 //                        .withPackageName('com.hieplp.url.common.repository.url')
 //                        .withDirectory('/home/hieplp/Project/url-shorten/common-services/src/main/java'))))
-////                        .withDirectory('/home/hieplp/Intellin/own-project/url-shorten/shorten-services/src/main/java'))))
+
+// -------------------------------------------------------------------------
+// XXX ShortenUser
+// -------------------------------------------------------------------------
+//
+//GenerationTool.generate(new Configuration()
+//        .withJdbc(new Jdbc()
+//                .withDriver('org.mariadb.jdbc.Driver')
+//                .withUrl('jdbc:mysql://127.0.0.1:3306/shortenUser')
+//                .withUser('root')
+//                .withPassword('123456'))
+//        .withGenerator(new Generator()
+//                .withDatabase(new Database()
+//                        .withName("org.jooq.meta.mariadb.MariaDBDatabase")
+//                        .withInputSchema("shortenUser")
+//                        .withOutputSchema("shortenUser"))
+//                .withGenerate(new Generate()
+//                        .withFluentSetters(true)
+//                        .withPojos(true)
+//                        .withDaos(true))
+//                .withTarget(new Target()
+//                        .withPackageName('com.hieplp.url.common.repository.user')
+//                        .withDirectory('/home/hieplp/Project/url-shorten/common-services/src/main/java'))))

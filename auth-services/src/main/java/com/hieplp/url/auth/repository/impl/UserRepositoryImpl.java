@@ -7,7 +7,7 @@ import com.hieplp.url.common.repository.base.BaseRepositoryImpl;
 import com.hieplp.url.common.repository.base.CustomDSLContext;
 import lombok.extern.slf4j.Slf4j;
 
-import static com.hieplp.url.common.repository.url.Tables.USER;
+import static com.hieplp.url.common.repository.user.Tables.USER;
 
 
 @Slf4j

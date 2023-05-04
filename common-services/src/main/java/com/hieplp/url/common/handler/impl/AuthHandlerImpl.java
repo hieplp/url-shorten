@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.hieplp.url.common.constants.auth.PasswordKey;
 import com.hieplp.url.common.handler.AuthHandler;
-import com.hieplp.url.common.repository.url.tables.records.PasswordRecord;
+import com.hieplp.url.common.repository.user.tables.records.PasswordRecord;
 import com.hieplp.url.common.util.GenerateUtil;
 import com.hieplp.url.common.util.RsaUtil;
 import lombok.extern.slf4j.Slf4j;

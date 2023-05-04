@@ -16,14 +16,6 @@ public enum DiscoveryServiceName {
         this.prefix = prefix;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getPrefix() {
-        return prefix;
-    }
-
     public static DiscoveryServiceName getByPrefix(String path) {
         for (DiscoveryServiceName service : DiscoveryServiceName.values()) {
             if (path.startsWith(service.getPrefix())) {
@@ -31,5 +23,13 @@ public enum DiscoveryServiceName {
             }
         }
         throw new BadRequestException("Service name not found");
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getPrefix() {
+        return prefix;
     }
 }
