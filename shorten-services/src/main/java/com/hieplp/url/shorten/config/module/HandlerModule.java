@@ -13,7 +13,6 @@ public class HandlerModule extends AbstractModule {
     @Override
     protected void configure() {
         log.info("Configuring handler module");
-        bind(AuthHandler.class).to(AuthHandlerImpl.class).in(Singleton.class);
         bind(UrlHandler.class).to(UrlHandlerImpl.class).in(Singleton.class);
     }
 }

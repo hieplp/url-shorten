@@ -92,7 +92,6 @@ public class RestServiceImpl implements RestService {
                     log.debug("Request path: {}", path);
 
                     List<Record> records = ar.result();
-                    log.warn("{}", records.size());
                     Optional<Record> client = records.stream()
                             .filter(record -> record.getMetadata().getString(DiscoveryMetadata.NAME.getName()).equals(service.getName()))
                             .findAny();

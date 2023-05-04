@@ -2,6 +2,7 @@ package com.hieplp.url.user.controller;
 
 import com.google.inject.Inject;
 import com.hieplp.url.common.constants.ApiConfig;
+import com.hieplp.url.common.controller.BaseController;
 import com.hieplp.url.common.router.RouterHandler;
 import com.hieplp.url.user.service.UserService;
 import io.vertx.ext.web.Router;

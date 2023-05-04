@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 public class Application extends AbstractVerticle {
 
     public static Injector injector;
+    public static Consumer consumer;
 
     @Override
     public void start() {
@@ -46,15 +47,21 @@ public class Application extends AbstractVerticle {
                     this.vertx = res;
 
                     injector = Guice.createInjector(new ConfigModule(this.vertx, configInfo));
-                    Consumer consumer = injector.getInstance(Consumer.class);
+                    consumer = injector.getInstance(Consumer.class);
                     consumer
                             .init()
-                            .cors()
                             .api()
                             .start();
                 })
                 .onFailure(err -> {
                     log.error("Failed to start vertx cluster", err);
                 });
+    }
+
+
+    @Override
+    public void stop() {
+        log.info("Stop auth service");
+        consumer.stop();
     }
 }

@@ -8,10 +8,7 @@ import com.hieplp.url.common.config.SqlConfig;
 import com.hieplp.url.common.util.States;
 import com.hieplp.url.shorten.config.ConfigInfo;
 import com.hieplp.url.shorten.repository.UrlRepository;
-import com.hieplp.url.shorten.repository.UserRepository;
-import com.hieplp.url.shorten.repository.impl.PasswordRepositoryImpl;
 import com.hieplp.url.shorten.repository.impl.UrlRepositoryImpl;
-import com.hieplp.url.shorten.repository.impl.UserRepositoryImpl;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.RequiredArgsConstructor;
@@ -31,8 +28,6 @@ public class SqlModule extends AbstractModule {
     protected void configure() {
         log.info("Configuring SQL module");
         bind(UrlRepository.class).to(UrlRepositoryImpl.class).in(Singleton.class);
-        bind(UserRepository.class).to(UserRepositoryImpl.class).in(Singleton.class);
-        bind(PasswordRepository.class).to(PasswordRepositoryImpl.class).in(Singleton.class);
     }
 
     @Provides

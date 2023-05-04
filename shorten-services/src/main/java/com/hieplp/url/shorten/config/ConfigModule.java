@@ -10,6 +10,7 @@ import com.hieplp.url.shorten.comsumer.Consumer;
 import com.hieplp.url.shorten.comsumer.ConsumerImpl;
 import com.hieplp.url.shorten.config.module.*;
 import io.vertx.core.Vertx;
+import io.vertx.servicediscovery.Record;
 import io.vertx.servicediscovery.ServiceDiscovery;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,6 +19,7 @@ public class ConfigModule extends AbstractModule {
     private final ConfigInfo configInfo;
     private final Vertx vertx;
     private final ServiceDiscovery discovery;
+    private final Record discoveryRecord;
 
     public ConfigModule(Vertx vertx,
                         ConfigInfo configInfo) {
@@ -25,11 +27,11 @@ public class ConfigModule extends AbstractModule {
         this.configInfo = configInfo;
         //
         this.discovery = ServiceDiscovery.create(vertx);
-        DiscoveryUtil.publicService(this.discovery,
-                DiscoveryServiceName.AUTH,
+        this.discoveryRecord = DiscoveryUtil.publicService(this.discovery,
+                DiscoveryServiceName.URL,
                 configInfo.getServerConfig().getHost(),
                 configInfo.getServerConfig().getPort(),
-                ApiConfig.Auth.PREFIX);
+                ApiConfig.UserUrl.PREFIX);
     }
 
     @Provides
@@ -50,6 +52,12 @@ public class ConfigModule extends AbstractModule {
         return discovery;
     }
 
+    @Provides
+    @Singleton
+    public Record getDiscoveryRecord() {
+        return discoveryRecord;
+    }
+
     @Override
     protected void configure() {
         log.info("Config module");
@@ -57,7 +65,6 @@ public class ConfigModule extends AbstractModule {
         install(new ServiceModule());
         install(new RouterModule());
         install(new SqlModule(getConfigInfo()));
-        install(new RsaModule(getConfigInfo()));
         install(new HandlerModule());
     }
 }

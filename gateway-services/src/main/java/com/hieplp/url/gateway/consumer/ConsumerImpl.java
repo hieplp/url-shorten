@@ -1,18 +1,16 @@
 package com.hieplp.url.gateway.consumer;
 
 import com.google.inject.Inject;
-import com.hieplp.url.common.router.RouterHandler;
 import com.hieplp.url.gateway.config.ConfigInfo;
 import com.hieplp.url.gateway.controller.AuthController;
+import com.hieplp.url.gateway.controller.UrlController;
 import com.hieplp.url.gateway.controller.UserController;
-import com.hieplp.url.gateway.service.RestService;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.CorsHandler;
-import io.vertx.servicediscovery.ServiceDiscovery;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,13 +20,10 @@ public class ConsumerImpl implements Consumer {
 
     private final Vertx vertx;
     private final ConfigInfo configInfo;
-    private final ServiceDiscovery discovery;
-    //
-    private final RouterHandler routerHandler;
-    private final RestService restService;
     //
     private final AuthController authController;
     private final UserController userController;
+    private final UrlController urlController;
     //
     private Router router;
 
@@ -66,38 +61,8 @@ public class ConsumerImpl implements Consumer {
         router.route("/*").handler(BodyHandler.create());
 
         authController.init(router);
-        userController.init(router);
-
-//        router.route("/*")
-//                .handler(BodyHandler.create())
-//                .handler(context -> DiscoveryUtil.getAllEndpoints(discovery)
-//                        .andThen(ar -> {
-//
-//                            final String path = context.request().uri();
-//                            final String prefix = path.substring(0, path.indexOf("/", 1));
-//                            log.debug("path: {} and prefix: {}", path, prefix);
-//
-//                            log.error("{}", context.request().absoluteURI());
-//
-//                            List<Record> records = ar.result();
-//                            Optional<Record> client = records.stream()
-//                                    .filter(record -> record.getMetadata().getString(DiscoveryMetadata.NAME.getName()).equals(prefix))
-//                                    .findAny();
-//
-//                            if (client.isPresent()) {
-//                                HttpClient httpClient = discovery.getReference(client.get()).get();
-//                                restService.dispatch(context, httpClient, path);
-//                            } else {
-//                                routerHandler.notFound(context, new NotFoundException("service is not found"));
-//                            }
-//                        })
-//                        .onSuccess(ar -> {
-//                            log.debug("Get all endpoints successfully");
-//                        })
-//                        .onFailure(ar -> {
-//                            log.error("Failed to get all endpoints cause by {}", ar.getMessage());
-//                            routerHandler.internalError(context);
-//                        }));
+        urlController.init(router);
+        userController.init(router); // Should be the last one because it matches all routes with /user/*
 
         return this;
     }
