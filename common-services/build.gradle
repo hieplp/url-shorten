@@ -1,0 +1,108 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        def jooqVersion = '3.14.16'
+        classpath "org.jooq:jooq:${jooqVersion}"
+        classpath "org.jooq:jooq-meta:${jooqVersion}"
+        classpath "org.jooq:jooq-codegen:${jooqVersion}"
+        classpath 'org.mariadb.jdbc:mariadb-java-client:2.7.2'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.3'
+    }
+}
+
+plugins {
+    id 'java'
+    id 'java-library'
+}
+
+group 'com.hieplp.url.common'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+def vertxVersion = '4.4.0'
+def jooqVersion = '3.14.16'
+def junitVersion = '5.8.1'
+def lombokVersion = '1.18.26'
+def log4jVersion = '2.20.0'
+
+dependencies {
+    api(
+            "io.vertx:vertx-core:${vertxVersion}",
+            "io.vertx:vertx-web:${vertxVersion}",
+            "io.vertx:vertx-config:${vertxVersion}",
+            "io.vertx:vertx-kafka-client:${vertxVersion}",
+            "io.vertx:vertx-service-discovery:${vertxVersion}",
+            "io.vertx:vertx-service-discovery-bridge-zookeeper:${vertxVersion}",
+            "io.vertx:vertx-zookeeper:${vertxVersion}",
+    )
+
+    api(
+            "org.jooq:jooq:${jooqVersion}",
+            "org.jooq:jooq-codegen:${jooqVersion}",
+            "com.zaxxer:HikariCP:5.0.1",
+            'org.mariadb.jdbc:mariadb-java-client:2.7.2'
+    )
+
+    api(
+            'com.google.inject:guice:5.1.0',
+            'com.google.code.gson:gson:2.10.1',
+            'com.google.guava:guava:30.0-jre'
+    )
+
+    api(
+            'io.jsonwebtoken:jjwt-impl:0.11.2',
+            'io.jsonwebtoken:jjwt-jackson:0.11.2',
+            'com.auth0:java-jwt:3.19.2'
+    )
+
+    api(
+            "org.apache.logging.log4j:log4j-core:${log4jVersion}",
+            "org.apache.logging.log4j:log4j-api:${log4jVersion}",
+            "org.apache.logging.log4j:log4j-slf4j-impl:${log4jVersion}"
+    )
+
+
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+
+
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
+}
+
+test {
+    useJUnitPlatform()
+}
+
+// -------------------------------------------------------------------------
+// XXX Generate JOOQ tables
+// -------------------------------------------------------------------------
+
+//import org.jooq.codegen.GenerationTool
+//import org.jooq.meta.jaxb.*
+//
+//GenerationTool.generate(new Configuration()
+//        .withJdbc(new Jdbc()
+//                .withDriver('org.mariadb.jdbc.Driver')
+//                .withUrl('jdbc:mysql://127.0.0.1:3306/shortenUrl')
+//                .withUser('root')
+//                .withPassword('123456'))
+//        .withGenerator(new Generator()
+//                .withDatabase(new Database()
+//                        .withName("org.jooq.meta.mariadb.MariaDBDatabase")
+//                        .withInputSchema("shortenUrl")
+//                        .withOutputSchema("shortenUrl"))
+//                .withGenerate(new Generate()
+//                        .withFluentSetters(true)
+//                        .withPojos(true)
+//                        .withDaos(true))
+//                .withTarget(new Target()
+//                        .withPackageName('com.hieplp.url.common.repository.url')
+//                        .withDirectory('/home/hieplp/Project/url-shorten/common-services/src/main/java'))))
+////                        .withDirectory('/home/hieplp/Intellin/own-project/url-shorten/shorten-services/src/main/java'))))

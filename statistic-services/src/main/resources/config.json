@@ -1,0 +1,40 @@
+{
+  "serverConfig": {
+    "port": 9900,
+    "host": "0.0.0.0"
+  },
+  "sqlConfig": {
+    "driverClassName": "org.mariadb.jdbc.Driver",
+    "jdbcUrl": "jdbc:mariadb://127.0.0.1:3306/ecommerce",
+    "maxPoolSize": "16",
+    "username": "root",
+    "password": "123456",
+    "serverTimezone": "Asia/Ho_Chi_Minh",
+    "autoCommit": true,
+    "useLegacyDatetimeCode": "false",
+    "connectionTimeout": 3600
+  },
+  "cacheConfig": {
+    "maximumSize": 1000,
+    "expireAfterWrite": 3600
+  },
+  "tokenConfig": {
+    "privateKey": "/src/main/resources/rsa/token/token_private_key.der",
+    "publicKey": "/src/main/resources/rsa/token/token_public_key.der",
+    "issuer": "todo",
+    "accessActiveTime": 36,
+    "refreshActiveTime": 144000
+  },
+  "kafkaConfig": {
+    "bootstrapServers": "localhost:29092",
+    "keyDeserializer": "org.apache.kafka.common.serialization.StringDeserializer",
+    "valueDeserializer": "org.apache.kafka.common.serialization.StringDeserializer",
+    "groupId": "statistic-group",
+    "offsetReset": "earliest",
+    "autoCommit": "false"
+  },
+  "aliasLength": 6,
+  "urlHost": "http://localhost:5173",
+  "workerPoolSize": 16,
+  "workerMaxExecuteTime": 5000
+}

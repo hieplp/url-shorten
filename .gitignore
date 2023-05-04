@@ -1,8 +1,6 @@
 
-shorten-services/build/
+build/
+.idea/
+.gradle/
+logs/
 
-shorten-services/logs/
-
-shorten-services/.idea/
-
-shorten-services/.gradle/
