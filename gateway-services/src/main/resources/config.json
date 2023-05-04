@@ -1,6 +1,6 @@
 {
   "serverConfig": {
-    "port": 9901,
+    "port": 9900,
     "host": "0.0.0.0"
   },
   "sqlConfig": {
@@ -14,10 +14,6 @@
     "useLegacyDatetimeCode": "false",
     "connectionTimeout": 3600
   },
-  "cacheConfig": {
-    "maximumSize": 1000,
-    "expireAfterWrite": 3600
-  },
   "tokenConfig": {
     "privateKey": "/src/main/resources/rsa/token/token_private_key.der",
     "publicKey": "/src/main/resources/rsa/token/token_public_key.der",
@@ -25,14 +21,6 @@
     "accessActiveTime": 36,
     "refreshActiveTime": 144000
   },
-  "passwordConfig": {
-    "privateKey": "/src/main/resources/rsa/password/password_private_key.der"
-  },
-  "discoveryConfig": {
-    "zkHost": "127.0.0.1:2181"
-  },
-  "aliasLength": 6,
-  "urlHost": "http://localhost:5173",
   "workerPoolSize": 16,
   "workerMaxExecuteTime": 5000
 }

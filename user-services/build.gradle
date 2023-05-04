@@ -1,0 +1,30 @@
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '4.0.3'
+}
+
+group = 'com.hieplp.url.user'
+version = '1.0'
+
+repositories {
+    mavenCentral()
+}
+
+def lombokVersion = '1.18.26'
+
+dependencies {
+    implementation project("common-services")
+
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+}
+
+shadowJar {
+    manifest {
+        attributes 'Main-Class': 'io.vertx.core.Launcher'
+        attributes 'Main-Verticle': 'com.hieplp.url.user.Application'
+    }
+    mergeServiceFiles {
+        include 'META-INF/services/io.vertx.core.spi.VerticleFactory'
+    }
+}

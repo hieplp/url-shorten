@@ -19,11 +19,11 @@ public class UserController implements BaseController {
     public BaseController init(Router router) {
         log.info("Init user controller");
 
-        router.get(ApiConfig.User.PROFILE)
-                .handler(routerHandler::postHandler)
-                .blockingHandler(routerHandler::userHandler)
-                .blockingHandler(ctx -> routerHandler.serviceHandler(ctx, userService::getProfileByUser))
-                .blockingHandler(routerHandler::ok);
+//        router.get(ApiConfig.User.PROFILE)
+//                .handler(routerHandler::postHandler)
+//                .blockingHandler(routerHandler::userHandler)
+//                .blockingHandler(ctx -> routerHandler.serviceHandler(ctx, userService::getProfileByUser))
+//                .blockingHandler(routerHandler::ok);
 
         return this;
     }

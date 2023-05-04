@@ -4,9 +4,12 @@ package com.hieplp.url.auth.comsumer;
 import com.google.inject.Inject;
 import com.hieplp.url.auth.config.ConfigInfo;
 import com.hieplp.url.auth.controller.AuthController;
+import com.hieplp.url.common.util.DiscoveryUtil;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.ext.web.Router;
+import io.vertx.servicediscovery.Record;
+import io.vertx.servicediscovery.ServiceDiscovery;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -16,9 +19,11 @@ public class ConsumerImpl implements Consumer {
 
     private final Vertx vertx;
     private final ConfigInfo configInfo;
+    private final ServiceDiscovery serviceDiscovery;
+    private final Record discoveryRecord;
     //
     private final AuthController authController;
-
+    //
     private Router router;
 
 
@@ -53,6 +58,13 @@ public class ConsumerImpl implements Consumer {
                         log.error("Listen failed on port {} cause by {}", configInfo.getServerConfig().getPort(), event.cause().getMessage());
                     }
                 });
+        return this;
+    }
+
+    @Override
+    public Consumer stop() {
+        log.info("Stop consumer");
+        DiscoveryUtil.unPublicService(serviceDiscovery, discoveryRecord);
         return this;
     }
 }

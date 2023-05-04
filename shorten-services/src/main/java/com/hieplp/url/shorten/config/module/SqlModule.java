@@ -7,7 +7,6 @@ import com.google.inject.Singleton;
 import com.hieplp.url.common.config.SqlConfig;
 import com.hieplp.url.common.util.States;
 import com.hieplp.url.shorten.config.ConfigInfo;
-import com.hieplp.url.shorten.repository.PasswordRepository;
 import com.hieplp.url.shorten.repository.UrlRepository;
 import com.hieplp.url.shorten.repository.UserRepository;
 import com.hieplp.url.shorten.repository.impl.PasswordRepositoryImpl;

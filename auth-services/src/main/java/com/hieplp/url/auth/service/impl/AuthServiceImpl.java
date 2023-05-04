@@ -12,6 +12,7 @@ import com.hieplp.url.common.exception.BadRequestException;
 import com.hieplp.url.common.exception.auth.InvalidPasswordException;
 import com.hieplp.url.common.exception.auth.UnauthorizedException;
 import com.hieplp.url.common.handler.AuthHandler;
+import com.hieplp.url.common.handler.TokenHandler;
 import com.hieplp.url.common.model.TokenModel;
 import com.hieplp.url.common.model.UserModel;
 import com.hieplp.url.common.payload.HeaderInformation;
@@ -42,6 +43,7 @@ public class AuthServiceImpl implements AuthService {
     private final ConfigInfo configInfo;
     //
     private final AuthHandler authHandler;
+    private final TokenHandler tokenHandler;
     //
     private final UserRepository userRepo;
     private final PasswordRepository passwordRepo;
@@ -68,12 +70,12 @@ public class AuthServiceImpl implements AuthService {
             }
 
             //
-            TokenModel accessToken = authHandler.generateToken(GenerateTokenRequest.builder()
+            TokenModel accessToken = tokenHandler.generateToken(GenerateTokenRequest.builder()
                     .user(userModel)
                     .tokenType(TokenType.ACCESS)
                     .activeTime(configInfo.getTokenConfig().getAccessActiveTime())
                     .build());
-            TokenModel refreshToken = authHandler.generateToken(GenerateTokenRequest.builder()
+            TokenModel refreshToken = tokenHandler.generateToken(GenerateTokenRequest.builder()
                     .user(userModel)
                     .tokenType(TokenType.REFRESH)
                     .activeTime(configInfo.getTokenConfig().getRefreshActiveTime())
@@ -130,12 +132,12 @@ public class AuthServiceImpl implements AuthService {
         userRecord.into(userModel);
 
         //
-        TokenModel accessToken = authHandler.generateToken(GenerateTokenRequest.builder()
+        TokenModel accessToken = tokenHandler.generateToken(GenerateTokenRequest.builder()
                 .user(userModel)
                 .tokenType(TokenType.ACCESS)
                 .activeTime(configInfo.getTokenConfig().getAccessActiveTime())
                 .build());
-        TokenModel refreshToken = authHandler.generateToken(GenerateTokenRequest.builder()
+        TokenModel refreshToken = tokenHandler.generateToken(GenerateTokenRequest.builder()
                 .user(userModel)
                 .tokenType(TokenType.REFRESH)
                 .activeTime(configInfo.getTokenConfig().getRefreshActiveTime())
@@ -153,14 +155,14 @@ public class AuthServiceImpl implements AuthService {
     public CommonResponse refreshToken(CommonRequest commonRequest) {
         log.info("Refresh token with request: {}", commonRequest);
 
-        final HeaderInformation headers = authHandler.validateToken(commonRequest.getHeaders().getToken());
+        final HeaderInformation headers = tokenHandler.validateToken(commonRequest.getHeaders().getToken());
 
         if (!TokenType.REFRESH.getType().equals(headers.getTokenType())) {
             log.debug("Invalid token type: {}", headers.getTokenType());
             throw new UnauthorizedException("Invalid token type");
         }
 
-        TokenModel accessToken = authHandler.generateToken(GenerateTokenRequest.builder()
+        TokenModel accessToken = tokenHandler.generateToken(GenerateTokenRequest.builder()
                 .activeTime(configInfo.getTokenConfig().getAccessActiveTime())
                 .tokenType(TokenType.ACCESS)
                 .user(UserModel.builder()

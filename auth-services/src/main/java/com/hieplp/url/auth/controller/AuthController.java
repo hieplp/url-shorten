@@ -3,6 +3,7 @@ package com.hieplp.url.auth.controller;
 import com.google.inject.Inject;
 import com.hieplp.url.auth.service.AuthService;
 import com.hieplp.url.common.constants.ApiConfig;
+import com.hieplp.url.common.controller.BaseController;
 import com.hieplp.url.common.router.RouterHandler;
 import io.vertx.ext.web.Router;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +40,7 @@ public class AuthController implements BaseController {
                 .blockingHandler(routerHandler::refreshTokenHandler)
                 .blockingHandler(ctx -> routerHandler.serviceHandler(ctx, authService::refreshToken))
                 .blockingHandler(routerHandler::ok);
+
 
         return this;
     }

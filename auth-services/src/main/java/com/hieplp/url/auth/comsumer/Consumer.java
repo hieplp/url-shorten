@@ -6,4 +6,6 @@ public interface Consumer {
     Consumer api();
 
     Consumer start();
+
+    Consumer stop();
 }

@@ -2,6 +2,7 @@ package com.hieplp.url.common.router.impl;
 
 import com.google.gson.JsonObject;
 import com.google.inject.Inject;
+import com.hieplp.url.common.constants.auth.HeaderKey;
 import com.hieplp.url.common.constants.statusCode.HttpStatusCode;
 import com.hieplp.url.common.exception.BadRequestException;
 import com.hieplp.url.common.exception.auth.InvalidPasswordException;
@@ -63,19 +64,21 @@ public class RouterHandlerImpl implements RouterHandler {
         try {
             log.debug("User handler with body");
 
-//            final String token = context.request().getHeader("Authorization");
-//            HeaderInformation headers = authHandler.validateToken(token);
-//
-//            if (!TokenType.ACCESS.getType().equals(headers.getTokenType())) {
-//                log.debug("Invalid token type: {}", headers.getTokenType());
-//                throw new UnauthorizedException("Invalid token type");
-//            }
-//
-//            CommonRequest request = CommonRequest.builder()
-//                    .request(JsonUtil.fromJson(context.body().asString(), JsonObject.class))
-//                    .headers(headers)
-//                    .build();
-//            context.put(REQUEST, request);
+            final String userId = context.request().getHeader(HeaderKey.USERID.getName());
+
+            if (States.isBlank(userId)) {
+                log.debug("User id is null");
+                throw new UnauthorizedException("Invalid user id");
+            }
+
+            HeaderInformation headers = HeaderInformation.builder()
+                    .userId(userId)
+                    .build();
+            CommonRequest request = CommonRequest.builder()
+                    .request(JsonUtil.fromJson(context.body().asString(), JsonObject.class))
+                    .headers(headers)
+                    .build();
+            context.put(REQUEST, request);
 
             context.next();
         } catch (Exception e) {

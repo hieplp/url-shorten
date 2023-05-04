@@ -24,7 +24,6 @@ import com.hieplp.url.common.util.GenerateUtil;
 import com.hieplp.url.common.util.JsonUtil;
 import com.hieplp.url.common.util.ValidationUtil;
 import com.hieplp.url.shorten.config.ConfigInfo;
-import com.hieplp.url.shorten.repository.PasswordRepository;
 import com.hieplp.url.shorten.repository.UserRepository;
 import com.hieplp.url.shorten.service.AuthService;
 import lombok.RequiredArgsConstructor;

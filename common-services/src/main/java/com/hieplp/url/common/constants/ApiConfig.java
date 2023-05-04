@@ -16,22 +16,19 @@ public class ApiConfig {
         public static final String REGISTER = PREFIX + "/register";
         public static final String LOGOUT = PREFIX + "/logout";
         public static final String REFRESH_TOKEN = PREFIX + "/refresh-token";
+        public static final String PROFILE = PREFIX + "/profile";
     }
 
     public static class User {
         public static final String PREFIX = "/user";
         public static final String PROFILE = PREFIX + "/profile";
-
-        public static class Url {
-            public static final String PREFIX = User.PREFIX + "/url";
-        }
     }
 
-    public static class Public {
-        public static final String PREFIX = "/public";
+    public static class UserUrl {
+        public static final String PREFIX = "/user/url";
+    }
 
-        public static class Url {
-            public static final String PREFIX = Public.PREFIX + "/url";
-        }
+    public static class PublicUrl {
+        public static final String PREFIX = "/public/url";
     }
 }
