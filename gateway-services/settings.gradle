@@ -1,0 +1,5 @@
+rootProject.name = 'gateway-services'
+include(":common-services")
+project(':common-services').setProjectDir(new File(settingsDir, '../common-services'))
+
+
