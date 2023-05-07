@@ -3,9 +3,8 @@ package com.hieplp.url.shorten.service.impl;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.inject.Inject;
-import com.hieplp.url.shorten.config.ConfigInfo;
-import com.hieplp.url.shorten.handler.UrlHandler;
-import com.hieplp.url.shorten.repository.UrlRepository;
+import com.hieplp.url.common.constants.statistic.StatisticSocialType;
+import com.hieplp.url.common.constants.statistic.StatisticTopic;
 import com.hieplp.url.common.constants.statusCode.SuccessCode;
 import com.hieplp.url.common.constants.url.UrlIsDeleted;
 import com.hieplp.url.common.exception.BadRequestException;
@@ -13,6 +12,7 @@ import com.hieplp.url.common.exception.data.DuplicateException;
 import com.hieplp.url.common.model.UrlModel;
 import com.hieplp.url.common.payload.request.CommonRequest;
 import com.hieplp.url.common.payload.request.QueryRequest;
+import com.hieplp.url.common.payload.request.history.CreateHistoryRequest;
 import com.hieplp.url.common.payload.request.url.CreateUrlByAuthRequest;
 import com.hieplp.url.common.payload.request.url.CreateUrlByPublicRequest;
 import com.hieplp.url.common.payload.request.url.UpdateUrlByAuthRequest;
@@ -20,6 +20,9 @@ import com.hieplp.url.common.payload.response.CommonResponse;
 import com.hieplp.url.common.payload.response.QueryResponse;
 import com.hieplp.url.common.repository.url.tables.records.UrlRecord;
 import com.hieplp.url.common.util.*;
+import com.hieplp.url.shorten.config.ConfigInfo;
+import com.hieplp.url.shorten.handler.UrlHandler;
+import com.hieplp.url.shorten.repository.UrlRepository;
 import com.hieplp.url.shorten.service.UrlService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -81,7 +84,11 @@ public class UrlServiceImpl implements UrlService {
             urlCache.put(request.getAlias(), response);
         }
 
-        // TODO: Push to queue to update statistics
+        urlHandler.saveUrlHistory(StatisticTopic.CLICK, CreateHistoryRequest.builder()
+                .urlId(response.getUrlId())
+                .socialTypeAsString(StatisticSocialType.FACEBOOK.getName()) // FIXME: Hard code
+                .createdBy("public") // TODO: Use deviceId or something else to identify url owner
+                .build());
 
         return new CommonResponse(SuccessCode.SUCCESS, response);
     }

@@ -4,7 +4,7 @@ public enum DiscoveryServiceName {
     AUTH("auth"),
     USER("user"),
     URL("url"),
-    ;
+    STATISTIC("statistic");
 
     private final String name;
 

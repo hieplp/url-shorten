@@ -2,6 +2,7 @@ package com.hieplp.url.shorten.comsumer;
 
 
 import com.google.inject.Inject;
+import com.hieplp.url.common.util.CorsUtil;
 import com.hieplp.url.common.util.DiscoveryUtil;
 import com.hieplp.url.shorten.config.ConfigInfo;
 import com.hieplp.url.shorten.controller.UrlController;
@@ -40,6 +41,13 @@ public class ConsumerImpl implements Consumer {
 
         urlController.init(router);
 
+        return this;
+    }
+
+    @Override
+    public Consumer cors() {
+        log.info("Init cors");
+        CorsUtil.cors(router);
         return this;
     }
 

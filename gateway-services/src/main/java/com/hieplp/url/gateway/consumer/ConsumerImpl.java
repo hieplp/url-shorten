@@ -1,16 +1,15 @@
 package com.hieplp.url.gateway.consumer;
 
 import com.google.inject.Inject;
+import com.hieplp.url.common.util.CorsUtil;
 import com.hieplp.url.gateway.config.ConfigInfo;
 import com.hieplp.url.gateway.controller.AuthController;
 import com.hieplp.url.gateway.controller.UrlController;
 import com.hieplp.url.gateway.controller.UserController;
 import io.vertx.core.Vertx;
-import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
-import io.vertx.ext.web.handler.CorsHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,20 +36,7 @@ public class ConsumerImpl implements Consumer {
     @Override
     public Consumer cors() {
         log.info("Init cors");
-
-        router.route().handler(CorsHandler.create()
-                .addRelativeOrigin(".*")
-
-                .allowedMethod(HttpMethod.GET)
-                .allowedMethod(HttpMethod.POST)
-                .allowedMethod(HttpMethod.PUT)
-                .allowedMethod(HttpMethod.PATCH)
-                .allowedMethod(HttpMethod.DELETE)
-
-                .allowedHeader("Content-Type")
-                .allowedHeader("Authorization")
-        );
-
+        CorsUtil.cors(router);
         return this;
     }
 

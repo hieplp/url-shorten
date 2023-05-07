@@ -18,6 +18,12 @@
     "maximumSize": 1000,
     "expireAfterWrite": 3600
   },
+  "kafkaConfig": {
+    "bootstrapServers": "localhost:29092",
+    "keySerializer": "org.apache.kafka.common.serialization.StringSerializer",
+    "valueSerializer": "io.vertx.kafka.client.serialization.BufferSerializer",
+    "groupId": "statistic-group"
+  },
   "aliasLength": 6,
   "urlHost": "http://localhost:5173",
   "workerPoolSize": 16,

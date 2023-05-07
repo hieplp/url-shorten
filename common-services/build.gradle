@@ -84,8 +84,8 @@ test {
 // XXX Generate JOOQ tables
 // -------------------------------------------------------------------------
 
-//import org.jooq.codegen.GenerationTool
-//import org.jooq.meta.jaxb.*
+import org.jooq.codegen.GenerationTool
+import org.jooq.meta.jaxb.*
 
 
 // -------------------------------------------------------------------------
@@ -133,3 +133,26 @@ test {
 //                .withTarget(new Target()
 //                        .withPackageName('com.hieplp.url.common.repository.user')
 //                        .withDirectory('/home/hieplp/Project/url-shorten/common-services/src/main/java'))))
+
+// -------------------------------------------------------------------------
+// XXX ShortenUser
+// -------------------------------------------------------------------------
+//
+GenerationTool.generate(new Configuration()
+        .withJdbc(new Jdbc()
+                .withDriver('org.mariadb.jdbc.Driver')
+                .withUrl('jdbc:mysql://127.0.0.1:3306/shortenUser')
+                .withUser('root')
+                .withPassword('123456'))
+        .withGenerator(new Generator()
+                .withDatabase(new Database()
+                        .withName("org.jooq.meta.mariadb.MariaDBDatabase")
+                        .withInputSchema("shortenStatistic")
+                        .withOutputSchema("shortenStatistic"))
+                .withGenerate(new Generate()
+                        .withFluentSetters(true)
+                        .withPojos(true)
+                        .withDaos(true))
+                .withTarget(new Target()
+                        .withPackageName('com.hieplp.url.common.repository.statistic')
+                        .withDirectory('/home/hieplp/Project/url-shorten/common-services/src/main/java'))))

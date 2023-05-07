@@ -1,6 +1,5 @@
 package com.hieplp.url.shorten.repository.impl;
 
-import com.hieplp.url.shorten.repository.UrlRepository;
 import com.hieplp.url.common.constants.url.UrlIsDeleted;
 import com.hieplp.url.common.constants.url.UrlStatus;
 import com.hieplp.url.common.model.UrlModel;
@@ -8,6 +7,7 @@ import com.hieplp.url.common.payload.request.QueryRequest;
 import com.hieplp.url.common.payload.response.QueryResponse;
 import com.hieplp.url.common.repository.base.BaseRepositoryImpl;
 import com.hieplp.url.common.repository.url.tables.records.UrlRecord;
+import com.hieplp.url.shorten.repository.UrlRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.Condition;
 import org.jooq.Field;

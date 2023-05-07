@@ -30,7 +30,7 @@ public class UrlController implements BaseController {
                 .handler(routerHandler::getHandler)
                 .blockingHandler(routerHandler::anonymousHandler)
                 .blockingHandler(ctx -> routerHandler.serviceHandler(ctx, urlService::getUrlByPublic))
-                .blockingHandler(routerHandler::created);
+                .blockingHandler(routerHandler::ok);
 
         // XXX User
         router.post(ApiConfig.UserUrl.PREFIX)

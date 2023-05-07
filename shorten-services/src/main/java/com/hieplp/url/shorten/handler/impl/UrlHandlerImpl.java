@@ -1,9 +1,12 @@
 package com.hieplp.url.shorten.handler.impl;
 
 import com.google.inject.Inject;
+import com.hieplp.url.common.constants.statistic.StatisticTopic;
 import com.hieplp.url.common.constants.url.UrlIsDeleted;
 import com.hieplp.url.common.constants.url.UrlStatus;
+import com.hieplp.url.common.handler.KafkaProducerHandler;
 import com.hieplp.url.common.model.UrlModel;
+import com.hieplp.url.common.payload.request.history.CreateHistoryRequest;
 import com.hieplp.url.common.repository.url.tables.records.UrlRecord;
 import com.hieplp.url.common.util.DateUtil;
 import com.hieplp.url.common.util.GenerateUtil;
@@ -23,6 +26,7 @@ public class UrlHandlerImpl implements UrlHandler {
 
     private final ConfigInfo configInfo;
     private final UrlRepository urlRepo;
+    private final KafkaProducerHandler kafkaProducerHandler;
 
     @Override
     public UrlModel saveUrl(UrlModel urlModel) {
@@ -44,5 +48,11 @@ public class UrlHandlerImpl implements UrlHandler {
                 .setIsdeleted(UrlIsDeleted.NOT_DELETED.getValue());
 
         return urlRepo.saveAndReturn(urlRecord, UrlModel.class);
+    }
+
+    @Override
+    public void saveUrlHistory(StatisticTopic topic, CreateHistoryRequest request) {
+        log.info("Save url history: {}", request);
+        kafkaProducerHandler.send(topic.getName(), request.getUrlId(), request);
     }
 }
