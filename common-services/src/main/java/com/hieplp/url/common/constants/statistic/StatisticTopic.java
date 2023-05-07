@@ -10,6 +10,16 @@ public enum StatisticTopic {
         this.name = name;
     }
 
+    public static StatisticTopic safeValueOf(String name) {
+        for (StatisticTopic topic : StatisticTopic.values()) {
+            if (topic.getName().equals(name)) {
+                return topic;
+            }
+        }
+
+        return null;
+    }
+
     public String getName() {
         return name;
     }

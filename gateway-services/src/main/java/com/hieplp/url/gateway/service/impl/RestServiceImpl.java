@@ -63,13 +63,13 @@ public class RestServiceImpl implements RestService {
 
                     return request.send(context.body().buffer());
                 })
-                .onSuccess(ar1 -> {
+                .onSuccess(ar -> {
                     log.info("Send request to {} successfully", path);
 
-                    ar1.bodyHandler(body -> {
+                    ar.bodyHandler(body -> {
                         log.debug("Response body: {}", body);
-                        context.response().setStatusCode(ar1.statusCode());
-                        context.response().headers().setAll(ar1.headers());
+                        context.response().setStatusCode(ar.statusCode());
+                        context.response().headers().setAll(ar.headers());
                         context.response().end(body);
                     });
                 })

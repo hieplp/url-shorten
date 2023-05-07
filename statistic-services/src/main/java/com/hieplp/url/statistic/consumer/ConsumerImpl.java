@@ -3,17 +3,24 @@ package com.hieplp.url.statistic.consumer;
 
 import com.google.inject.Inject;
 import com.hieplp.url.common.constants.statistic.StatisticTopic;
+import com.hieplp.url.common.handler.KafkaConsumerHandler;
+import com.hieplp.url.common.util.DiscoveryUtil;
 import com.hieplp.url.statistic.config.ConfigInfo;
+import com.hieplp.url.statistic.factory.StatisticFactory;
+import com.hieplp.url.statistic.stragety.StatisticStrategy;
 import io.vertx.core.Vertx;
-import io.vertx.core.http.HttpMethod;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.ext.web.Router;
-import io.vertx.ext.web.handler.CorsHandler;
 import io.vertx.kafka.client.consumer.KafkaConsumer;
+import io.vertx.servicediscovery.Record;
+import io.vertx.servicediscovery.ServiceDiscovery;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 @Slf4j
 @RequiredArgsConstructor(onConstructor = @__({@Inject}))
@@ -21,9 +28,14 @@ public class ConsumerImpl implements Consumer {
 
     private final Vertx vertx;
     private final ConfigInfo configInfo;
+    private final ServiceDiscovery serviceDiscovery;
+    private final Record discoveryRecord;
     //
-    private final KafkaConsumer<String, String> kafkaConsumer;
-
+    private final KafkaConsumer<String, Buffer> kafkaConsumer;
+    private final KafkaConsumerHandler kafkaConsumerHandler;
+    //
+    private final StatisticFactory statisticFactory;
+    //
     private Router router;
 
 
@@ -38,18 +50,22 @@ public class ConsumerImpl implements Consumer {
     public Consumer kafka() {
         log.info("Init kafka");
 
+        Set<String> topics = new HashSet<>();
         Arrays.stream(StatisticTopic.values())
-                .forEach(statisticTopic -> kafkaConsumer.subscribe(statisticTopic.getName())
-                        .onSuccess(success -> log.info("Subscribe topic {} success", statisticTopic.getName()))
-                        .onFailure(failure -> log.error("Subscribe topic {} failure: {}", statisticTopic.getName(), failure)));
+                .forEach(statisticTopic -> topics.add(statisticTopic.getName()));
+
+        kafkaConsumer.subscribe(topics)
+                .onSuccess(success -> log.info("Subscribe topics {} success", topics))
+                .onFailure(failure -> log.error("Subscribe topics {} failure: {}", topics, failure));
+
 
         kafkaConsumer.handler(record -> {
-            final String topic = record.topic();
-
-            if (StatisticTopic.CLICK.getName().equals(topic)) {
-            } else if (StatisticTopic.QUICK.getName().equals(topic)) {
-                log.info("Receive record {}", record.value());
-            }
+            StatisticTopic topic = StatisticTopic.safeValueOf(record.topic());
+            StatisticStrategy strategy = statisticFactory.getStrategy(topic);
+            strategy
+                    .validate(record.value())
+                    .saveHistory()
+                    .executeStatistic();
         });
 
         return this;
@@ -59,25 +75,6 @@ public class ConsumerImpl implements Consumer {
     public Consumer api() {
         log.info("Init api");
 
-
-        return this;
-    }
-
-    @Override
-    public Consumer cors() {
-        log.info("Init cors");
-
-        router.route().handler(CorsHandler.create("*")
-
-                .allowedMethod(HttpMethod.GET)
-                .allowedMethod(HttpMethod.POST)
-                .allowedMethod(HttpMethod.PUT)
-                .allowedMethod(HttpMethod.PATCH)
-                .allowedMethod(HttpMethod.DELETE)
-
-                .allowedHeader("Content-Type")
-                .allowedHeader("Authorization")
-        );
 
         return this;
     }
@@ -97,6 +94,13 @@ public class ConsumerImpl implements Consumer {
                         log.error("Listen failed on port {} cause by {}", configInfo.getServerConfig().getPort(), event.cause().getMessage());
                     }
                 });
+        return this;
+    }
+
+    @Override
+    public Consumer stop() {
+        log.info("Stop consumer");
+        DiscoveryUtil.unPublicService(serviceDiscovery, discoveryRecord);
         return this;
     }
 }

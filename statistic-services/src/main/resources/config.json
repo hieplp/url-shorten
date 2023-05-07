@@ -1,6 +1,6 @@
 {
   "serverConfig": {
-    "port": 9900,
+    "port": 9904,
     "host": "0.0.0.0"
   },
   "sqlConfig": {
@@ -28,10 +28,10 @@
   "kafkaConfig": {
     "bootstrapServers": "localhost:29092",
     "keyDeserializer": "org.apache.kafka.common.serialization.StringDeserializer",
-    "valueDeserializer": "org.apache.kafka.common.serialization.StringDeserializer",
+    "valueDeserializer": "io.vertx.kafka.client.serialization.BufferDeserializer",
     "groupId": "statistic-group",
     "offsetReset": "earliest",
-    "autoCommit": "false"
+    "autoCommit": "true"
   },
   "aliasLength": 6,
   "urlHost": "http://localhost:5173",

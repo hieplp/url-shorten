@@ -16,8 +16,6 @@ dependencies {
     implementation project("common-services")
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
-
-
 }
 
 shadowJar {

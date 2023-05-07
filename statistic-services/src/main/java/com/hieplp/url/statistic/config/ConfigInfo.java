@@ -9,7 +9,7 @@ public class ConfigInfo {
     private SqlConfig sqlConfig;
     private CacheConfig cacheConfig;
     private TokenConfig tokenConfig;
-    private KafkaConfig kafkaConfig;
+    private KafkaConsumerConfig kafkaConfig;
     private Integer workerPoolSize;
     private Long workerMaxExecuteTime;
 }

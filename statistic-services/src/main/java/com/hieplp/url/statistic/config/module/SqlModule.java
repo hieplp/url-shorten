@@ -1,12 +1,11 @@
 package com.hieplp.url.statistic.config.module;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Inject;
-import com.google.inject.Provides;
-import com.google.inject.Singleton;
+import com.google.inject.*;
 import com.hieplp.url.common.config.SqlConfig;
 import com.hieplp.url.common.util.States;
 import com.hieplp.url.statistic.config.ConfigInfo;
+import com.hieplp.url.statistic.repository.HistoryRepository;
+import com.hieplp.url.statistic.repository.impl.HistoryRepositoryImpl;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +24,7 @@ public class SqlModule extends AbstractModule {
     @Override
     protected void configure() {
         log.info("Configuring SQL module");
+        bind(HistoryRepository.class).to(HistoryRepositoryImpl.class).in(Scopes.SINGLETON);
     }
 
     @Provides

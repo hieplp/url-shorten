@@ -67,7 +67,7 @@
     <Loggers>
         <Logger name="com.zaxxer.hikari" level="error"/>
         <Logger name="org.mongodb" level="error"/>
-        <Root level="debug">
+        <Root level="info">
             <AppenderRef ref="Console"/>
             <AppenderRef ref="url-admin-error" level="error"/>
             <AppenderRef ref="url-admin-info" level="info"/>

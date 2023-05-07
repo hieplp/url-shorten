@@ -7,7 +7,7 @@ public interface Consumer {
 
     Consumer api();
 
-    Consumer cors();
-
     Consumer start();
+
+    Consumer stop();
 }

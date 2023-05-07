@@ -66,5 +66,6 @@ public class ConfigModule extends AbstractModule {
         install(new RouterModule());
         install(new SqlModule(getConfigInfo()));
         install(new HandlerModule());
+        install(new KafkaModule(getVertx(), getConfigInfo().getKafkaConfig()));
     }
 }
