@@ -1,9 +1,9 @@
-FROM elastic/logstash:8.7.1
+ARG ELASTIC_VERSION
 
-# RUN bin/logstash-plugin install logstash-input-jdbc
+# https://www.docker.elastic.co/
+FROM docker.elastic.co/logstash/logstash:${ELASTIC_VERSION}
 
 COPY ./mariadb-java-client-2.4.4.jar /usr/share/logstash/logstash-core/lib/jars/mariadb-java-client-2.4.4.jar
 
-# COPY ./logstash.yml /usr/share/logstash/config/logstash.yml
-
-COPY ./logstash.conf /usr/share/logstash/pipeline/logstash.conf
+# Add your logstash plugins setup here
+# Example: RUN logstash-plugin install logstash-filter-json
