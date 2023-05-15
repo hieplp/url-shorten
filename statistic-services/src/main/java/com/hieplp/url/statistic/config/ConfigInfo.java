@@ -10,6 +10,7 @@ public class ConfigInfo {
     private CacheConfig cacheConfig;
     private TokenConfig tokenConfig;
     private KafkaConsumerConfig kafkaConfig;
+    private ElasticConfig elasticConfig;
     private Integer workerPoolSize;
     private Long workerMaxExecuteTime;
 }

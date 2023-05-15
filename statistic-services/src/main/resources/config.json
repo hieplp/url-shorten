@@ -33,8 +33,12 @@
     "offsetReset": "earliest",
     "autoCommit": "true"
   },
-  "aliasLength": 6,
-  "urlHost": "http://localhost:5173",
+  "elasticConfig": {
+    "host": "localhost",
+    "port": 9200,
+    "index": "ecommerce",
+    "type": "statistic"
+  },
   "workerPoolSize": 16,
   "workerMaxExecuteTime": 5000
 }

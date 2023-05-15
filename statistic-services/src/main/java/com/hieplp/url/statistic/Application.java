@@ -51,7 +51,7 @@ public class Application extends AbstractVerticle {
                     consumer
                             .init()
                             .api()
-                            .kafka()
+//                            .kafka()
                             .start();
                 })
                 .onFailure(err -> {

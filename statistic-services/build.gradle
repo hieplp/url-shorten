@@ -16,6 +16,9 @@ dependencies {
     implementation project("common-services")
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+
+    implementation 'co.elastic.clients:elasticsearch-java:8.7.1'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.3'
 }
 
 shadowJar {

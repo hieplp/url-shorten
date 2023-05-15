@@ -6,6 +6,7 @@ import com.hieplp.url.common.constants.statistic.StatisticTopic;
 import com.hieplp.url.common.handler.KafkaConsumerHandler;
 import com.hieplp.url.common.util.DiscoveryUtil;
 import com.hieplp.url.statistic.config.ConfigInfo;
+import com.hieplp.url.statistic.controller.StatisticController;
 import com.hieplp.url.statistic.factory.StatisticFactory;
 import com.hieplp.url.statistic.stragety.StatisticStrategy;
 import io.vertx.core.Vertx;
@@ -35,6 +36,8 @@ public class ConsumerImpl implements Consumer {
     private final KafkaConsumerHandler kafkaConsumerHandler;
     //
     private final StatisticFactory statisticFactory;
+    //
+    private final StatisticController statisticController;
     //
     private Router router;
 
@@ -75,6 +78,7 @@ public class ConsumerImpl implements Consumer {
     public Consumer api() {
         log.info("Init api");
 
+        statisticController.init(router);
 
         return this;
     }
