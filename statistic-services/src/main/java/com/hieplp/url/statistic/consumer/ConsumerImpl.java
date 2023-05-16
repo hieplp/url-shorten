@@ -8,7 +8,6 @@ import com.hieplp.url.common.util.DiscoveryUtil;
 import com.hieplp.url.statistic.config.ConfigInfo;
 import com.hieplp.url.statistic.controller.StatisticController;
 import com.hieplp.url.statistic.factory.StatisticFactory;
-import com.hieplp.url.statistic.stragety.StatisticStrategy;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerOptions;
@@ -21,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Set;
 
 @Slf4j
 @RequiredArgsConstructor(onConstructor = @__({@Inject}))
@@ -53,7 +51,7 @@ public class ConsumerImpl implements Consumer {
     public Consumer kafka() {
         log.info("Init kafka");
 
-        Set<String> topics = new HashSet<>();
+        var topics = new HashSet<String>();
         Arrays.stream(StatisticTopic.values())
                 .forEach(statisticTopic -> topics.add(statisticTopic.getName()));
 
@@ -63,8 +61,8 @@ public class ConsumerImpl implements Consumer {
 
 
         kafkaConsumer.handler(record -> {
-            StatisticTopic topic = StatisticTopic.safeValueOf(record.topic());
-            StatisticStrategy strategy = statisticFactory.getStrategy(topic);
+            var topic = StatisticTopic.safeValueOf(record.topic());
+            var strategy = statisticFactory.getStrategy(topic);
             strategy
                     .validate(record.value())
                     .saveHistory()

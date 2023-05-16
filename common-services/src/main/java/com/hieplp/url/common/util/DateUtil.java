@@ -2,6 +2,7 @@ package com.hieplp.url.common.util;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -49,5 +50,10 @@ public class DateUtil {
 
     public static Date addSeconds(Date date, int seconds) {
         return addSeconds(date.getTime(), seconds);
+    }
+
+    public static String formatDate(Long date, String pattern) {
+        var formatter = DateTimeFormatter.ofPattern(pattern);
+        return toLocalDateTime(date).format(formatter);
     }
 }

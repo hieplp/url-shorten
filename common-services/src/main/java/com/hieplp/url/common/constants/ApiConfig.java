@@ -34,6 +34,7 @@ public class ApiConfig {
 
     public static class Statistic {
         public static final String PREFIX = "/statistic";
-        public static final String SOCIAL_MEDIA = PREFIX + "/social-media";
+        public static final String SOCIAL_MEDIA = PREFIX + "/social";
+        public static final String TOTAL_CLICKS_BY_DATE = PREFIX + "/clicks";
     }
 }

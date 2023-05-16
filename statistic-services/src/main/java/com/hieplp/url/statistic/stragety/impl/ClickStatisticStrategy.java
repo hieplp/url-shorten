@@ -40,7 +40,7 @@ public class ClickStatisticStrategy implements StatisticStrategy {
     public StatisticStrategy saveHistory() {
         log.info("Save click statistic history");
 
-        HistoryRecord historyRecord = new HistoryRecord()
+        var historyRecord = new HistoryRecord()
                 .setHistoryid(GenerateUtil.generate(DEFAULT_HISTORY_ID_LENGTH))
                 .setUrlid(request.getUrlId())
                 .setCreatedby(request.getCreatedBy())

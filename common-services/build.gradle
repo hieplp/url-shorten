@@ -84,8 +84,8 @@ test {
 // XXX Generate JOOQ tables
 // -------------------------------------------------------------------------
 
-import org.jooq.codegen.GenerationTool
-import org.jooq.meta.jaxb.*
+//import org.jooq.codegen.GenerationTool
+//import org.jooq.meta.jaxb.*
 
 
 // -------------------------------------------------------------------------

@@ -5,7 +5,8 @@ import lombok.Data;
 
 @Data
 @Builder
-public class GetStatisticOfSocialMediaResponse {
-    private Long socialType;
+public class GetTotalClicksByDateResponse {
+    private Long date;
+    private String dateAsString;
     private Long totalClicks;
 }

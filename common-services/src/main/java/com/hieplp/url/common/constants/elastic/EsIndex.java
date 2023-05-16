@@ -1,13 +1,11 @@
 package com.hieplp.url.common.constants.elastic;
 
-public enum HistoryField {
-    URL_ID("urlid"),
-    SOCIAL_TYPE("socialtype"),
-    ;
+public enum EsIndex {
+    HISTORY("logstash-history");
 
     private final String name;
 
-    HistoryField(String name) {
+    EsIndex(String name) {
         this.name = name;
     }
 
