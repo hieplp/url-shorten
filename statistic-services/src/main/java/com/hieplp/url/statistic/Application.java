@@ -11,7 +11,6 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.json.JsonObject;
-import io.vertx.core.spi.cluster.ClusterManager;
 import io.vertx.spi.cluster.zookeeper.ZookeeperClusterManager;
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,14 +30,14 @@ public class Application extends AbstractVerticle {
         }
 
         // Load config
-        ConfigInfo configInfo = ConfigUtil.loadConfig(context.config().encode(), ConfigInfo.class);
+        var configInfo = ConfigUtil.loadConfig(context.config().encode(), ConfigInfo.class);
 
         // Zookeeper cluster manager
-        JsonObject zkConfig = new JsonObject();
-        ClusterManager mgr = new ZookeeperClusterManager(zkConfig);
+        var zkConfig = new JsonObject();
+        var mgr = new ZookeeperClusterManager(zkConfig);
 
         // Vertx cluster
-        VertxOptions options = new VertxOptions()
+        var options = new VertxOptions()
                 .setWorkerPoolSize(configInfo.getWorkerPoolSize())
                 .setMaxWorkerExecuteTime(configInfo.getWorkerMaxExecuteTime())
                 .setClusterManager(mgr);
@@ -51,7 +50,7 @@ public class Application extends AbstractVerticle {
                     consumer
                             .init()
                             .api()
-//                            .kafka()
+                            .kafka()
                             .start();
                 })
                 .onFailure(err -> {

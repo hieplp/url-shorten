@@ -16,10 +16,11 @@ import com.hieplp.url.common.exception.BadRequestException;
 import com.hieplp.url.common.model.UrlModel;
 import com.hieplp.url.common.payload.request.CommonRequest;
 import com.hieplp.url.common.payload.request.statistic.GetStatisticOfSocialMediaRequest;
-import com.hieplp.url.common.payload.request.statistic.GetTotalClicksByDateRequest;
+import com.hieplp.url.common.payload.request.statistic.GetTotalClicksGroupByDateRequest;
 import com.hieplp.url.common.payload.response.CommonResponse;
 import com.hieplp.url.common.payload.response.statistic.GetStatisticOfSocialMediaResponse;
 import com.hieplp.url.common.payload.response.statistic.GetTotalClicksByDateResponse;
+import com.hieplp.url.common.payload.response.statistic.GetTotalClicksGroupByDateResponse;
 import com.hieplp.url.common.util.DateUtil;
 import com.hieplp.url.common.util.JsonUtil;
 import com.hieplp.url.common.util.States;
@@ -36,7 +37,10 @@ import java.util.HashSet;
 @Slf4j
 @RequiredArgsConstructor(onConstructor = @__({@Inject}))
 public class StatisticServiceImpl implements StatisticService {
+    private final static String DATE_PATTERN = "yyyy-MM-dd";
+    private final static String MONTH_PATTERN = "yyyy-MM";
 
+    //
     private final ElasticsearchClient elasticClient;
 
     @Override
@@ -44,7 +48,7 @@ public class StatisticServiceImpl implements StatisticService {
         try {
             log.info("Get statistic of social media: {}", commonRequest);
 
-            var request = JsonUtil.fromJson(commonRequest.getRequest(), GetStatisticOfSocialMediaRequest.class);
+            final var request = JsonUtil.fromJson(commonRequest.getRequest(), GetStatisticOfSocialMediaRequest.class);
 
             if (States.isEmpty(request.getUrlId())) {
                 log.error("UrlId is empty");
@@ -104,21 +108,56 @@ public class StatisticServiceImpl implements StatisticService {
     }
 
     @Override
-    public CommonResponse getStatisticOfClicksByDate(CommonRequest commonRequest) {
-        return null;
-    }
-
-    @Override
     public CommonResponse getTotalClicksByDate(CommonRequest commonRequest) {
         try {
             log.info("Get total clicks by date: {}", commonRequest);
 
-            var request = JsonUtil.fromJson(commonRequest.getRequest(), GetTotalClicksByDateRequest.class);
+            final var request = JsonUtil.fromJson(commonRequest.getRequest(), GetTotalClicksGroupByDateRequest.class);
 
-            // TODO: Check if url belongs to user
+            //
+            final var fromDate = DateUtil.formatDate(request.getFromDate(), DATE_PATTERN);
+            final var toDate = DateUtil.formatDate(request.getToDate(), DATE_PATTERN);
 
-            final var DATE_PATTERN = "yyyy-MM-dd";
-            final var MONTH_PATTERN = "yyyy-MM";
+            var searchResponse = elasticClient.search(s -> s
+                            .index(EsIndex.HISTORY.getName())
+                            .size(0)
+
+                            .query(q -> q.bool(b -> b
+
+                                    // Filter by urlId
+                                    .must(m -> m.match(t -> t.field(EsField.URL_ID.getName()).query(request.getUrlId())))
+
+                                    // Filter by date range
+                                    .must(m -> m.range(t -> t.field(EsField.CREATED_AT.getName())
+                                            .gte(JsonData.of(fromDate))
+                                            .lte(JsonData.of(toDate))))
+                            ))
+
+                    , Void.class);
+
+            // Mapping elastic hits to response
+            var totalHits = searchResponse.hits().total();
+            var totalClicks = States.isNull(totalHits) ? 0 : totalHits.value();
+
+            // Mapping to response
+            var response = GetTotalClicksByDateResponse.builder()
+                    .totalClicks(totalClicks)
+                    .build();
+
+            return new CommonResponse(SuccessCode.SUCCESS, response);
+        } catch (IOException e) {
+            log.error("Error when get statistic of clicks by date: {}", e.getMessage());
+            return new CommonResponse(ErrorCode.INTERNAL_SERVER_ERROR, null);
+        }
+    }
+
+    @Override
+    public CommonResponse getTotalClicksGroupByMonth(CommonRequest commonRequest) {
+        try {
+            log.info("Get total clicks by date: {}", commonRequest);
+
+            final var request = JsonUtil.fromJson(commonRequest.getRequest(), GetTotalClicksGroupByDateRequest.class);
+
             final var fromDate = DateUtil.formatDate(request.getFromDate(), DATE_PATTERN);
             final var toDate = DateUtil.formatDate(request.getToDate(), DATE_PATTERN);
 
@@ -126,13 +165,16 @@ public class StatisticServiceImpl implements StatisticService {
                             .index(EsIndex.HISTORY.getName())
                             .size(0) // Don't need to return any documents
 
-                            // Filter by urlId
-                            .query(q -> q.match(t -> t.field(EsField.URL_ID.getName()).query(request.getUrlId())))
+                            .query(q -> q.bool(b -> b
 
-                            // Filter by date range
-                            .query(q -> q.range(t -> t.field(EsField.CREATED_AT.getName())
-                                    .gte(JsonData.of(fromDate))
-                                    .lte(JsonData.of(toDate))))
+                                    // Filter by urlId
+                                    .must(m -> m.match(t -> t.field(EsField.URL_ID.getName()).query(request.getUrlId())))
+
+                                    // Filter by date range
+                                    .must(m -> m.range(t -> t.field(EsField.CREATED_AT.getName())
+                                            .gte(JsonData.of(fromDate))
+                                            .lte(JsonData.of(toDate))))
+                            ))
 
                             .aggregations(EsAggregation.TOTAL_CLICKS_BY_DATE.getName(), a -> a.dateHistogram(t -> t
                                     .field(EsField.CREATED_AT.getName()) // Group by created_at
@@ -153,9 +195,9 @@ public class StatisticServiceImpl implements StatisticService {
                     .dateHistogram().buckets();
 
             // Mapping elastic aggregation to response
-            var response = new ArrayList<GetTotalClicksByDateResponse>();
+            var response = new ArrayList<GetTotalClicksGroupByDateResponse>();
             buckets.array().forEach(bucket -> {
-                var item = GetTotalClicksByDateResponse.builder()
+                var item = GetTotalClicksGroupByDateResponse.builder()
                         .date(bucket.key())
                         .dateAsString(bucket.keyAsString())
                         .totalClicks(bucket.docCount())

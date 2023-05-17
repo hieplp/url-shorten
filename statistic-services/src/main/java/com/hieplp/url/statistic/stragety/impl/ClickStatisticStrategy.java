@@ -27,11 +27,12 @@ public class ClickStatisticStrategy implements StatisticStrategy {
     @Override
     public StatisticStrategy validate(Buffer buffer) {
         log.info("Validate click statistic");
+        log.info("Buffer: {}", buffer);
 
         request = Json.decodeValue(buffer, CreateHistoryRequest.class);
-        ValidationUtil.checkNotNullAll(request);
+        ValidationUtil.checkNotNullWithAnnotation(request);
 
-        socialType = StatisticSocialType.safeValueOf(request.getSocialTypeAsString());
+        socialType = StatisticSocialType.safeValueOf(request.getReferrer());
 
         return this;
     }

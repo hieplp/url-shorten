@@ -25,11 +25,19 @@ public class StatisticController implements BaseController {
                 .blockingHandler(routerHandler::anonymousHandler)
                 .blockingHandler(ctx -> routerHandler.serviceHandler(ctx, statisticService::getStatisticOfSocialMedia))
                 .blockingHandler(routerHandler::ok);
+
         router.get(ApiConfig.Statistic.TOTAL_CLICKS_BY_DATE)
                 .handler(routerHandler::getHandler)
                 .blockingHandler(routerHandler::anonymousHandler)
                 .blockingHandler(ctx -> routerHandler.serviceHandler(ctx, statisticService::getTotalClicksByDate))
                 .blockingHandler(routerHandler::ok);
+
+        router.get(ApiConfig.Statistic.TOTAL_CLICKS_GROUP_BY_MONTH)
+                .handler(routerHandler::getHandler)
+                .blockingHandler(routerHandler::anonymousHandler)
+                .blockingHandler(ctx -> routerHandler.serviceHandler(ctx, statisticService::getTotalClicksGroupByMonth))
+                .blockingHandler(routerHandler::ok);
+
         return this;
     }
 }

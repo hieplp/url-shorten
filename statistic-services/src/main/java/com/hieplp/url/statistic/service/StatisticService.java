@@ -6,7 +6,7 @@ import com.hieplp.url.common.payload.response.CommonResponse;
 public interface StatisticService {
     CommonResponse getStatisticOfSocialMedia(CommonRequest commonRequest);
 
-    CommonResponse getStatisticOfClicksByDate(CommonRequest commonRequest);
-
     CommonResponse getTotalClicksByDate(CommonRequest commonRequest);
+
+    CommonResponse getTotalClicksGroupByMonth(CommonRequest commonRequest);
 }

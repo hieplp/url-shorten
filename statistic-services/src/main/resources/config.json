@@ -5,7 +5,7 @@
   },
   "sqlConfig": {
     "driverClassName": "org.mariadb.jdbc.Driver",
-    "jdbcUrl": "jdbc:mariadb://127.0.0.1:3306/ecommerce",
+    "jdbcUrl": "jdbc:mariadb://127.0.0.1:3306/shortenStatistic",
     "maxPoolSize": "16",
     "username": "root",
     "password": "123456",

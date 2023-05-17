@@ -42,7 +42,7 @@ public class ConfigModule extends AbstractModule {
                 DiscoveryServiceName.STATISTIC,
                 configInfo.getServerConfig().getHost(),
                 configInfo.getServerConfig().getPort(),
-                ApiConfig.UserUrl.PREFIX);
+                ApiConfig.Statistic.PREFIX);
 
     }
 
