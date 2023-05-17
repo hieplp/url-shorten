@@ -3,7 +3,6 @@ package com.hieplp.url.shorten.service.impl;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.inject.Inject;
-import com.hieplp.url.common.constants.statistic.StatisticSocialType;
 import com.hieplp.url.common.constants.statistic.StatisticTopic;
 import com.hieplp.url.common.constants.statusCode.SuccessCode;
 import com.hieplp.url.common.constants.url.UrlIsDeleted;
@@ -15,9 +14,9 @@ import com.hieplp.url.common.payload.request.QueryRequest;
 import com.hieplp.url.common.payload.request.history.CreateHistoryRequest;
 import com.hieplp.url.common.payload.request.url.CreateUrlByAuthRequest;
 import com.hieplp.url.common.payload.request.url.CreateUrlByPublicRequest;
+import com.hieplp.url.common.payload.request.url.GetUrlByPublicRequest;
 import com.hieplp.url.common.payload.request.url.UpdateUrlByAuthRequest;
 import com.hieplp.url.common.payload.response.CommonResponse;
-import com.hieplp.url.common.payload.response.QueryResponse;
 import com.hieplp.url.common.repository.url.tables.records.UrlRecord;
 import com.hieplp.url.common.util.*;
 import com.hieplp.url.shorten.config.ConfigInfo;
@@ -55,18 +54,18 @@ public class UrlServiceImpl implements UrlService {
     public CommonResponse createUrlByPublic(CommonRequest commonRequest) {
         log.info("Create url by public with request: {}", commonRequest);
 
-        CreateUrlByPublicRequest request = JsonUtil.fromJson(commonRequest.getRequest(), CreateUrlByPublicRequest.class);
+        var request = JsonUtil.fromJson(commonRequest.getRequest(), CreateUrlByPublicRequest.class);
 
         ValidationUtil.checkNotNullAll(request);
         ValidationUtil.checkUrlIsValid(request.getLongUrl());
 
 
-        UrlModel urlModel = UrlModel.builder()
+        var urlModel = UrlModel.builder()
                 .longUrl(request.getLongUrl())
                 .alias(GenerateUtil.generate(configInfo.getAliasLength()))
                 .createdBy("public") // TODO: Use deviceId or something else to identify url owner
                 .build();
-        UrlModel response = urlHandler.saveUrl(urlModel);
+        var response = urlHandler.saveUrl(urlModel);
 
         return new CommonResponse(SuccessCode.SUCCESS, response);
     }
@@ -75,10 +74,10 @@ public class UrlServiceImpl implements UrlService {
     public CommonResponse getUrlByPublic(CommonRequest commonRequest) {
         log.info("Get url by public with request: {}", commonRequest);
 
-        UrlModel request = JsonUtil.fromJson(commonRequest.getRequest(), UrlModel.class);
+        var request = JsonUtil.fromJson(commonRequest.getRequest(), GetUrlByPublicRequest.class);
         ValidationUtil.checkNotNull(request);
 
-        UrlModel response = urlCache.getIfPresent(request.getAlias());
+        var response = urlCache.getIfPresent(request.getAlias());
         if (States.isNull(response)) {
             response = urlRepo.getUrlModelByPublic(request.getAlias());
             urlCache.put(request.getAlias(), response);
@@ -86,7 +85,7 @@ public class UrlServiceImpl implements UrlService {
 
         urlHandler.saveUrlHistory(StatisticTopic.CLICK, CreateHistoryRequest.builder()
                 .urlId(response.getUrlId())
-                .socialTypeAsString(StatisticSocialType.FACEBOOK.getName()) // FIXME: Hard code
+                .referrer(request.getReferer())
                 .createdBy("public") // TODO: Use deviceId or something else to identify url owner
                 .build());
 
@@ -97,7 +96,7 @@ public class UrlServiceImpl implements UrlService {
     public CommonResponse createUrlByAuth(CommonRequest commonRequest) {
         log.info("Create url by auth with request: {}", commonRequest);
 
-        CreateUrlByAuthRequest request = JsonUtil.fromJson(commonRequest.getRequest(), CreateUrlByAuthRequest.class);
+        var request = JsonUtil.fromJson(commonRequest.getRequest(), CreateUrlByAuthRequest.class);
         ValidationUtil.checkNotNullWithAnnotation(request);
         ValidationUtil.checkUrlIsValid(request.getLongUrl());
 
@@ -111,20 +110,20 @@ public class UrlServiceImpl implements UrlService {
         }
 
         if (States.isNotNull(request.getExpiredAt())) {
-            final Long currentTime = DateUtil.getCurrentTime();
+            final var currentTime = DateUtil.getCurrentTime();
             if (States.isLessThan(request.getExpiredAt(), currentTime)) {
                 log.debug("Expired at: {} is less than current time: {}", request.getExpiredAt(), currentTime);
                 throw new BadRequestException(String.format("Expired at: %s is less than current time: %s", request.getExpiredAt(), currentTime));
             }
         }
 
-        UrlModel urlModel = UrlModel.builder()
+        var urlModel = UrlModel.builder()
                 .longUrl(request.getLongUrl())
                 .alias(request.getAlias())
                 .expiredAt(request.getExpiredAt())
                 .createdBy(commonRequest.getHeaders().getUserId())
                 .build();
-        UrlModel response = urlHandler.saveUrl(urlModel);
+        var response = urlHandler.saveUrl(urlModel);
 
         return new CommonResponse(SuccessCode.SUCCESS, response);
     }
@@ -133,12 +132,12 @@ public class UrlServiceImpl implements UrlService {
     public CommonResponse updateUrlByAuth(CommonRequest commonRequest) {
         log.info("Update url by auth with request: {}", commonRequest);
 
-        UpdateUrlByAuthRequest request = JsonUtil.fromJson(commonRequest.getRequest(), UpdateUrlByAuthRequest.class);
+        var request = JsonUtil.fromJson(commonRequest.getRequest(), UpdateUrlByAuthRequest.class);
         ValidationUtil.checkNotNullWithAnnotation(request);
 
-        UrlRecord urlRecord = urlRepo.getActiveUrlRecordByOwner(request.getUrlId(), commonRequest.getHeaders().getUserId());
+        var urlRecord = urlRepo.getActiveUrlRecordByOwner(request.getUrlId(), commonRequest.getHeaders().getUserId());
 
-        final Long currentTime = DateUtil.getCurrentTime();
+        final var currentTime = DateUtil.getCurrentTime();
         if (States.isLessThan(DateUtil.toMilliSeconds(urlRecord.getExpiredat()), currentTime)) {
             log.debug("Url: {} is expired", urlRecord.getUrlid());
             throw new BadRequestException(String.format("Url: %s is expired", urlRecord.getUrlid()));
@@ -161,7 +160,7 @@ public class UrlServiceImpl implements UrlService {
             ValidationUtil.checkUrlIsValid(request.getLongUrl());
         }
 
-        UrlRecord updatedUrlRecord = new UrlRecord()
+        var updatedUrlRecord = new UrlRecord()
                 .setUrlid(urlRecord.getUrlid())
                 .setAlias(request.getAlias())
                 .setShorturl(States.isNull(request.getAlias())
@@ -173,7 +172,7 @@ public class UrlServiceImpl implements UrlService {
                 .setModifiedby(commonRequest.getHeaders().getUserId());
         urlRepo.updateNotNull(updatedUrlRecord);
 
-        UrlModel response = urlRepo.getUrlModelByOwner(request.getUrlId(), commonRequest.getHeaders().getUserId());
+        var response = urlRepo.getUrlModelByOwner(request.getUrlId(), commonRequest.getHeaders().getUserId());
         return new CommonResponse(SuccessCode.SUCCESS, response);
     }
 
@@ -181,11 +180,11 @@ public class UrlServiceImpl implements UrlService {
     public CommonResponse deleteUrlByAuth(CommonRequest commonRequest) {
         log.info("Delete url by auth with request: {}", commonRequest);
 
-        UrlModel request = JsonUtil.fromJson(commonRequest.getRequest(), UrlModel.class);
+        var request = JsonUtil.fromJson(commonRequest.getRequest(), UrlModel.class);
         ValidationUtil.checkNotNull(request.getUrlId());
 
-        UrlRecord urlRecord = urlRepo.getActiveUrlRecordByOwner(request.getUrlId(), commonRequest.getHeaders().getUserId());
-        UrlRecord deletedUrlRecord = new UrlRecord()
+        var urlRecord = urlRepo.getActiveUrlRecordByOwner(request.getUrlId(), commonRequest.getHeaders().getUserId());
+        var deletedUrlRecord = new UrlRecord()
                 .setUrlid(urlRecord.getUrlid())
                 .setIsdeleted(UrlIsDeleted.DELETED.getValue())
                 .setDeletedby(commonRequest.getHeaders().getUserId())
@@ -199,10 +198,10 @@ public class UrlServiceImpl implements UrlService {
     public CommonResponse getUrlByAuth(CommonRequest commonRequest) {
         log.info("Get url by auth with request: {}", commonRequest);
 
-        UrlModel request = JsonUtil.fromJson(commonRequest.getRequest(), UrlModel.class);
+        var request = JsonUtil.fromJson(commonRequest.getRequest(), UrlModel.class);
         ValidationUtil.checkNotNull(request.getUrlId());
 
-        UrlModel response = urlRepo.getUrlModelByOwner(request.getUrlId(), commonRequest.getHeaders().getUserId());
+        var response = urlRepo.getUrlModelByOwner(request.getUrlId(), commonRequest.getHeaders().getUserId());
 
         return new CommonResponse(SuccessCode.SUCCESS, response);
     }
@@ -210,8 +209,8 @@ public class UrlServiceImpl implements UrlService {
     @Override
     public CommonResponse getUrlsByAuth(CommonRequest commonRequest) {
         log.info("Get urls by auth with request: {}", commonRequest);
-        QueryRequest request = JsonUtil.fromJson(commonRequest.getRequest(), QueryRequest.class);
-        QueryResponse<UrlModel> response = urlRepo.getUrlsByOwner(request, commonRequest.getHeaders().getUserId());
+        var request = JsonUtil.fromJson(commonRequest.getRequest(), QueryRequest.class);
+        var response = urlRepo.getUrlsByOwner(request, commonRequest.getHeaders().getUserId());
         return new CommonResponse(SuccessCode.SUCCESS, response);
     }
 }

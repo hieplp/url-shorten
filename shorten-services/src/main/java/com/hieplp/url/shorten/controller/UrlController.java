@@ -28,7 +28,7 @@ public class UrlController implements BaseController {
 
         router.get(ApiConfig.PublicUrl.PREFIX + "/:alias")
                 .handler(routerHandler::getHandler)
-                .blockingHandler(routerHandler::anonymousHandler)
+                .blockingHandler(routerHandler::headerHandler)
                 .blockingHandler(ctx -> routerHandler.serviceHandler(ctx, urlService::getUrlByPublic))
                 .blockingHandler(routerHandler::ok);
 

@@ -32,7 +32,7 @@ public class UrlHandlerImpl implements UrlHandler {
     public UrlModel saveUrl(UrlModel urlModel) {
         log.info("Save url: {}", urlModel);
 
-        UrlRecord urlRecord = new UrlRecord()
+        var urlRecord = new UrlRecord()
                 .setUrlid(GenerateUtil.generate(DEFAULT_URL_ID_LENGTH))
                 .setAlias(urlModel.getAlias())
                 .setShorturl(String.format("%s/%s", configInfo.getUrlHost(), urlModel.getAlias()))
