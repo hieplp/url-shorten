@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.hieplp.url.common.util.CorsUtil;
 import com.hieplp.url.gateway.config.ConfigInfo;
 import com.hieplp.url.gateway.controller.AuthController;
+import com.hieplp.url.gateway.controller.StatisticController;
 import com.hieplp.url.gateway.controller.UrlController;
 import com.hieplp.url.gateway.controller.UserController;
 import io.vertx.core.Vertx;
@@ -23,6 +24,7 @@ public class ConsumerImpl implements Consumer {
     private final AuthController authController;
     private final UserController userController;
     private final UrlController urlController;
+    private final StatisticController statisticController;
     //
     private Router router;
 
@@ -48,6 +50,7 @@ public class ConsumerImpl implements Consumer {
 
         authController.init(router);
         urlController.init(router);
+        statisticController.init(router);
         userController.init(router); // Should be the last one because it matches all routes with /user/*
 
         return this;

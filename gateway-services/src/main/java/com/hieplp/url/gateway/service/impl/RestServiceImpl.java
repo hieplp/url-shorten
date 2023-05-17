@@ -8,19 +8,14 @@ import com.hieplp.url.common.constants.discovery.DiscoveryServiceName;
 import com.hieplp.url.common.exception.auth.UnauthorizedException;
 import com.hieplp.url.common.exception.data.NotFoundException;
 import com.hieplp.url.common.handler.TokenHandler;
-import com.hieplp.url.common.payload.HeaderInformation;
 import com.hieplp.url.common.router.RouterHandler;
 import com.hieplp.url.common.util.DiscoveryUtil;
 import com.hieplp.url.gateway.service.RestService;
 import io.vertx.core.http.HttpClient;
 import io.vertx.ext.web.RoutingContext;
-import io.vertx.servicediscovery.Record;
 import io.vertx.servicediscovery.ServiceDiscovery;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor(onConstructor = @__({@Inject}))
@@ -35,8 +30,8 @@ public class RestServiceImpl implements RestService {
         try {
             log.debug("Auth handler");
 
-            final String token = context.request().getHeader("Authorization");
-            HeaderInformation headers = tokenHandler.validateToken(token);
+            final var token = context.request().getHeader("Authorization");
+            var headers = tokenHandler.validateToken(token);
 
             if (!TokenType.ACCESS.getType().equals(headers.getTokenType())) {
                 log.debug("Invalid token type: {}", headers.getTokenType());
@@ -88,11 +83,11 @@ public class RestServiceImpl implements RestService {
         log.info("Dispatch request to {}", service.getName());
         DiscoveryUtil.getAllEndpoints(discovery)
                 .andThen(ar -> {
-                    final String path = context.request().uri();
+                    final var path = context.request().uri();
                     log.debug("Request path: {}", path);
 
-                    List<Record> records = ar.result();
-                    Optional<Record> client = records.stream()
+                    var records = ar.result();
+                    var client = records.stream()
                             .filter(record -> record.getMetadata().getString(DiscoveryMetadata.NAME.getName()).equals(service.getName()))
                             .findAny();
 
