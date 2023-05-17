@@ -52,10 +52,28 @@ public class RouterHandlerImpl implements RouterHandler {
     @Override
     public void anonymousHandler(RoutingContext context) {
         log.debug("Anonymous handler with body");
-        CommonRequest request = CommonRequest.builder()
+        var request = CommonRequest.builder()
                 .request(JsonUtil.fromJson(context.body().asString(), JsonObject.class))
                 .build();
         context.put(REQUEST, request);
+        context.next();
+    }
+
+    @Override
+    public void headerHandler(RoutingContext context) {
+        log.debug("Header handler with body");
+
+        var header = JsonUtil.fromMultiMap(context.request().headers());
+        log.warn("Header: {}", header);
+        var body = JsonUtil.fromJson(context.body().asString(), JsonObject.class);
+        log.warn("Body: {}", body);
+
+        var request = JsonUtil.merge(header, body);
+        var commonRequest = CommonRequest.builder()
+                .request(request)
+                .build();
+
+        context.put(REQUEST, commonRequest);
         context.next();
     }
 
@@ -64,17 +82,17 @@ public class RouterHandlerImpl implements RouterHandler {
         try {
             log.debug("User handler with body");
 
-            final String userId = context.request().getHeader(HeaderKey.USERID.getName());
+            final var userId = context.request().getHeader(HeaderKey.USERID.getName());
 
             if (States.isBlank(userId)) {
                 log.debug("User id is null");
                 throw new UnauthorizedException("Invalid user id");
             }
 
-            HeaderInformation headers = HeaderInformation.builder()
+            var headers = HeaderInformation.builder()
                     .userId(userId)
                     .build();
-            CommonRequest request = CommonRequest.builder()
+            var request = CommonRequest.builder()
                     .request(JsonUtil.fromJson(context.body().asString(), JsonObject.class))
                     .headers(headers)
                     .build();
@@ -91,16 +109,16 @@ public class RouterHandlerImpl implements RouterHandler {
         try {
             log.debug("User handler with body");
 
-            final String token = context.request().getHeader("Authorization");
+            final var token = context.request().getHeader("Authorization");
             if (States.isBlank(token)) {
                 throw new UnauthorizedException("Invalid token type");
             }
 
-            HeaderInformation headers = HeaderInformation.builder()
+            var headers = HeaderInformation.builder()
                     .token(token)
                     .build();
 
-            CommonRequest request = CommonRequest.builder()
+            var request = CommonRequest.builder()
                     .request(JsonUtil.fromJson(context.body().asString(), JsonObject.class))
                     .headers(headers)
                     .build();
@@ -116,7 +134,7 @@ public class RouterHandlerImpl implements RouterHandler {
     public void serviceHandler(RoutingContext context, ServiceHandler serviceHandler) {
         try {
             CommonRequest request = context.get(REQUEST);
-            Object response = serviceHandler.handle(request);
+            var response = serviceHandler.handle(request);
             log.debug("Service handler with response: {}", response);
             context.put(RESPONSE, response);
             context.next();
@@ -129,7 +147,7 @@ public class RouterHandlerImpl implements RouterHandler {
     public void ok(RoutingContext context) {
         if (context.response().ended()) return;
 
-        Object response = context.get(RESPONSE);
+        var response = context.get(RESPONSE);
         context.response()
                 .setStatusCode(HttpStatusCode.OK.getCodeAsInteger())
                 .putHeader("content-type", "application/json")
@@ -140,7 +158,7 @@ public class RouterHandlerImpl implements RouterHandler {
     public void created(RoutingContext context) {
         if (context.response().ended()) return;
 
-        Object response = context.get(RESPONSE);
+        var response = context.get(RESPONSE);
         context.response()
                 .setStatusCode(HttpStatusCode.CREATED.getCodeAsInteger())
                 .putHeader("content-type", "application/json")
@@ -170,7 +188,7 @@ public class RouterHandlerImpl implements RouterHandler {
     @Override
     public void badRequest(RoutingContext context, Exception e) {
         log.error("Bad request: {}", e.getMessage());
-        CommonResponse response = new CommonResponse(HttpStatusCode.BAD_REQUEST, e.getMessage());
+        var response = new CommonResponse(HttpStatusCode.BAD_REQUEST, e.getMessage());
         context.response()
                 .setStatusCode(HttpStatusCode.BAD_REQUEST.getCodeAsInteger())
                 .putHeader("content-type", "application/json")
@@ -180,7 +198,7 @@ public class RouterHandlerImpl implements RouterHandler {
     @Override
     public void notFound(RoutingContext context, Exception e) {
         log.error("Not found: {}", e.getMessage());
-        CommonResponse response = new CommonResponse(HttpStatusCode.NOT_FOUND, e.getMessage());
+        var response = new CommonResponse(HttpStatusCode.NOT_FOUND, e.getMessage());
         context.response()
                 .setStatusCode(HttpStatusCode.NOT_FOUND.getCodeAsInteger())
                 .putHeader("content-type", "application/json")
@@ -190,7 +208,7 @@ public class RouterHandlerImpl implements RouterHandler {
     @Override
     public void conflict(RoutingContext context, Exception e) {
         log.error("Conflict: {}", e.getMessage());
-        CommonResponse response = new CommonResponse(HttpStatusCode.CONFLICT, e.getMessage());
+        var response = new CommonResponse(HttpStatusCode.CONFLICT, e.getMessage());
         context.response()
                 .setStatusCode(HttpStatusCode.CONFLICT.getCodeAsInteger())
                 .putHeader("content-type", "application/json")
@@ -200,7 +218,7 @@ public class RouterHandlerImpl implements RouterHandler {
     @Override
     public void unauthorized(RoutingContext context, Exception e) {
         log.error("Unauthorized: {}", e.getMessage());
-        CommonResponse response = new CommonResponse(HttpStatusCode.UNAUTHORIZED, e.getMessage());
+        var response = new CommonResponse(HttpStatusCode.UNAUTHORIZED, e.getMessage());
         context.response()
                 .setStatusCode(HttpStatusCode.UNAUTHORIZED.getCodeAsInteger())
                 .putHeader("content-type", "application/json")
@@ -210,7 +228,7 @@ public class RouterHandlerImpl implements RouterHandler {
     @Override
     public void invalidPassword(RoutingContext context, Exception e) {
         log.error("Invalid password: {}", e.getMessage());
-        CommonResponse response = new CommonResponse(HttpStatusCode.UNAUTHORIZED, e.getMessage());
+        var response = new CommonResponse(HttpStatusCode.UNAUTHORIZED, e.getMessage());
         context.response()
                 .setStatusCode(HttpStatusCode.UNAUTHORIZED.getCodeAsInteger())
                 .putHeader("content-type", "application/json")
@@ -219,7 +237,7 @@ public class RouterHandlerImpl implements RouterHandler {
 
     @Override
     public void internalError(RoutingContext context) {
-        CommonResponse response = new CommonResponse(HttpStatusCode.INTERNAL_SERVER_ERROR, "Internal error");
+        var response = new CommonResponse(HttpStatusCode.INTERNAL_SERVER_ERROR, "Internal error");
         context.response()
                 .setStatusCode(HttpStatusCode.INTERNAL_SERVER_ERROR.getCodeAsInteger())
                 .putHeader("content-type", "application/json")

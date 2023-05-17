@@ -5,6 +5,8 @@ import lombok.Data;
 
 @Data
 @Builder
-public class GetTotalClicksByDateResponse {
+public class GetTotalClicksGroupByDateResponse {
+    private Long date;
+    private String dateAsString;
     private Long totalClicks;
 }

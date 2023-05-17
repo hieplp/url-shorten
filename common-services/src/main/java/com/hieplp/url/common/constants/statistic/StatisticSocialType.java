@@ -2,33 +2,31 @@ package com.hieplp.url.common.constants.statistic;
 
 import com.hieplp.url.common.util.States;
 
-import java.util.Locale;
-
 public enum StatisticSocialType {
     OTHER(0, "other"),
-    MESSENGER(1, "messenger"),
-    FACEBOOK(2, "facebook"),
-    GOOGLE(3, "google"),
-    YOU_TUBE(4, "youTube"),
-    INSTAGRAM(5, "instagram"),
+    MESSENGER(1, "www.messenger.com"),
+    FACEBOOK(2, "www.youtube.com"),
+    GOOGLE(3, "www.google.com"),
+    YOU_TUBE(4, "www.youtube.com"),
+    INSTAGRAM(5, "www.instagram.com"),
     ;
 
     private final Byte code;
-    private final String name;
+    private final String domain;
 
-    StatisticSocialType(Integer code, String name) {
+    StatisticSocialType(Integer code, String domain) {
         this.code = code.byteValue();
-        this.name = name;
+        this.domain = domain;
     }
 
-    public static StatisticSocialType safeValueOf(String name) {
+    public static StatisticSocialType safeValueOf(String url) {
 
-        if (States.isNull(name)) {
+        if (States.isNull(url)) {
             return OTHER;
         }
 
         for (StatisticSocialType type : values()) {
-            if (type.getName().equals(name.toLowerCase(Locale.ROOT))) {
+            if (url.contains(type.getDomain())) {
                 return type;
             }
         }
@@ -40,7 +38,8 @@ public enum StatisticSocialType {
         return this.code;
     }
 
-    public String getName() {
-        return this.name;
+    public String getDomain() {
+        return this.domain;
     }
+
 }

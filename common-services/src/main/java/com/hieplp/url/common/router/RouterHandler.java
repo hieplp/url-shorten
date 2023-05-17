@@ -26,6 +26,13 @@ public interface RouterHandler {
     void anonymousHandler(RoutingContext context);
 
     /**
+     * Handle request with header
+     *
+     * @param context routing context
+     */
+    void headerHandler(RoutingContext context);
+
+    /**
      * Handle request with authentication - user
      *
      * @param context routing context

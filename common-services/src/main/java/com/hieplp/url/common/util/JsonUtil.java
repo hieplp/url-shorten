@@ -65,4 +65,21 @@ public class JsonUtil {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.convertValue(map, clazz);
     }
+
+    public static JsonObject merge(JsonObject... jsonObjects) {
+        JsonObject result = new JsonObject();
+
+        for (JsonObject jsonObject : jsonObjects) {
+
+            if (States.isNull(jsonObject)) {
+                continue;
+            }
+
+            for (var entry : jsonObject.entrySet()) {
+                result.add(entry.getKey(), entry.getValue());
+            }
+        }
+
+        return result;
+    }
 }
