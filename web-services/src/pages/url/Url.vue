@@ -42,7 +42,8 @@
 										grid-cols-1 lg:grid-cols-2
 										gap-2
 										row-span-5">
-          <SocialMediaStatistic class="bg-white
+          <SocialMediaStatistic :url-id="urlId"
+                                class="bg-white
 																	     shadow
 																	     row-span-6
 									                     rounded-lg" />

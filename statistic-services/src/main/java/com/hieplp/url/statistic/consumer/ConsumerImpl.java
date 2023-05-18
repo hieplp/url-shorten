@@ -4,6 +4,7 @@ package com.hieplp.url.statistic.consumer;
 import com.google.inject.Inject;
 import com.hieplp.url.common.constants.statistic.StatisticTopic;
 import com.hieplp.url.common.handler.KafkaConsumerHandler;
+import com.hieplp.url.common.util.CorsUtil;
 import com.hieplp.url.common.util.DiscoveryUtil;
 import com.hieplp.url.statistic.config.ConfigInfo;
 import com.hieplp.url.statistic.controller.StatisticController;
@@ -78,6 +79,13 @@ public class ConsumerImpl implements Consumer {
 
         statisticController.init(router);
 
+        return this;
+    }
+
+    @Override
+    public Consumer cors() {
+        log.info("Init cors");
+        CorsUtil.cors(router);
         return this;
     }
 

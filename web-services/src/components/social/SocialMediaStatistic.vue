@@ -18,7 +18,7 @@
 
       <div class="flex flex-col">
         <div v-for="media in socialMediaList"
-             :key="media.id"
+             :key="media.socialType"
              class="flex
 										flex-wrap
 										gap-4
@@ -27,15 +27,17 @@
 										w-full">
 
           <div class="">
-            <img :alt="media.name" :src="media.svgPath" class="h-7 w-7" />
+            <img :alt="socialMediaTypes[media.socialType].name"
+                 :src="socialMediaTypes[media.socialType].svgPath"
+                 class="h-7 w-7" />
           </div>
 
           <span class="font-bold">
-						{{ media.name }}
+						{{ socialMediaTypes[media.socialType].name }}
 					</span>
 
           <span class="ml-auto text-gray-400">
-						{{ media.count }}
+						{{ media.totalClicks }}
 					</span>
         </div>
       </div>
@@ -44,7 +46,7 @@
       <div class="flex border-t-2 py-1 pl-2">
         <span class="font-bold">Total: </span>
         <span class="ml-auto text-gray-400">
-					{{ socialMediaList.length }}
+					{{ sumOfClicks }}
 				</span>
       </div>
 
@@ -54,47 +56,32 @@
 </template>
 
 <script lang="ts" setup>
+import { computed, onMounted } from "vue";
+import { useStatisticStore } from "../../store/statistic";
+import { socialMediaTypes } from "../../common/constant/Constant";
 
-import SocialMediaModel from "../../common/model/SocialMediaModel";
-
-const socialMediaList = [
-  {
-    id: 1,
-    name: "Messenger",
-    count: 0,
-    svgPath: "/src/assets/svg/messenger.svg"
-  },
-  {
-    id: 2,
-    name: "Facebook",
-    count: 0,
-    svgPath: "/src/assets/svg/facebook.svg"
-  },
-  {
-    id: 3,
-    name: "Google",
-    count: 0,
-    svgPath: "/src/assets/svg/google.svg"
-  },
-  {
-    id: 4,
-    name: "Youtube",
-    count: 0,
-    svgPath: "/src/assets/svg/youtube.svg"
-  },
-  {
-    id: 5,
-    name: "Instagram",
-    count: 0,
-    svgPath: "/src/assets/svg/instagram.svg"
-  },
-  {
-    id: 6,
-    name: "Others",
-    count: 0,
-    svgPath: "/src/assets/svg/url.svg"
+const props = defineProps({
+  urlId: {
+    type: String,
+    required: true,
+    default: ""
   }
-] as SocialMediaModel[];
+});
+
+onMounted(() => {
+  statisticStore.getStatisticOfSocialMedia(props.urlId);
+});
+
+const statisticStore = useStatisticStore();
+
+const socialMediaList = computed(() => statisticStore.statisticOfSocialMedia);
+const sumOfClicks = computed(() => {
+  let sum = 0;
+  socialMediaList.value.forEach((media) => {
+    sum += media.totalClicks;
+  });
+  return sum;
+});
 
 </script>
 

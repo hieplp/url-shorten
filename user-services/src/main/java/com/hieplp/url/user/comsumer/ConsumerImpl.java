@@ -2,6 +2,7 @@ package com.hieplp.url.user.comsumer;
 
 
 import com.google.inject.Inject;
+import com.hieplp.url.common.util.CorsUtil;
 import com.hieplp.url.common.util.DiscoveryUtil;
 import com.hieplp.url.user.config.ConfigInfo;
 import com.hieplp.url.user.controller.UserController;
@@ -31,6 +32,13 @@ public class ConsumerImpl implements Consumer {
     public Consumer init() {
         log.info("Init consumer");
         router = Router.router(vertx);
+        return this;
+    }
+
+    @Override
+    public Consumer cors() {
+        log.info("Init cors");
+        CorsUtil.cors(router);
         return this;
     }
 

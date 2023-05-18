@@ -49,6 +49,7 @@ public class Application extends AbstractVerticle {
                     consumer = injector.getInstance(Consumer.class);
                     consumer
                             .init()
+                            .cors()
                             .api()
                             .kafka()
                             .start();
