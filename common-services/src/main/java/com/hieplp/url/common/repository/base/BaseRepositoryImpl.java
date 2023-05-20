@@ -8,7 +8,6 @@ import com.hieplp.url.common.payload.response.QueryResponse;
 import com.hieplp.url.common.util.States;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.extern.slf4j.Slf4j;
-import org.jooq.Record;
 import org.jooq.*;
 import org.jooq.conf.Settings;
 import org.jooq.impl.DSL;

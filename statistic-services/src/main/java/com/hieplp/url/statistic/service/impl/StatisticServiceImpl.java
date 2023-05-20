@@ -37,7 +37,7 @@ import java.util.HashSet;
 @Slf4j
 @RequiredArgsConstructor(onConstructor = @__({@Inject}))
 public class StatisticServiceImpl implements StatisticService {
-    private final static String DATE_PATTERN = "yyyy-MM-dd";
+    private final static String DATE_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS";
     private final static String MONTH_PATTERN = "yyyy-MM";
 
     //

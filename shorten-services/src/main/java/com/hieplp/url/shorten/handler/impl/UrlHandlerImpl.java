@@ -1,5 +1,6 @@
 package com.hieplp.url.shorten.handler.impl;
 
+import com.google.common.cache.Cache;
 import com.google.inject.Inject;
 import com.hieplp.url.common.constants.statistic.StatisticTopic;
 import com.hieplp.url.common.constants.url.UrlIsDeleted;
@@ -54,5 +55,15 @@ public class UrlHandlerImpl implements UrlHandler {
     public void saveUrlHistory(StatisticTopic topic, CreateHistoryRequest request) {
         log.info("Save url history: {}", request);
         kafkaProducerHandler.send(topic.getName(), request.getUrlId(), request);
+    }
+
+    @Override
+    public void invalidateUrl(Cache<String, UrlModel> urlCache, String alias) {
+        try {
+            log.info("Invalidate url: {}", alias);
+            urlCache.invalidate(alias);
+        } catch (NullPointerException e) {
+            // ignore
+        }
     }
 }

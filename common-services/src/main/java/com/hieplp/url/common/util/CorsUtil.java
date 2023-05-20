@@ -18,6 +18,7 @@ public class CorsUtil {
 
                 .allowedHeader("Content-Type")
                 .allowedHeader("Authorization")
+                .allowedHeader("fromHost")
         );
     }
 }

@@ -85,7 +85,7 @@ public class UrlServiceImpl implements UrlService {
 
         urlHandler.saveUrlHistory(StatisticTopic.CLICK, CreateHistoryRequest.builder()
                 .urlId(response.getUrlId())
-                .referrer(request.getReferer())
+                .referrer(request.getFromHost())
                 .createdBy("public") // TODO: Use deviceId or something else to identify url owner
                 .build());
 
@@ -138,9 +138,16 @@ public class UrlServiceImpl implements UrlService {
         var urlRecord = urlRepo.getActiveUrlRecordByOwner(request.getUrlId(), commonRequest.getHeaders().getUserId());
 
         final var currentTime = DateUtil.getCurrentTime();
-        if (States.isLessThan(DateUtil.toMilliSeconds(urlRecord.getExpiredat()), currentTime)) {
-            log.debug("Url: {} is expired", urlRecord.getUrlid());
-            throw new BadRequestException(String.format("Url: %s is expired", urlRecord.getUrlid()));
+        if (States.isNotNull(urlRecord.getExpiredat())) {
+            if (States.isLessThan(DateUtil.toMilliSeconds(urlRecord.getExpiredat()), currentTime)) {
+                log.debug("Url: {} is expired", urlRecord.getUrlid());
+                throw new BadRequestException(String.format("Url: %s is expired", urlRecord.getUrlid()));
+            }
+
+            if (States.isLessThan(request.getExpiredAt(), currentTime)) {
+                log.debug("Expired at: {} is less than current time: {}", request.getExpiredAt(), currentTime);
+                throw new BadRequestException(String.format("Expired at: %s is less than current time: %s", request.getExpiredAt(), currentTime));
+            }
         }
 
         if (States.isNotBlank(request.getAlias())
@@ -148,12 +155,6 @@ public class UrlServiceImpl implements UrlService {
                 && urlRepo.doesAliasExist(request.getAlias())) {
             log.debug("Alias: {} already exist", request.getAlias());
             throw new DuplicateException(String.format("Alias: %s already exist", request.getAlias()));
-        }
-
-        if (States.isNotNull(request.getExpiredAt())
-                && States.isLessThan(request.getExpiredAt(), currentTime)) {
-            log.debug("Expired at: {} is less than current time: {}", request.getExpiredAt(), currentTime);
-            throw new BadRequestException(String.format("Expired at: %s is less than current time: %s", request.getExpiredAt(), currentTime));
         }
 
         if (States.isNotNull(request.getLongUrl()) && States.isNotEquals(request.getLongUrl(), urlRecord.getLongurl())) {
@@ -171,6 +172,10 @@ public class UrlServiceImpl implements UrlService {
                 .setModifiedat(LocalDateTime.now())
                 .setModifiedby(commonRequest.getHeaders().getUserId());
         urlRepo.updateNotNull(updatedUrlRecord);
+
+        // Invalidate cache
+        // TODO: Update cache instead of invalidate
+        urlHandler.invalidateUrl(urlCache, urlRecord.getAlias());
 
         var response = urlRepo.getUrlModelByOwner(request.getUrlId(), commonRequest.getHeaders().getUserId());
         return new CommonResponse(SuccessCode.SUCCESS, response);
@@ -190,6 +195,9 @@ public class UrlServiceImpl implements UrlService {
                 .setDeletedby(commonRequest.getHeaders().getUserId())
                 .setDeletedat(LocalDateTime.now());
         urlRepo.updateNotNull(deletedUrlRecord);
+
+        // Invalidate cache
+        urlHandler.invalidateUrl(urlCache, urlRecord.getAlias());
 
         return new CommonResponse(SuccessCode.SUCCESS);
     }

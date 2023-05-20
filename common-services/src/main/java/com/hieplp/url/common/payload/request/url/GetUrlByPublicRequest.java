@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class GetUrlByPublicRequest {
     private String alias;
-    private String referer;
+    private String fromHost;
 }

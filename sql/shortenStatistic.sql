@@ -1,6 +1,7 @@
 create schema shortenStatistic;
 
-create or replace table shortenStatistic.history
+create
+or replace table shortenStatistic.history
 (
     historyId  varchar(255) not null
         primary key,

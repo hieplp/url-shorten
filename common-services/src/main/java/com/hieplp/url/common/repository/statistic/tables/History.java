@@ -7,7 +7,6 @@ package com.hieplp.url.common.repository.statistic.tables;
 import com.hieplp.url.common.repository.statistic.Keys;
 import com.hieplp.url.common.repository.statistic.Shortenstatistic;
 import com.hieplp.url.common.repository.statistic.tables.records.HistoryRecord;
-import org.jooq.Record;
 import org.jooq.*;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;

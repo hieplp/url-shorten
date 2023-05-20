@@ -8,7 +8,6 @@ import com.hieplp.url.common.repository.url.Indexes;
 import com.hieplp.url.common.repository.url.Keys;
 import com.hieplp.url.common.repository.url.Shortenurl;
 import com.hieplp.url.common.repository.url.tables.records.UrlRecord;
-import org.jooq.Record;
 import org.jooq.*;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;

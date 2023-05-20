@@ -2,7 +2,6 @@ package com.hieplp.url.common.repository.base;
 
 import com.hieplp.url.common.payload.request.QueryRequest;
 import com.hieplp.url.common.payload.response.QueryResponse;
-import org.jooq.Record;
 import org.jooq.*;
 
 import java.sql.SQLException;

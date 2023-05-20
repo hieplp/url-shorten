@@ -7,7 +7,6 @@ package com.hieplp.url.common.repository.user.tables;
 import com.hieplp.url.common.repository.user.Keys;
 import com.hieplp.url.common.repository.user.Shortenuser;
 import com.hieplp.url.common.repository.user.tables.records.PasswordRecord;
-import org.jooq.Record;
 import org.jooq.*;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
