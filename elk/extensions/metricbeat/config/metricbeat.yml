@@ -16,38 +16,38 @@ metricbeat.autodiscover:
       hints.enabled: true
 
 metricbeat.modules:
-- module: elasticsearch
-  hosts: [ http://elasticsearch:9200 ]
-  username: monitoring_internal
-  password: ${MONITORING_INTERNAL_PASSWORD}
-  xpack.enabled: true
-  period: 10s
-  enabled: true
-- module: logstash
-  hosts: [ http://logstash:9600 ]
-  xpack.enabled: true
-  period: 10s
-  enabled: true
-- module: kibana
-  hosts: [ http://kibana:5601 ]
-  username: monitoring_internal
-  password: ${MONITORING_INTERNAL_PASSWORD}
-  xpack.enabled: true
-  period: 10s
-  enabled: true
-- module: docker
-  metricsets:
-    - container
-    - cpu
-    - diskio
-    - healthcheck
-    - info
-    #- image
-    - memory
-    - network
-  hosts: [ unix:///var/run/docker.sock ]
-  period: 10s
-  enabled: true
+  - module: elasticsearch
+    hosts: [ http://elasticsearch:9200 ]
+    username: monitoring_internal
+    password: ${MONITORING_INTERNAL_PASSWORD}
+    xpack.enabled: true
+    period: 10s
+    enabled: true
+  - module: logstash
+    hosts: [ http://logstash:9600 ]
+    xpack.enabled: true
+    period: 10s
+    enabled: true
+  - module: kibana
+    hosts: [ http://kibana:5601 ]
+    username: monitoring_internal
+    password: ${MONITORING_INTERNAL_PASSWORD}
+    xpack.enabled: true
+    period: 10s
+    enabled: true
+  - module: docker
+    metricsets:
+      - container
+      - cpu
+      - diskio
+      - healthcheck
+      - info
+      #- image
+      - memory
+      - network
+    hosts: [ unix:///var/run/docker.sock ]
+    period: 10s
+    enabled: true
 
 processors:
   - add_cloud_metadata: ~
