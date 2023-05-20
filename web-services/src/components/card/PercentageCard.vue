@@ -17,6 +17,7 @@ import DecreaseCard from "./DecreaseCard.vue";
 const props = defineProps({
   amount: {
     type: Number as PropType<number>,
+    default: 0,
     required: true
   },
   title: {
@@ -25,6 +26,7 @@ const props = defineProps({
   },
   percentage: {
     type: Number as PropType<number>,
+    default: 0,
     required: true
   },
   isIncrease: {

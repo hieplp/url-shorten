@@ -1,4 +1,4 @@
 export default interface TotalClicksModel {
-  totalClicks: number;
-  date: number;
+  totalClicks: number | 0;
+  date: number | 0;
 }

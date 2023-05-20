@@ -23,6 +23,8 @@ export const getInputDateTime = (datetime: number): string => {
 };
 
 export const formatDatetime = (datetime: number): string => {
+  if (!datetime) return "";
+
   const date = new Date(datetime);
   const year = date.getFullYear().toString();
   const month = (date.getMonth() + 1).toString().padStart(2, "0");

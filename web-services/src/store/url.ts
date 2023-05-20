@@ -19,16 +19,23 @@ export const useUrlStore = defineStore("url", {
   ),
   getters: {},
   actions: {
-    getUrls() {
 
-    },
-
-    getUrl() {
-
-    },
-
-    getUrlByShortUrl() {
-
+    getUrlByAlias(alias: string, referrer: string): Promise<UrlModel> {
+      return new Promise((resolve, reject) => {
+        getWithAuth("/public/url/" + alias, {}, {
+          headers: {
+            "fromHost": referrer
+          }
+        })
+          .then((response) => {
+            let url = response.data as UrlModel;
+            this.url = url;
+            resolve(url);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
     },
 
     createUrlByPublic(request: CreateUrlByPublicRequest): Promise<any> {

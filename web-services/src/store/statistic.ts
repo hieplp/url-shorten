@@ -29,11 +29,9 @@ export const useStatisticStore = defineStore("statistic", {
     getTotalClicksByDate(urlId: String, fromDate: number, toDate: number): Promise<TotalClicksModel> {
       return new Promise((resolve, reject) => {
         getWithAuth("/statistic/total-clicks-by-date", {
-          params: {
-            urlId: urlId,
-            fromDate: fromDate,
-            toDate: toDate
-          }
+          urlId: urlId,
+          fromDate: fromDate,
+          toDate: toDate
         })
           .then((response) => {
             let totalClick = response.data as TotalClicksModel;
@@ -48,11 +46,9 @@ export const useStatisticStore = defineStore("statistic", {
     getTotalClicksGroupByMonth(urlId: String, fromDate: number, toDate: number): Promise<TotalClicksModel[]> {
       return new Promise((resolve, reject) => {
         getWithAuth("/statistic/total-clicks-group-by-month", {
-          params: {
-            urlId: urlId,
-            fromDate: fromDate,
-            toDate: toDate
-          }
+          urlId: urlId,
+          fromDate: fromDate,
+          toDate: toDate
         })
           .then((response) => {
             let totalClicks = response.data as TotalClicksModel[];

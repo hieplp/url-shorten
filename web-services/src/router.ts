@@ -6,6 +6,7 @@ import Profile from "./pages/user/Profile.vue";
 import Urls from "./pages/url/Urls.vue";
 import Url from "./pages/url/Url.vue";
 import UpdateUrl from "./pages/url/UpdateUrl.vue";
+import PublicUrl from "./pages/url/PublicUrl.vue";
 
 
 export const router = createRouter({
@@ -49,6 +50,13 @@ export const router = createRouter({
       path: "/urls/:urlId/update",
       name: "UpdateUrl",
       component: UpdateUrl
+    },
+
+    //
+    {
+      path: "/:pathMatch(.*)*",
+      name: "PublicUrl",
+      component: PublicUrl
     }
   ]
 });

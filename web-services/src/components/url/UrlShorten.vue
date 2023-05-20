@@ -123,8 +123,7 @@ function shortenUrl() {
 
   validateLongUrl();
 
-  if (isAuth.value) {
-    console.log(isAuth.value);
+  if (isAuth.value && alias.value.value) {
     validateAlias();
   }
 

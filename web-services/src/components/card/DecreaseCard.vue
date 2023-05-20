@@ -38,7 +38,7 @@
 										 text-sm
 										 font-semibold
 										 ml-2">
-					-{{ percentage }}%
+					{{ percentage }}%
 				</span>
       </div>
     </div>
