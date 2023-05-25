@@ -147,6 +147,14 @@ services:
     networks:
       - elk
 
+  auth-services:
+    container_name: auth-services
+    image: url-shortener/auth-services:latest
+    links:
+      - mariadb
+    depends_on:
+      - mariadb
+
 networks:
   elk:
     driver: bridge
