@@ -14,6 +14,10 @@
     "useLegacyDatetimeCode": "false",
     "connectionTimeout": 3600
   },
+  "zookeeperConfig": {
+    "host": "127.0.0.1",
+    "rootPath": "io.vertx"
+  },
   "workerPoolSize": 16,
   "workerMaxExecuteTime": 5000
 }

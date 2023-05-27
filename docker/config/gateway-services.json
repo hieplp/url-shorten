@@ -4,14 +4,14 @@
     "host": "0.0.0.0"
   },
   "tokenConfig": {
-    "privateKey": "/src/main/resources/rsa/token/token_private_key.der",
-    "publicKey": "/src/main/resources/rsa/token/token_public_key.der",
+    "privateKey": "/rsa/token/token_private_key.der",
+    "publicKey": "/rsa/token/token_public_key.der",
     "issuer": "todo",
     "accessActiveTime": 36,
     "refreshActiveTime": 144000
   },
   "zookeeperConfig": {
-    "host": "127.0.0.1",
+    "host": "zookeeper",
     "rootPath": "io.vertx"
   },
   "workerPoolSize": 16,

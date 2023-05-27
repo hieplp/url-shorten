@@ -5,7 +5,7 @@
   },
   "sqlConfig": {
     "driverClassName": "org.mariadb.jdbc.Driver",
-    "jdbcUrl": "jdbc:mariadb://127.0.0.1:3306/shortenUrl",
+    "jdbcUrl": "jdbc:mariadb://mariadb:3306/shortenUrl",
     "maxPoolSize": "16",
     "username": "root",
     "password": "123456",
@@ -19,13 +19,13 @@
     "expireAfterWrite": 3600
   },
   "kafkaConfig": {
-    "bootstrapServers": "localhost:29092",
+    "bootstrapServers": "kafka:29092",
     "keySerializer": "org.apache.kafka.common.serialization.StringSerializer",
     "valueSerializer": "io.vertx.kafka.client.serialization.BufferSerializer",
     "groupId": "statistic-group"
   },
   "zookeeperConfig": {
-    "host": "127.0.0.1",
+    "host": "zookeeper",
     "rootPath": "io.vertx"
   },
   "aliasLength": 6,

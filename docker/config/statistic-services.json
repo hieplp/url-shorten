@@ -5,7 +5,7 @@
   },
   "sqlConfig": {
     "driverClassName": "org.mariadb.jdbc.Driver",
-    "jdbcUrl": "jdbc:mariadb://127.0.0.1:3306/shortenStatistic",
+    "jdbcUrl": "jdbc:mariadb://mariadb:3306/shortenStatistic",
     "maxPoolSize": "16",
     "username": "root",
     "password": "123456",
@@ -14,19 +14,8 @@
     "useLegacyDatetimeCode": "false",
     "connectionTimeout": 3600
   },
-  "cacheConfig": {
-    "maximumSize": 1000,
-    "expireAfterWrite": 3600
-  },
-  "tokenConfig": {
-    "privateKey": "/src/main/resources/rsa/token/token_private_key.der",
-    "publicKey": "/src/main/resources/rsa/token/token_public_key.der",
-    "issuer": "todo",
-    "accessActiveTime": 36,
-    "refreshActiveTime": 144000
-  },
   "kafkaConfig": {
-    "bootstrapServers": "localhost:29092",
+    "bootstrapServers": "kafka:29092",
     "keyDeserializer": "org.apache.kafka.common.serialization.StringDeserializer",
     "valueDeserializer": "io.vertx.kafka.client.serialization.BufferDeserializer",
     "groupId": "statistic-group",
@@ -34,13 +23,13 @@
     "autoCommit": "true"
   },
   "elasticConfig": {
-    "host": "localhost",
+    "host": "elasticsearch",
     "port": 9200,
     "index": "ecommerce",
     "type": "statistic"
   },
   "zookeeperConfig": {
-    "host": "127.0.0.1",
+    "host": "zookeeper",
     "rootPath": "io.vertx"
   },
   "workerPoolSize": 16,

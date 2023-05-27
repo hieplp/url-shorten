@@ -15,14 +15,18 @@
     "connectionTimeout": 3600
   },
   "tokenConfig": {
-    "privateKey": "/src/main/resources/rsa/token/token_private_key.der",
-    "publicKey": "/src/main/resources/rsa/token/token_public_key.der",
+    "privateKey": "/rsa/token/token_private_key.der",
+    "publicKey": "/rsa/token/token_public_key.der",
     "issuer": "todo",
     "accessActiveTime": 144000,
     "refreshActiveTime": 144000
   },
   "passwordConfig": {
-    "privateKey": "/src/main/resources/rsa/password/password_private_key.der"
+    "privateKey": "/rsa/password/password_private_key.der"
+  },
+  "zookeeperConfig": {
+    "host": "zookeeper",
+    "rootPath": "io.vertx"
   },
   "workerPoolSize": 16,
   "workerMaxExecuteTime": 5000

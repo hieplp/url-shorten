@@ -7,10 +7,9 @@ import lombok.Getter;
 public class ConfigInfo {
     private HttpServerConfig serverConfig;
     private SqlConfig sqlConfig;
-    private CacheConfig cacheConfig;
-    private TokenConfig tokenConfig;
     private KafkaConsumerConfig kafkaConfig;
     private ElasticConfig elasticConfig;
+    private ZookeeperConfig zookeeperConfig;
     private Integer workerPoolSize;
     private Long workerMaxExecuteTime;
 }

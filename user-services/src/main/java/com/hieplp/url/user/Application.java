@@ -11,7 +11,6 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.json.JsonObject;
-import io.vertx.core.spi.cluster.ClusterManager;
 import io.vertx.spi.cluster.zookeeper.ZookeeperClusterManager;
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,16 +30,16 @@ public class Application extends AbstractVerticle {
         }
 
         // Load config
-        ConfigInfo configInfo = ConfigUtil.loadConfig(context.config().encode(), ConfigInfo.class);
+        var configInfo = ConfigUtil.loadConfig(context.config().encode(), ConfigInfo.class);
 
         // Zookeeper cluster manager
-        JsonObject zkConfig = new JsonObject();
+        var zkConfig = new JsonObject();
         zkConfig.put("zookeeperHosts", configInfo.getZookeeperConfig().getHost());
         zkConfig.put("rootPath", configInfo.getZookeeperConfig().getRootPath());
-        ClusterManager mgr = new ZookeeperClusterManager(zkConfig);
+        var mgr = new ZookeeperClusterManager(zkConfig);
 
         // Vertx cluster
-        VertxOptions options = new VertxOptions()
+        var options = new VertxOptions()
                 .setWorkerPoolSize(configInfo.getWorkerPoolSize())
                 .setMaxWorkerExecuteTime(configInfo.getWorkerMaxExecuteTime())
                 .setClusterManager(mgr);
