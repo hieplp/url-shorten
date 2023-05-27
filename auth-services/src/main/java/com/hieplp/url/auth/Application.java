@@ -35,6 +35,8 @@ public class Application extends AbstractVerticle {
 
         // Zookeeper cluster manager
         JsonObject zkConfig = new JsonObject();
+        zkConfig.put("zookeeperHosts", "zookeeper");
+        zkConfig.put("rootPath", "io.vertx");
         ClusterManager mgr = new ZookeeperClusterManager(zkConfig);
 
         // Vertx cluster

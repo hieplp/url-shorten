@@ -3,9 +3,9 @@
 # List of project directories
 projects=(
 #         "gateway-services"
-         "auth-services"
+#         "auth-services"
 #         "shorten-services"
-#         "user-services"
+         "user-services"
 #         "statistic-services"
 )
 
