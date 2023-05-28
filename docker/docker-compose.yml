@@ -64,6 +64,7 @@ services:
       # Use single node discovery in order to disable production mode and avoid bootstrap checks.
       # see: https://www.elastic.co/guide/en/elasticsearch/reference/current/bootstrap-checks.html
       discovery.type: single-node
+      TZ: Asia/Ho_Chi_Minh
     networks:
       - elk
     restart: unless-stopped
@@ -85,11 +86,13 @@ services:
     environment:
       LS_JAVA_OPTS: -Xms256m -Xmx256m
       LOGSTASH_INTERNAL_PASSWORD: ${LOGSTASH_INTERNAL_PASSWORD:-}
+    #    command: >
+    #      bash -c "sleep 30 && curl --user logstash_internal:${LOGSTASH_INTERNAL_PASSWORD:-} -XPUT 'http://localhost:9200/logstash-history'"
     networks:
       - elk
     depends_on:
       - elasticsearch
-    #      - mariadb
+      - mariadb
     restart: unless-stopped
 
   kibana:
@@ -135,17 +138,22 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - elk
 
   mariadb:
     container_name: mariadb
     image: mariadb:latest
     ports:
       - "3306:3306"
+    volumes:
+      - ./sql:/docker-entrypoint-initdb.d
     environment:
       MYSQL_ROOT_PASSWORD: 123456
       MYSQL_USER: hieplp
       MYSQL_PASSWORD: 123456
       MYSQL_DATABASE: hieplp
+      TZ: Asia/Ho_Chi_Minh
     networks:
       - elk
 
@@ -158,8 +166,8 @@ services:
       - ./config/rsa:/opt/verticles/rsa
     environment:
       - CONFIG_FILE=config.json
-    links:
-      - mariadb
+    #    ports:
+    #      - "9901:9901"
     depends_on:
       - mariadb
       - zookeeper
@@ -174,8 +182,6 @@ services:
       - ./config/user-services.json:/opt/verticles/config.json
     environment:
       - CONFIG_FILE=config.json
-    links:
-      - mariadb
     depends_on:
       - mariadb
       - zookeeper
@@ -190,8 +196,6 @@ services:
       - ./config/shorten-services.json:/opt/verticles/config.json
     environment:
       - CONFIG_FILE=config.json
-    links:
-      - mariadb
     depends_on:
       - mariadb
       - kafka
@@ -207,8 +211,6 @@ services:
       - ./config/statistic-services.json:/opt/verticles/config.json
     environment:
       - CONFIG_FILE=config.json
-    links:
-      - mariadb
     depends_on:
       - elasticsearch
       - mariadb
@@ -226,11 +228,15 @@ services:
       - ./config/rsa/token:/opt/verticles/rsa/token
     environment:
       - CONFIG_FILE=config.json
-    links:
-      - mariadb
+    ports:
+      - "9900:9900"
     depends_on:
       - mariadb
       - zookeeper
+      - auth-services
+      - user-services
+      - shorten-services
+      - statistic-services
     networks:
       - elk
 

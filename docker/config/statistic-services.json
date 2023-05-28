@@ -3,6 +3,10 @@
     "port": 9904,
     "host": "0.0.0.0"
   },
+  "discoveryConfig": {
+    "host": "statistic-services",
+    "port": 9904
+  },
   "sqlConfig": {
     "driverClassName": "org.mariadb.jdbc.Driver",
     "jdbcUrl": "jdbc:mariadb://mariadb:3306/shortenStatistic",
@@ -15,7 +19,7 @@
     "connectionTimeout": 3600
   },
   "kafkaConfig": {
-    "bootstrapServers": "kafka:29092",
+    "bootstrapServers": "kafka:9092",
     "keyDeserializer": "org.apache.kafka.common.serialization.StringDeserializer",
     "valueDeserializer": "io.vertx.kafka.client.serialization.BufferDeserializer",
     "groupId": "statistic-group",

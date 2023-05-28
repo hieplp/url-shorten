@@ -3,6 +3,10 @@
     "port": 9902,
     "host": "0.0.0.0"
   },
+  "discoveryConfig": {
+    "host": "user-services",
+    "port": 9902
+  },
   "sqlConfig": {
     "driverClassName": "org.mariadb.jdbc.Driver",
     "jdbcUrl": "jdbc:mariadb://mariadb:3306/shortenUser",

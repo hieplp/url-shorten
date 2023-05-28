@@ -4,5 +4,6 @@ import lombok.Data;
 
 @Data
 public class DiscoveryConfig {
-    private String zkHost;
+    private String host;
+    private int port;
 }

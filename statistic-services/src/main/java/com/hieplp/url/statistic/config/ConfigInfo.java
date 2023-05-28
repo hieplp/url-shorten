@@ -6,6 +6,7 @@ import lombok.Getter;
 @Getter
 public class ConfigInfo {
     private HttpServerConfig serverConfig;
+    private DiscoveryConfig discoveryConfig;
     private SqlConfig sqlConfig;
     private KafkaConsumerConfig kafkaConfig;
     private ElasticConfig elasticConfig;

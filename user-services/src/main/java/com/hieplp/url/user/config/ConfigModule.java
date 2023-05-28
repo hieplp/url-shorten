@@ -33,8 +33,8 @@ public class ConfigModule extends AbstractModule {
         this.discovery = ServiceDiscovery.create(vertx);
         this.discoveryRecord = DiscoveryUtil.publicService(this.discovery,
                 DiscoveryServiceName.USER,
-                configInfo.getServerConfig().getHost(),
-                configInfo.getServerConfig().getPort(),
+                configInfo.getDiscoveryConfig().getHost(),
+                configInfo.getDiscoveryConfig().getPort(),
                 ApiConfig.User.PREFIX);
     }
 
