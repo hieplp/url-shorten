@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 public class UrlHandlerImpl implements UrlHandler {
     private final static int DEFAULT_URL_ID_LENGTH = 6;
+    private final static int DEFAULT_MESSAGE_ID_LENGTH = 10;
 
     private final ConfigInfo configInfo;
     private final UrlRepository urlRepo;
@@ -54,6 +55,7 @@ public class UrlHandlerImpl implements UrlHandler {
     @Override
     public void saveUrlHistory(StatisticTopic topic, CreateHistoryRequest request) {
         log.info("Save url history: {}", request);
+        request.setMessageId(GenerateUtil.generate(DEFAULT_MESSAGE_ID_LENGTH));
         kafkaProducerHandler.send(topic.getName(), request.getUrlId(), request);
     }
 

@@ -64,7 +64,8 @@ services:
       # Use single node discovery in order to disable production mode and avoid bootstrap checks.
       # see: https://www.elastic.co/guide/en/elasticsearch/reference/current/bootstrap-checks.html
       discovery.type: single-node
-      TZ: Asia/Ho_Chi_Minh
+      #      TZ: Asia/Ho_Chi_Minh
+      TZ: Etc/UTC
     networks:
       - elk
     restart: unless-stopped
@@ -153,7 +154,8 @@ services:
       MYSQL_USER: hieplp
       MYSQL_PASSWORD: 123456
       MYSQL_DATABASE: hieplp
-      TZ: Asia/Ho_Chi_Minh
+      #      TZ: Asia/Ho_Chi_Minh
+      TZ: Etc/UTC
     networks:
       - elk
 
@@ -166,6 +168,7 @@ services:
       - ./config/rsa:/opt/verticles/rsa
     environment:
       - CONFIG_FILE=config.json
+      - TZ=Etc/UTC
     #    ports:
     #      - "9901:9901"
     depends_on:
@@ -182,6 +185,7 @@ services:
       - ./config/user-services.json:/opt/verticles/config.json
     environment:
       - CONFIG_FILE=config.json
+      - TZ=Etc/UTC
     depends_on:
       - mariadb
       - zookeeper
@@ -196,6 +200,7 @@ services:
       - ./config/shorten-services.json:/opt/verticles/config.json
     environment:
       - CONFIG_FILE=config.json
+      - TZ=Etc/UTC
     depends_on:
       - mariadb
       - kafka
@@ -211,6 +216,7 @@ services:
       - ./config/statistic-services.json:/opt/verticles/config.json
     environment:
       - CONFIG_FILE=config.json
+      - TZ=Etc/UTC
     depends_on:
       - elasticsearch
       - mariadb
@@ -228,6 +234,7 @@ services:
       - ./config/rsa/token:/opt/verticles/rsa/token
     environment:
       - CONFIG_FILE=config.json
+      - TZ=Etc/UTC
     ports:
       - "9900:9900"
     depends_on:

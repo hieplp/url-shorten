@@ -75,7 +75,8 @@
                              class="bg-white
 							                      shadow
 							                      md:col-span-2
-							                      rounded-lg" />
+							                      rounded-lg
+                                    mb-5" />
 
     </div>
   </div>

@@ -2,10 +2,10 @@
 
 # List of project directories
 projects=(
-         "gateway-services"
-         "auth-services"
-         "shorten-services"
-         "user-services"
+#         "gateway-services"
+#         "auth-services"
+#         "shorten-services"
+#         "user-services"
          "statistic-services"
 )
 

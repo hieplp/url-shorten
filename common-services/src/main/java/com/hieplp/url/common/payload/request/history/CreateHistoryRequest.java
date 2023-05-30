@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateHistoryRequest {
+    private String messageId;
     @NotNull
     private String urlId;
     @NotNull

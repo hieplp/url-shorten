@@ -66,6 +66,7 @@ public class StatisticServiceImpl implements StatisticService {
                                     a -> a.terms(t -> t.field(EsField.SOCIAL_TYPE.getName())))
                     , UrlModel.class);
 
+
             // Get buckets from aggregation
             var buckets = searchResponse.aggregations()
                     .get(EsAggregation.STATISTIC_OF_SOCIAL_MEDIA.getName())
@@ -117,6 +118,7 @@ public class StatisticServiceImpl implements StatisticService {
             //
             final var fromDate = DateUtil.formatDate(request.getFromDate(), DATE_PATTERN);
             final var toDate = DateUtil.formatDate(request.getToDate(), DATE_PATTERN);
+            log.info("From date: {}, to date: {}", fromDate, toDate);
 
             var searchResponse = elasticClient.search(s -> s
                             .index(EsIndex.HISTORY.getName())
