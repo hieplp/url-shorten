@@ -1,12 +1,12 @@
 <template>
-  <Header />
+  <Header/>
 
   <div class="max-w-screen-xl
 	            mx-auto
 	            md:px-8 px-2
 	           ">
 
-    <Breadcrumb :items="breadcrumbs" :last-item="`DETAIL ( ${urlId} )`" />
+    <Breadcrumb :items="breadcrumbs" :last-item="`DETAIL ( ${urlId} )`"/>
 
     <div class="w-full
 								grid
@@ -21,18 +21,18 @@
         <PercentageCard :amount="todayClicks.totalClicks"
                         :is-increase="isIncrease(todayClicks.totalClicks, yesterdayClicks.totalClicks)"
                         :percentage="getPercentage(todayClicks.totalClicks, yesterdayClicks.totalClicks)"
-                        title="clicks today" />
+                        title="clicks today"/>
 
         <PercentageCard :amount="thisMonthClicks.totalClicks"
                         :is-increase="isIncrease(thisMonthClicks.totalClicks, lastMonthClicks.totalClicks)"
                         :percentage="getPercentage(thisMonthClicks.totalClicks, lastMonthClicks.totalClicks)"
-                        title="clicks last 30 days" />
+                        title="clicks last 30 days"/>
       </div>
 
       <UrlInfo :url-id="urlId"
                class="bg-white
 											shadow
-									    rounded-lg" />
+									    rounded-lg"/>
 
 
       <div class="grid grid-cols-1 gap-2">
@@ -44,12 +44,12 @@
           <PercentageCard :amount="todayClicks.totalClicks"
                           :is-increase="isIncrease(todayClicks.totalClicks, yesterdayClicks.totalClicks)"
                           :percentage="getPercentage(todayClicks.totalClicks, yesterdayClicks.totalClicks)"
-                          title="clicks today" />
+                          title="clicks today"/>
 
           <PercentageCard :amount="thisMonthClicks.totalClicks"
                           :is-increase="isIncrease(thisMonthClicks.totalClicks, lastMonthClicks.totalClicks)"
                           :percentage="getPercentage(thisMonthClicks.totalClicks, lastMonthClicks.totalClicks)"
-                          title="clicks last 30 days" />
+                          title="clicks last 30 days"/>
         </div>
 
         <div class="grid
@@ -60,14 +60,14 @@
                                 class="bg-white
 																	     shadow
 																	     row-span-6
-									                     rounded-lg" />
+									                     rounded-lg"/>
 
           <UrlQr v-if="url.urlId"
                  :short-url="url.shortUrl"
                  class="bg-white
 												shadow
 												row-span-6
-									      rounded-lg" />
+									      rounded-lg"/>
         </div>
       </div>
 
@@ -76,7 +76,7 @@
 							                      shadow
 							                      md:col-span-2
 							                      rounded-lg
-                                    mb-5" />
+                                    mb-5"/>
 
     </div>
   </div>
@@ -87,16 +87,16 @@
 <script lang="ts" setup>
 import Header from "../../components/Header.vue";
 import Breadcrumb from "../../components/Breadcrumb.vue";
-import { computed, onMounted, ref } from "vue";
+import {computed, onMounted, ref} from "vue";
 import BreadcrumbModel from "../../common/model/BreadcrumbModel";
-import { useRoute } from "vue-router";
-import { useUrlStore } from "../../store/url";
+import {useRoute} from "vue-router";
+import {useUrlStore} from "../../store/url";
 import SocialMediaStatistic from "../../components/social/SocialMediaStatistic.vue";
 import UrlInfo from "../../components/url/UrlInfo.vue";
 import PercentageCard from "../../components/card/PercentageCard.vue";
 import UrlQr from "../../components/url/UrlQr.vue";
 import UrlStatisticLineChart from "../../components/url/UrlStatisticLineChart.vue";
-import { useStatisticStore } from "../../store/statistic";
+import {useStatisticStore} from "../../store/statistic";
 import TotalClicksModel from "../../common/model/TotalClicksModel";
 
 
@@ -107,35 +107,38 @@ onMounted(() => {
   let todayStart = new Date(today).setHours(0, 0, 0, 0);
   let todayEnd = new Date(today).setHours(23, 59, 59, 999);
   statisticStore.getTotalClicksByDate(urlId.value, todayStart, todayEnd)
-    .then((totalClicks) => {
-      todayClicks.value = totalClicks;
-    });
+      .then((totalClicks) => {
+        todayClicks.value = totalClicks;
+      });
 
   // Yesterday
   let yesterday = today - 24 * 60 * 60 * 1000;
   let yesterdayStart = new Date(yesterday).setHours(0, 0, 0, 0);
   let yesterdayEnd = new Date(yesterday).setHours(23, 59, 59, 999);
   statisticStore.getTotalClicksByDate(urlId.value, yesterdayStart, yesterdayEnd)
-    .then((totalClicks) => {
-      yesterdayClicks.value = totalClicks;
-    });
+      .then((totalClicks) => {
+        yesterdayClicks.value = totalClicks;
+      });
 
   // This month
   let thisMonthStart = new Date(today).setDate(1);
   let thisMonthEnd = new Date(today).setDate(31);
+  console.log(thisMonthStart, thisMonthEnd)
   statisticStore.getTotalClicksByDate(urlId.value, thisMonthStart, thisMonthEnd)
-    .then((totalClicks) => {
-      thisMonthClicks.value = totalClicks;
-    });
+      .then((totalClicks) => {
+        console.log("this month", totalClicks);
+        thisMonthClicks.value = totalClicks;
+      });
 
   // Last month
-  let lastMonth = today - 30 * 24 * 60 * 60 * 1000;
+  let lastMonth = thisMonthStart - 30 * 24 * 60 * 60 * 1000;
   let lastMonthStart = new Date(lastMonth).setDate(1);
   let lastMonthEnd = new Date(lastMonth).setDate(31);
   statisticStore.getTotalClicksByDate(urlId.value, lastMonthStart, lastMonthEnd)
-    .then((totalClicks) => {
-      lastMonthClicks.value = totalClicks;
-    });
+      .then((totalClicks) => {
+        console.log("last month", totalClicks);
+        lastMonthClicks.value = totalClicks;
+      });
 });
 
 const route = useRoute();

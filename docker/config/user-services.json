@@ -13,7 +13,7 @@
     "maxPoolSize": "16",
     "username": "root",
     "password": "123456",
-    "serverTimezone": "Asia/Ho_Chi_Minh",
+    "serverTimezone": "Etc/UTC",
     "autoCommit": true,
     "useLegacyDatetimeCode": "false",
     "connectionTimeout": 3600

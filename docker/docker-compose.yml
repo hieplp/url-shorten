@@ -38,7 +38,7 @@ services:
       MONITORING_INTERNAL_PASSWORD: ${MONITORING_INTERNAL_PASSWORD:-}
       BEATS_SYSTEM_PASSWORD: ${BEATS_SYSTEM_PASSWORD:-}
     networks:
-      - elk
+      - url-shorten
     depends_on:
       - elasticsearch
 
@@ -67,7 +67,7 @@ services:
       #      TZ: Asia/Ho_Chi_Minh
       TZ: Etc/UTC
     networks:
-      - elk
+      - url-shorten
     restart: unless-stopped
 
   logstash:
@@ -90,7 +90,7 @@ services:
     #    command: >
     #      bash -c "sleep 30 && curl --user logstash_internal:${LOGSTASH_INTERNAL_PASSWORD:-} -XPUT 'http://localhost:9200/logstash-history'"
     networks:
-      - elk
+      - url-shorten
     depends_on:
       - elasticsearch
       - mariadb
@@ -109,7 +109,7 @@ services:
     environment:
       KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD:-}
     networks:
-      - elk
+      - url-shorten
     depends_on:
       - elasticsearch
     restart: unless-stopped
@@ -123,7 +123,7 @@ services:
     ports:
       - "2181:2181"
     networks:
-      - elk
+      - url-shorten
 
   kafka:
     container_name: kafka
@@ -140,7 +140,7 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     networks:
-      - elk
+      - url-shorten
 
   mariadb:
     container_name: mariadb
@@ -154,10 +154,9 @@ services:
       MYSQL_USER: hieplp
       MYSQL_PASSWORD: 123456
       MYSQL_DATABASE: hieplp
-      #      TZ: Asia/Ho_Chi_Minh
       TZ: Etc/UTC
     networks:
-      - elk
+      - url-shorten
 
   auth-services:
     container_name: auth-services
@@ -167,15 +166,15 @@ services:
       - ./config/auth-services.json:/opt/verticles/config.json
       - ./config/rsa:/opt/verticles/rsa
     environment:
-      - CONFIG_FILE=config.json
-      - TZ=Etc/UTC
+      CONFIG_FILE: config.json
+      TZ: Etc/UTC
     #    ports:
     #      - "9901:9901"
     depends_on:
       - mariadb
       - zookeeper
     networks:
-      - elk
+      - url-shorten
 
   user-services:
     container_name: user-services
@@ -184,13 +183,13 @@ services:
     volumes:
       - ./config/user-services.json:/opt/verticles/config.json
     environment:
-      - CONFIG_FILE=config.json
-      - TZ=Etc/UTC
+      CONFIG_FILE: config.json
+      TZ: Etc/UTC
     depends_on:
       - mariadb
       - zookeeper
     networks:
-      - elk
+      - url-shorten
 
   shorten-services:
     container_name: shorten-services
@@ -199,14 +198,14 @@ services:
     volumes:
       - ./config/shorten-services.json:/opt/verticles/config.json
     environment:
-      - CONFIG_FILE=config.json
-      - TZ=Etc/UTC
+      CONFIG_FILE: config.json
+      TZ: Etc/UTC
     depends_on:
       - mariadb
       - kafka
       - zookeeper
     networks:
-      - elk
+      - url-shorten
 
   statistic-services:
     container_name: statistic-services
@@ -215,15 +214,15 @@ services:
     volumes:
       - ./config/statistic-services.json:/opt/verticles/config.json
     environment:
-      - CONFIG_FILE=config.json
-      - TZ=Etc/UTC
+      CONFIG_FILE: config.json
+      TZ: Etc/UTC
     depends_on:
       - elasticsearch
       - mariadb
       - kafka
       - zookeeper
     networks:
-      - elk
+      - url-shorten
 
   gateway-services:
     container_name: gateway-services
@@ -233,8 +232,8 @@ services:
       - ./config/gateway-services.json:/opt/verticles/config.json
       - ./config/rsa/token:/opt/verticles/rsa/token
     environment:
-      - CONFIG_FILE=config.json
-      - TZ=Etc/UTC
+      CONFIG_FILE: config.json
+      TZ: Etc/UTC
     ports:
       - "9900:9900"
     depends_on:
@@ -245,10 +244,10 @@ services:
       - shorten-services
       - statistic-services
     networks:
-      - elk
+      - url-shorten
 
 networks:
-  elk:
+  url-shorten:
     driver: bridge
 
 volumes:

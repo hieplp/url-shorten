@@ -5,8 +5,10 @@ ENV VERTICLE_FILE build/libs/auth-services-1.0.jar
 # Set the location of the verticles
 ENV VERTICLE_HOME /opt/verticles
 
-#EXPOSE 9001
+# Set the timezone
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
+# Copy your fat jar to the container
 COPY $VERTICLE_FILE $VERTICLE_HOME/
 
 WORKDIR $VERTICLE_HOME
