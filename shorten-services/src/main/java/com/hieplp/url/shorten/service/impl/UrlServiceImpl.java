@@ -138,7 +138,7 @@ public class UrlServiceImpl implements UrlService {
         var urlRecord = urlRepo.getActiveUrlRecordByOwner(request.getUrlId(), commonRequest.getHeaders().getUserId());
 
         final var currentTime = DateUtil.getCurrentTime();
-        if (States.isNotNull(urlRecord.getExpiredat())) {
+        if (States.isNotNull(urlRecord.getExpiredat()) && States.isNotNull(request.getExpiredAt())) {
             if (States.isLessThan(DateUtil.toMilliSeconds(urlRecord.getExpiredat()), currentTime)) {
                 log.debug("Url: {} is expired", urlRecord.getUrlid());
                 throw new BadRequestException(String.format("Url: %s is expired", urlRecord.getUrlid()));
