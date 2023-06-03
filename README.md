@@ -123,4 +123,44 @@ git clone https://github.com/hieplp/url-shorten.git
   docker-compose up -d
 ```
 
+## License
 
+The project is licensed under the MIT License.
+
+## Screenshots
+
+**1. Register**
+![Register](other/screenshots/register.png)
+
+**2. Login**
+![Login](other/screenshots/login.png)
+
+**3. Profile**
+![Profile](other/screenshots/auth-profile.png)
+
+**4. Shorten URL**
+
+4.1. Authenticated
+![Shorten URL](other/screenshots/auth-shorten-url.png)
+![Shorten URL Result](other/screenshots/auth-shortened-url-result.png)
+
+4.2. Unauthenticated
+![Shorten URL](other/screenshots/public-shorten-url.png)
+![Shorten URL Result](other/screenshots/public-shortened-url-result.png)
+
+**5. URL List**
+![URL List](other/screenshots/auth-url-list.png)
+
+**6. Update URL**
+![Update URL](other/screenshots/auth-update-url.png)
+
+**7. Delete URL**
+![Delete URL](other/screenshots/auth-delete-url.png)
+
+**8. URL Detail**
+![URL Detail](other/screenshots/auth-url-detail-1.png)
+![URL Detail](other/screenshots/auth-url-detail-2.png)
+
+## References
+
+[Elastic stack (ELK) on Docker](https://github.com/deviantony/docker-elk)
