@@ -58,22 +58,24 @@ public class RestServiceImpl implements RestService {
 
                     return request.send(context.body().buffer());
                 })
-                .onSuccess(ar -> {
+                .onSuccess(response -> {
                     log.info("Send request to {} successfully", path);
-
-                    ar.bodyHandler(body -> {
-                        log.debug("Response body: {}", body);
-                        context.response().setStatusCode(ar.statusCode());
-                        context.response().headers().setAll(ar.headers());
+                    response.bodyHandler(body -> {
+                        log.info("Response body: {}", body);
+                        context.response().setStatusCode(response.statusCode());
+                        context.response().headers().setAll(response.headers());
                         context.response().end(body);
+
+                        // Release service object
+                        ServiceDiscovery.releaseServiceObject(discovery, httpClient);
                     });
                 })
                 .onFailure(ar1 -> {
                     ar1.printStackTrace();
                     log.error("Failed to send request cause by {}", ar1.getMessage());
                     routerHandler.internalError(context);
-                })
-                .onComplete(ar1 -> {
+
+                    // Release service object
                     ServiceDiscovery.releaseServiceObject(discovery, httpClient);
                 });
     }

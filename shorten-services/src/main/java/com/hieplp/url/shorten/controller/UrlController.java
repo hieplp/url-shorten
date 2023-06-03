@@ -43,25 +43,25 @@ public class UrlController implements BaseController {
                 .handler(routerHandler::postHandler)
                 .blockingHandler(routerHandler::userHandler)
                 .blockingHandler(ctx -> routerHandler.serviceHandler(ctx, urlService::updateUrlByAuth))
-                .blockingHandler(routerHandler::created);
+                .blockingHandler(routerHandler::ok);
 
         router.delete(ApiConfig.UserUrl.PREFIX + "/:urlId")
                 .handler(routerHandler::getHandler)
                 .blockingHandler(routerHandler::userHandler)
                 .blockingHandler(ctx -> routerHandler.serviceHandler(ctx, urlService::deleteUrlByAuth))
-                .blockingHandler(routerHandler::created);
+                .blockingHandler(routerHandler::ok);
 
         router.get(ApiConfig.UserUrl.PREFIX + "/:urlId")
                 .handler(routerHandler::getHandler)
                 .blockingHandler(routerHandler::userHandler)
                 .blockingHandler(ctx -> routerHandler.serviceHandler(ctx, urlService::getUrlByAuth))
-                .blockingHandler(routerHandler::created);
+                .blockingHandler(routerHandler::ok);
 
         router.get(ApiConfig.UserUrl.PREFIX)
                 .handler(routerHandler::getHandler)
                 .blockingHandler(routerHandler::userHandler)
                 .blockingHandler(ctx -> routerHandler.serviceHandler(ctx, urlService::getUrlsByAuth))
-                .blockingHandler(routerHandler::created);
+                .blockingHandler(routerHandler::ok);
 
 
         return this;

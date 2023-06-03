@@ -1,11 +1,12 @@
 #!/bin/sh
 
 # List of project directories
+# shellcheck disable=SC2039
 projects=(
-#         "gateway-services"
-#         "auth-services"
-#         "shorten-services"
-#         "user-services"
+         "gateway-services"
+         "auth-services"
+         "shorten-services"
+         "user-services"
          "statistic-services"
 )
 
