@@ -1,0 +1,593 @@
+{
+	"info": {
+		"_postman_id": "d472172c-0b33-43b4-8fda-d94c430b2e65",
+		"name": "url-shorten",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "9006063"
+	},
+	"item": [
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"test0121\",\r\n    \"password\": \"mLwTN2lAn/tEmKpFMZOe53+XbgqdYbcJVoE77bkOV8XIewE6qRfBFtbSONhc6Jl+/BTXPXCLMwos7Z3reD5DNfWL44pSg2EBDlrrw6L4FYrAM0Nn/hPfIqJBDj39RiUNTqGFPfGu6ECJ/v8N1IbHI7qCzZ+jbnT7jPflGi/qkkqcJ+z5WbtclRMTJd/04tZFKrf85//E6YTYlbzdNq6gqxf6gKJCRDqugynCxrZSyGuD8pQOKDlNEUDBUXWjNmXUqXdsreWH0tJGnE4ERH6u2Tc6QRYpXWeisudGdkR6N6mtrNRKeSDmnt0RC8CXtg3LfGXwa3WGZNQDPN06p6gI0g==\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/auth/login",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"test0121\",\r\n    \"password\": \"mLwTN2lAn/tEmKpFMZOe53+XbgqdYbcJVoE77bkOV8XIewE6qRfBFtbSONhc6Jl+/BTXPXCLMwos7Z3reD5DNfWL44pSg2EBDlrrw6L4FYrAM0Nn/hPfIqJBDj39RiUNTqGFPfGu6ECJ/v8N1IbHI7qCzZ+jbnT7jPflGi/qkkqcJ+z5WbtclRMTJd/04tZFKrf85//E6YTYlbzdNq6gqxf6gKJCRDqugynCxrZSyGuD8pQOKDlNEUDBUXWjNmXUqXdsreWH0tJGnE4ERH6u2Tc6QRYpXWeisudGdkR6N6mtrNRKeSDmnt0RC8CXtg3LfGXwa3WGZNQDPN06p6gI0g==\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/auth/register",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "refresh token",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{refreshToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/auth/refresh-token",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"auth",
+								"refresh-token"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "url",
+			"item": [
+				{
+					"name": "user",
+					"item": [
+						{
+							"name": "user - create url",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{accessToken}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    // \"shortUrl\": \"AAAAAA\",\n    \"longUrl\": \"https://app.gitkraken.com/purchase-license?product=gitgui&license=PRO\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/user/url",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"user",
+										"url"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "user - update url",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{accessToken}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"urlId\": \"7IdvjS\",\n    // \"shortUrl\": \"AAAAAA\",\n    \"longUrl\": \"https://app.gitkraken.com/purchase-license?product=gitgui&license=PRO1\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/user/url",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"user",
+										"url"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "user - get url",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{accessToken}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"shortUrl\": \"AAAAAA\",\n    \"longUrl\": \"https://app.gitkraken.com/purchase-license?product=gitgui&license=PRO\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/user/url/:urlId",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"user",
+										"url",
+										":urlId"
+									],
+									"variable": [
+										{
+											"key": "urlId",
+											"value": "1Dmvgp"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "user - get urls",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{accessToken}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"shortUrl\": \"AAAAAA\",\n    \"longUrl\": \"https://app.gitkraken.com/purchase-license?product=gitgui&license=PRO\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/user/url?from=0&limit=10&order=createdAt&by=asc",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"user",
+										"url"
+									],
+									"query": [
+										{
+											"key": "from",
+											"value": "0"
+										},
+										{
+											"key": "limit",
+											"value": "10"
+										},
+										{
+											"key": "order",
+											"value": "createdAt"
+										},
+										{
+											"key": "by",
+											"value": "asc"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "user - delete url",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{accessToken}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{host}}/user/url/:urlId",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"user",
+										"url",
+										":urlId"
+									],
+									"variable": [
+										{
+											"key": "urlId",
+											"value": "FB38X3"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "public",
+					"item": [
+						{
+							"name": "public - create url",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{accessToken}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"longUrl\": \"https://app.gitkraken.com/purchase-license?product=gitgui&license=PRO\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/public/url",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"public",
+										"url"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "public - get url",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "fromHost",
+										"value": "https://www.google.com",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{host}}/public/url/:alias",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"public",
+										"url",
+										":alias"
+									],
+									"variable": [
+										{
+											"key": "alias",
+											"value": "msi2023"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "get profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{accessToken}}",
+								"type": "text"
+							},
+							{
+								"key": "userId",
+								"value": "RnNwkPADvP",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{host}}/user/profile",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"user",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "statistic",
+			"item": [
+				{
+					"name": "auth - get statistic of social media",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{accessToken}}",
+								"type": "text"
+							},
+							{
+								"key": "userId",
+								"value": "RnNwkPADvP",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{host}}/statistic/social-media?urlId=Np3oLB",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"statistic",
+								"social-media"
+							],
+							"query": [
+								{
+									"key": "urlId",
+									"value": "Np3oLB"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "auth - get total clicks by month",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{accessToken}}",
+								"type": "text"
+							},
+							{
+								"key": "userId",
+								"value": "RnNwkPADvP",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{host}}/statistic/total-clicks-group-by-month?urlId=1Dmvgp&fromDate=1673885784000&toDate=1702743384000",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"statistic",
+								"total-clicks-group-by-month"
+							],
+							"query": [
+								{
+									"key": "urlId",
+									"value": "1Dmvgp"
+								},
+								{
+									"key": "fromDate",
+									"value": "1673885784000"
+								},
+								{
+									"key": "toDate",
+									"value": "1702743384000"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "auth - get total clicks by date",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{accessToken}}",
+								"type": "text"
+							},
+							{
+								"key": "userId",
+								"value": "RnNwkPADvP",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{host}}/statistic/total-clicks-by-date?urlId=1Dmvgp&fromDate=1673885784000&toDate=1702743384000",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"statistic",
+								"total-clicks-by-date"
+							],
+							"query": [
+								{
+									"key": "urlId",
+									"value": "1Dmvgp"
+								},
+								{
+									"key": "fromDate",
+									"value": "1673885784000"
+								},
+								{
+									"key": "toDate",
+									"value": "1702743384000"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "create url",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"shortUrl\": \"AAAAAA\",\n    \"longUrl\": \"https://app.gitkraken.com/purchase-license?product=gitgui&license=PRO\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/url",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"url"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "host",
+			"value": "http://localhost:9900",
+			"type": "string"
+		},
+		{
+			"key": "accessToken",
+			"value": "eyJ0eXBlIjowLCJ1c2VyIjp7InVzZXJJZCI6ImJKM3F6WkFxWTIiLCJ1c2VybmFtZSI6InRlc3QwMSIsInN0YXR1cyI6MCwiY3JlYXRlZEJ5IjoiYkozcXpaQXFZMiIsImNyZWF0ZWRBdCI6MTY4MTYzODI5ODAwMCwibW9kaWZpZWRCeSI6ImJKM3F6WkFxWTIiLCJtb2RpZmllZEF0IjoxNjgxNjM4Mjk4MDAwfSwiYWxnIjoiUlMyNTYifQ.eyJhdWQiOiJiSjNxelpBcVkyIiwiZXhwIjoxNjgyMDE2NzEzLCJpYXQiOjE2ODE2NTY3MTN9.XnrOWplxWCx1Huqv1G9UrCRWa2sqLPRO8X5VNBMtmnliaWy_Poi9ceiUhAYvFXQ4eiOBtt6lfuyxum473Tk0SrkR8oxvtZbIAn6QS-nsKVbkprbGY-lUhNjNIKO_g8NM9hXrScfB_dWXO1G1Z4hpDNUmf0_5Bja1UraTLTWMKf_lQKAa_0W28nezdYrmofCF25aojOSrSuLtwFg8IxWUJw8sfDcagjRsHoTgAOPedyro15VWZfVDJq246kG4_m_H6WSV_o9Ub0kT-Uq_JHUsNCgis01MJN-DYYjx_C7Vt453AYBG7owMBh43dYZvCZQy4g3-vFRfIimFqaChJx2I_",
+			"type": "string"
+		},
+		{
+			"key": "refreshToken",
+			"value": "eyJ0eXBlIjowLCJ1c2VyIjp7InVzZXJJZCI6ImJKM3F6WkFxWTIiLCJ1c2VybmFtZSI6InRlc3QwMSIsInN0YXR1cyI6MCwiY3JlYXRlZEJ5IjoiYkozcXpaQXFZMiIsImNyZWF0ZWRBdCI6MTY4MTYzODI5ODAwMCwibW9kaWZpZWRCeSI6ImJKM3F6WkFxWTIiLCJtb2RpZmllZEF0IjoxNjgxNjM4Mjk4MDAwfSwiYWxnIjoiUlMyNTYifQ.eyJhdWQiOiJiSjNxelpBcVkyIiwiZXhwIjoxNjgyMDE0MzQxLCJpYXQiOjE2ODE2NTQzNDF9.Byr9x7B4Raibzd_vORpO5zSAMlWJNNC3APREAk8m8l8QnxF82rPpqfNeN4pTL7xgdPMYCFfOL6a8mIveYv1ImlttOippRKGAp_a__c2Id3pAzVaqSphGGihuoiGge_l9QGtupnD0JYqew-SzVKgN0ZYS40_gn17XJ60aLwCqCIRNQVtkblBiKLnngvWjdw9wi5mYnVqjHy6Fb_dHp10SvtDZICMQiYuEOdeoJMsLqDZPJ0D3XBN6vu_SNo_mCrtkmwyoxg4LRFZ_7vSpvp5zYDhjqfoqYc6xPef7mlaAiI_f1c3l8W8g5Y0qGJ7Ge8gqcZbzNNMPeIf-13q7S57mzg",
+			"type": "string"
+		}
+	]
+}
